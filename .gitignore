@@ -1,0 +1,30 @@
+# Credentials and local secrets
+.env
+.env.*
+*.pem
+*.pfx
+*.p12
+*.key
+**/auth.json
+**/.credentials.json
+**/oauth_creds.json
+**/*token*.json
+**/*secret*.json
+
+# Agent runtime state
+**/*.sqlite
+**/*.sqlite-shm
+**/*.sqlite-wal
+**/history.jsonl
+**/sessions/
+**/cache/
+**/logs/
+**/plugins/
+
+# Deliberately machine-specific settings
+config/codex/config.toml
+config/codex/rules/
+config/claude/settings.json
+
+# Local verification workspaces
+work/

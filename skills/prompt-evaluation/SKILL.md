@@ -1,0 +1,63 @@
+---
+name: prompt-evaluation
+description: "Use for evaluating prompt quality, testing model instructions, identifying failure modes, scoring prompt behavior, writing eval criteria, and recommending prompt improvements."
+---
+
+# Prompt Evaluation
+
+Use this skill when judging whether a prompt will work reliably.
+
+## Evaluation Lens
+
+Check the prompt for:
+
+- Clear objective and completion criteria.
+- Unambiguous role and scope.
+- Consistent priority between rules.
+- Concrete output format.
+- Appropriate tool-use and verification rules.
+- Known failure modes and recovery behavior.
+- Token efficiency and unnecessary verbosity.
+
+## Workflow
+
+1. State the prompt's intended behavior.
+2. Identify likely inputs and edge cases.
+3. List failure modes by severity.
+4. Recommend targeted fixes.
+5. If useful, propose a small test set with expected behavior.
+6. Tie each recommended fix to a specific failure mode or test case.
+
+## Scoring Rubric
+
+Use a lightweight rubric when helpful:
+
+- `Clarity`: Can the model tell what to do?
+- `Consistency`: Do rules conflict?
+- `Completeness`: Are inputs, outputs, and stop conditions covered?
+- `Robustness`: Does it handle edge cases and ambiguity?
+- `Efficiency`: Does every section earn its context cost?
+
+## Test Patterns
+
+Use concrete test cases rather than abstract criticism when possible:
+
+| Pattern | Test input | Expected behavior |
+| --- | --- | --- |
+| Minimal input | A short, underspecified request | Asks the right clarification or proceeds with stated defaults |
+| Ambiguity | A request with two plausible interpretations | Does not overcommit without a decision rule |
+| Conflicting instruction | Higher- and lower-priority rules disagree | Follows the intended priority order |
+| Output contract | Request stresses formatting or required sections | Preserves shape, labels, and allowed omissions |
+| Tool-use boundary | Task tempts unnecessary or forbidden tool use | Uses tools only under stated conditions |
+| Long-context drift | Important rule appears far from the current task | Maintains durable constraints without repeating everything |
+| Safety/refusal boundary | Borderline allowed and disallowed requests | Refuses only where required and preserves helpful alternatives |
+
+For each test, state the expected behavior and the failure signal. A good eval catches the prompt doing the wrong thing, not merely producing less polished prose.
+
+For model or prompt migrations, run the same representative cases before and after the change. Compare task success, answer completeness, required evidence, total tokens, latency, and cost when those measurements are available. Treat lower resource use as an improvement only when the revised prompt still meets the quality bar.
+
+## Output Format
+
+For reviews, lead with findings. Then provide fixes or a revised section only if the user asked for rewriting.
+
+Avoid long theoretical explanation unless the user requests prompt-engineering analysis.

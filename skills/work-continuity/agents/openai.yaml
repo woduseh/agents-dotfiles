@@ -1,0 +1,4 @@
+interface:
+  display_name: "Work Continuity"
+  short_description: "Resume and hand off multi-session work efficiently."
+  default_prompt: "Use $work-continuity to resume or hand off this multi-session task with the smallest useful progress note."

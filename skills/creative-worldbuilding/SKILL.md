@@ -1,0 +1,35 @@
+---
+name: creative-worldbuilding
+description: "Use for building settings, lore, cultures, institutions, magic systems, factions, histories, places, world rules, genre contracts, and roleplay world frames."
+---
+
+# Creative Worldbuilding
+
+Use this skill when the user wants a world, setting, lore system, institution, or scenario frame.
+
+## Goal
+
+Build worlds that produce scenes, conflicts, choices, and texture. Avoid inert encyclopedia entries unless the user explicitly wants reference documentation.
+
+## Workflow
+
+1. Define genre, emotional gravity, and present-tense pressure.
+2. Identify the strongest generative axis, such as a rule, pressure, history, ecology, or aesthetic, without forcing every setting into a single high-concept premise.
+3. Build institutions, factions, places, or systems around pressures and incentives.
+4. Decide what belongs in always-on context versus conditional lore.
+5. Add hooks that naturally create scenes.
+6. Check consistency, scale, and reveal timing.
+
+## Principles
+
+- Atmosphere beats trivia for playable or narrative worlds.
+- Systems should create behavior, not just terminology.
+- Secrets should have reveal paths.
+- Cultures and institutions should have incentives, contradictions, and daily-life texture.
+- Names and terms should be memorable and not overproduced.
+
+## Roleplay And Conditional Lore
+
+For roleplay bots, lorebooks, and conditional context design, first use any local project instructions available in the current workspace. Do not rely on absolute paths to external projects.
+
+Preserve the distinction between persistent anchors, conditional detail, activation logic, and scene logic.

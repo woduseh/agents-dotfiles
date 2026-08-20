@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Prep"
+  short_description: "Release checks, docs, CI, changelog"
+  default_prompt: "Use $release-prep to check versioning, changelog, docs, validation, and remaining release risks for this project."
