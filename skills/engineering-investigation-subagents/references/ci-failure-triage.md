@@ -23,11 +23,4 @@ Tasks:
 6. Do not rewrite unrelated files or reset the worktree. If editing is assigned, keep to the named files and report every touched path.
 7. Report only what a tool result in this run supports; mark anything unverified as such.
 
-Return:
-
-- Summary.
-- Evidence.
-- Likely root cause with confidence.
-- Minimal fix or next check.
-- Validation command.
-- Residual risk.
+Return the parent's Output Contract.

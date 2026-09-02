@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Evaluation"
+  short_description: "Assess a prompt's failure modes"
+  default_prompt: "Use $prompt-evaluation to assess this prompt's failure modes and propose test cases without rewriting it."

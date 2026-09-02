@@ -5,8 +5,6 @@ description: "Builds settings and lore systems: cultures, institutions, factions
 
 # Creative Worldbuilding
 
-Use this skill when the user wants a world, setting, lore system, institution, or scenario frame.
-
 ## Goal
 
 Build worlds that produce scenes, conflicts, choices, and texture. Avoid inert encyclopedia entries unless the user explicitly wants reference documentation.
@@ -29,7 +27,5 @@ Build worlds that produce scenes, conflicts, choices, and texture. Avoid inert e
 - Names and terms should be memorable and not overproduced.
 
 ## Roleplay And Conditional Lore
-
-For roleplay bots, lorebooks, and conditional context design, first use any local project instructions available in the current workspace. Do not rely on absolute paths to external projects.
 
 Preserve the distinction between persistent anchors, conditional detail, activation logic, and scene logic.

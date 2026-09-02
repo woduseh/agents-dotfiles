@@ -5,8 +5,6 @@ description: "Designs how agents, skills, tools, and prompts coordinate: AGENTS.
 
 # Agent Orchestration
 
-Use this skill when the work is about how agents, skills, tools, prompts, or workflows should coordinate.
-
 ## Core Principles
 
 - Keep routers short and limited to broad routing rules.
@@ -58,4 +56,4 @@ Good handoff wording says: use this skill for X; hand off to Y only when Z becom
 - **Task skill:** contains guidance that changes the result for that task.
 - **Reference:** holds mode-specific procedures, schemas, checks, or substantial examples loaded only when needed.
 
-For project-specific orchestration, inspect local instructions, skills, schemas, and documentation. Do not embed absolute paths or assumptions from another project.
+Keep shared skills portable: do not embed one project's paths, tool names, or assumptions in a skill that installs globally.

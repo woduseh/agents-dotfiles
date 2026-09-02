@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Revision"
+  short_description: "Revise or migrate an existing prompt"
+  default_prompt: "Use $prompt-revision to revise this prompt, preserving its runtime semantics and intended behavior."

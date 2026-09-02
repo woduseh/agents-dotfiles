@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Orchestration"
+  short_description: "Design routers, skill splits, and delegation rules"
+  default_prompt: "Use $agent-orchestration to decide how these instructions should be split, triggered, and handed off."

@@ -5,8 +5,6 @@ description: "Turns scattered creative notes, chat history, and drafts into cohe
 
 # Creative Lore Consolidation
 
-Use this skill when the user wants scattered creative material turned into coherent reference material.
-
 ## Goal
 
 Convert fragments into usable canon without flattening atmosphere or inventing unsupported facts.
@@ -18,7 +16,7 @@ Convert fragments into usable canon without flattening atmosphere or inventing u
 3. Group by function: world rules, timeline, factions, places, characters, relationships, systems, secrets, scene hooks.
 4. Resolve contradictions explicitly or mark them for user decision.
 5. Write concise markdown sections with stable headings.
-6. Preserve evocative language where it carries tone, but remove duplicate clutter.
+6. Preserve evocative language where it carries tone, but remove duplicate clutter. Keeping source wording here is deliberate and overrides the general rule of restating retrieved material.
 7. For roleplay/lorebook use, separate always-on anchors from conditional entries.
 
 ## Output Patterns
@@ -33,7 +31,5 @@ Use one of these depending on the request:
 - Conflict report with recommended resolutions.
 
 ## Runtime-Specific Lore
-
-For app-specific lorebooks or roleplay bot organization, first use local project instructions available in the current workspace. Do not rely on absolute paths to external projects.
 
 Use runtime-specific decorators, keywords, folders, variables, and template syntax only when the output is meant for that runtime and the syntax has been verified from current local docs or user-provided material.

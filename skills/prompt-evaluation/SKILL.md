@@ -5,8 +5,6 @@ description: "Evaluates prompt quality: failure modes, rule conflicts, output co
 
 # Prompt Evaluation
 
-Use this skill when judging whether a prompt will work reliably.
-
 ## Evaluation Lens
 
 Check the prompt for:
@@ -18,6 +16,18 @@ Check the prompt for:
 - Appropriate tool-use and verification rules.
 - Known failure modes and recovery behavior.
 - Token efficiency and unnecessary verbosity.
+
+## Handoff Input
+
+When prompt-design or prompt-revision hands a prompt over, expect this block and ask for missing fields before evaluating:
+
+```markdown
+Intended behavior: <one sentence>
+Changed behavior contract: <what the revision changed, or "new prompt">
+Runtime semantics to preserve: <variables, tools, insertion points, output shape>
+Likely failure modes: 1) ... 2) ... 3) ...
+Suggested tests: minimal input / ambiguous input / conflict case / output contract case
+```
 
 ## Workflow
 

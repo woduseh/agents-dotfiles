@@ -5,8 +5,6 @@ description: "Generates creative range: premises, concepts, names, themes, plot 
 
 # Creative Brainstorming
 
-Use this skill when the user wants possibilities, not a polished final artifact.
-
 ## Goal
 
 Generate useful creative range while preserving the user's taste, constraints, and existing material.

@@ -5,8 +5,6 @@ description: "Revises existing creative prose, scenes, dialogue, style, or tone 
 
 # Creative Revision
 
-Use this skill when the user wants existing creative text improved.
-
 ## Goal
 
 Improve the piece while preserving the user's intent, voice, genre, and emotional center. When in doubt, preserve voice before polishing style.

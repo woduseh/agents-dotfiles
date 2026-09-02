@@ -8,6 +8,8 @@
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (작업별 규칙은 Skill이 담당)
 - `skills/`: `.agents/skills`를 원본으로 삼는 사용자 제작 Skill
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
+- `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
+- `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
 
 Skill은 저장소에서 한 번만 관리합니다. 설치할 때 `.agents/skills`와 `.claude/skills` 양쪽에 복사하므로 두 에이전트가 같은 사용자 제작 Skill을 사용합니다.
 
@@ -54,6 +56,12 @@ pwsh -File ./scripts/sync.ps1 -Mode Install -Apply
 `Install -Apply`는 덮어쓸 기존 파일과 Skill 폴더를 먼저 `~/.agents-dotfiles-backups/<timestamp>/`에 백업합니다. 관리 대상 밖의 로컬 파일이나 Skill은 삭제하지 않습니다.
 
 동기화 스크립트는 어느 방향에서도 파일을 삭제하지 않습니다. 로컬에서 제거한 관리 파일이 저장소에 남아 있으면 `Check`가 차이를 보고하므로, 확인 후 Git에서 직접 제거합니다.
+
+Skill을 추가하거나 고친 뒤에는 정적 검사를 돌립니다.
+
+```powershell
+pwsh -File ./scripts/lint-skills.ps1
+```
 
 테스트용 홈 경로를 지정할 수도 있습니다.
 
