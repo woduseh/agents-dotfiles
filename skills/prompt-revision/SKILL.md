@@ -1,6 +1,6 @@
 ---
 name: prompt-revision
-description: "Change, compress, migrate, reorganize, translate, or conflict-check an existing prompt or instruction set. Use prompt-evaluation when the user wants assessment without revision."
+description: "Changes, compresses, migrates, reorganizes, translates, or conflict-checks an existing prompt or instruction set, including migration to current Claude models. Use when the user supplies a prompt to improve; use prompt-evaluation for assessment only and prompt-design for a prompt that does not exist yet."
 ---
 
 # Prompt Revision
@@ -29,7 +29,7 @@ Use this skill when the user provides an existing prompt or instruction set and 
 - Move task-specific behavior into skills or references.
 - Keep routers short and trigger-focused.
 - For modern frontier models, prefer outcome-focused instructions: goal, relevant context, hard constraints, required evidence, success criteria, output shape, and the ambiguities that should trigger clarification.
-- Remove generic requests to think harder, reveal reasoning, follow fixed step-by-step thought, or be broadly concise when they do not encode a measured product requirement.
+- Remove generic requests to think harder, reveal or transcribe reasoning, follow fixed step-by-step thought, hold findings for the final response, minimize formatting, or be broadly concise, unless they encode a measured product requirement. Replace emphatic triggers (CRITICAL, MUST, ALWAYS) with plain conditions.
 - Put examples near the rule they clarify.
 - Keep evaluation criteria close to the expected output.
 - Avoid overfitting to one provider unless the prompt is provider-specific.
@@ -43,6 +43,10 @@ When translating or localizing prompts:
 - Keep technical field names and syntax stable.
 - Do not soften constraints that affect behavior.
 - Preserve Korean nuance when tone, hierarchy, intimacy, or genre language matters.
+
+## Target-Model Notes
+
+When the prompt runs on a current Claude model, read [references/claude-models.md](references/claude-models.md) before revising. It lists what to remove, what to add for each observed symptom, and the API constraints (no prefill, no forced tool choice, append-only history) the prompt must respect.
 
 ## Specialized Prompt Systems
 

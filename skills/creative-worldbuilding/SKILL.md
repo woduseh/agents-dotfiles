@@ -1,6 +1,6 @@
 ---
 name: creative-worldbuilding
-description: "Use for building settings, lore, cultures, institutions, magic systems, factions, histories, places, world rules, genre contracts, and roleplay world frames."
+description: "Builds settings and lore systems: cultures, institutions, factions, magic or technology rules, histories, places, genre contracts, and roleplay world frames. Use when a world or scenario frame is to be created or extended; use creative-lore-consolidation to organize material that already exists."
 ---
 
 # Creative Worldbuilding

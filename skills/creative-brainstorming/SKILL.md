@@ -1,6 +1,6 @@
 ---
 name: creative-brainstorming
-description: "Use for creative ideation, concept exploration, premise generation, naming, theme exploration, alternatives, plot seeds, setting hooks, and broad direction-finding."
+description: "Generates creative range: premises, concepts, names, themes, plot seeds, setting hooks, alternatives, and broad direction-finding. Use when the user wants possibilities to choose from rather than a finished piece; hand off to creative-writing once a direction is chosen."
 ---
 
 # Creative Brainstorming

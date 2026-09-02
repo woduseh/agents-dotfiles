@@ -1,6 +1,6 @@
 ---
 name: creative-writing
-description: "Use for writing prose, scenes, dialogue, monologues, openings, short fiction, roleplay turns, narration, atmosphere, and character-driven creative text."
+description: "Writes new creative prose: scenes, dialogue, monologues, openings, short fiction, roleplay turns, narration, and atmosphere. Use when the deliverable is the creative text itself; use creative-brainstorming when the user wants options rather than a piece."
 ---
 
 # Creative Writing

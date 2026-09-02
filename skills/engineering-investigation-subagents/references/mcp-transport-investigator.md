@@ -22,6 +22,7 @@ Tasks:
 4. Verify logs avoid leaking user content; prefer field names, sizes, status codes, and stack traces.
 5. Recommend the smallest next diagnostic or fix, plus the validation command that should prove it.
 6. Do not edit files unless the parent explicitly gives a disjoint write scope.
+7. Report only what a tool result in this run supports; mark anything unverified as such.
 
 Return:
 

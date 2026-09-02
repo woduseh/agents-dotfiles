@@ -1,6 +1,6 @@
 ---
 name: engineering-investigation-subagents
-description: Use bounded subagent playbooks for CI or test failure triage and MCP or tool-transport diagnostics. Trigger only when the user requests subagents or parallel work, or when active host policy permits delegation; do not use for ordinary single-agent debugging.
+description: "Provides bounded subagent playbooks for CI or test failure triage and MCP or tool-transport diagnostics, with prompt templates and an evidence-first output contract. Use when a failure can be investigated in parallel with the main task or the user asks for delegation; not for ordinary single-agent debugging that stays on the critical path."
 ---
 
 # Engineering Investigation Subagents
@@ -9,7 +9,7 @@ Use this skill to delegate small, bounded investigation roles without inventing 
 
 ## Delegation Rules
 
-- Use these prompts when the user explicitly asks for subagents, delegation, or parallel work, or when the host agent's active policy permits delegation.
+- Use these prompts when a failure can be investigated in parallel with the main task, when the user asks for delegation, or when the host agent's policy permits it. Keep working on the main task while the investigator runs and read its result when you need it.
 - Prefer a read-only investigator for diagnosis. Use an editing agent only when it has a clear, disjoint write scope.
 - Keep the main agent on the critical path. Delegate sidecar questions that can run in parallel.
 - Give the subagent concrete inputs: failing command, log excerpt, changed files, tool name, repo path, or suspected surface.
@@ -30,3 +30,5 @@ Ask each subagent to return:
 - Likely root cause and confidence.
 - Minimal recommended fix or next check.
 - Residual risk.
+
+Every claim should point to a tool result from the subagent's own run; anything it could not verify is marked as unverified rather than reported as done.

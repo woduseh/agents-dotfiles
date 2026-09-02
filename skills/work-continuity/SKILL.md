@@ -1,6 +1,6 @@
 ---
 name: work-continuity
-description: Use when resuming from existing progress or design notes, preparing a handoff, explicitly documenting progress, or managing work expected to span sessions. Do not trigger merely because a task is non-trivial or uses many tool calls.
+description: "Resumes work from existing progress or design notes, prepares handoffs, and keeps one compact note for work that spans sessions. Use when resuming from notes, when a handoff or progress record is requested, or when a task will clearly cross sessions; do not use merely because a task is long or uses many tool calls."
 ---
 
 # Work Continuity
@@ -25,6 +25,7 @@ Skip note creation when the task can reasonably finish in the current session wi
 - Put durable design documentation in the project only when it remains useful after the task.
 - Treat prior notes as hints, not truth. Verify current files, runtime state, and user-owned changes before editing.
 - Record decisions, current state, validation, blockers, and the smallest next step, not command transcripts or generic reasoning.
+- Keep the user's stated constraints and preferences close to their own words, note options tried or set aside with why, and keep hard-to-reconstruct details (names, numbers, dates, exact wording, links) exact. Condense your own reasoning to what it concluded.
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 ---
 name: creative-revision
-description: "Revise existing creative prose, style, scenes, dialogue, or tone while preserving voice. Use creative-character when redesigning the character rather than the text."
+description: "Revises existing creative prose, scenes, dialogue, style, or tone while preserving voice, from light polish to structural rewrite or critique. Use when the user supplies text to improve; use creative-character when the character rather than the text needs redesign."
 ---
 
 # Creative Revision

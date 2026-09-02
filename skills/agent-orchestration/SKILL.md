@@ -1,6 +1,6 @@
 ---
 name: agent-orchestration
-description: "Use for designing agent workflows, AGENTS.md routers, Skill taxonomies, sub-agent usage rules, tool routing, multi-step work plans, and context-loading strategies."
+description: "Designs how agents, skills, tools, and prompts coordinate: AGENTS.md or CLAUDE.md routers, skill taxonomies and descriptions, sub-agent delegation rules, tool routing, context-loading strategy, and multi-step work plans. Use when the question is how instructions should be split, triggered, or handed off; use prompt-design for one prompt's content and prompt-revision to change an existing one."
 ---
 
 # Agent Orchestration
@@ -26,7 +26,17 @@ Use this skill when the work is about how agents, skills, tools, prompts, or wor
 
 ## Sub-Agent Rules
 
-Use sub-agents only when parallelism improves quality, speed, or coverage. Good uses include independent codebase exploration, large reviews, architecture comparison, or isolated implementation slices. Avoid sub-agents for small, local, sequential, or highly coupled work.
+Delegate when parallelism improves quality, speed, or coverage: independent codebase exploration, large reviews, architecture comparison, isolated implementation slices, or verification in a fresh context. Keep small, local, sequential, or tightly coupled work in the main agent.
+
+When delegating, give concrete inputs (paths, commands, log excerpts, the exact question), ask for evidence-backed findings rather than essays, keep the lead agent working while sub-agents run, and intervene when one drifts or lacks context. Prefer one long-lived sub-agent for a series of related subtasks over a fresh one per subtask.
+
+## Writing for Current Models
+
+- Current frontier models follow brief instructions reliably and over-trigger on emphatic ones. Write triggers as plain conditions ("Use this skill when…"), not "CRITICAL: you MUST…", and drop "if in doubt, use X" defaults.
+- Prefer outcome, constraints, required evidence, and success criteria over step-by-step procedure. Reserve exact steps for fragile operations where one wrong move is costly.
+- Instructions written for earlier models are often too prescriptive now. When migrating a router or skill, remove rules the model already follows by default, then re-test.
+- Where the runtime shows text between tool calls, ask for a one-line note before long tool chains and a standalone recap at the end; ask for independent tool calls to be issued together in one turn.
+- For lesson or memory files: one lesson per file with a one-line summary; record corrections and confirmed approaches with why; skip what the repo or chat already records; update rather than duplicate; delete what turns out wrong.
 
 ## Split or Integrate
 

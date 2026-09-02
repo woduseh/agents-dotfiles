@@ -1,6 +1,6 @@
 ---
 name: creative-lore-consolidation
-description: "Use for organizing scattered creative notes, consolidating lore, resolving setting contradictions, producing markdown world documents, building lorebooks, and turning chat history into structured canon."
+description: "Turns scattered creative notes, chat history, and drafts into coherent canon: world documents, lorebooks, timelines, continuity audits, and contradiction reports. Use when existing material needs organizing or reconciling; use creative-worldbuilding to invent new material."
 ---
 
 # Creative Lore Consolidation

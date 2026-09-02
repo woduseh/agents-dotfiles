@@ -1,6 +1,6 @@
 ---
 name: creative-character
-description: "Create, deepen, or diagnose fictional and roleplay characters when character design or performance is the main problem. Use creative-revision when the task is primarily polishing existing prose."
+description: "Creates, deepens, or diagnoses fictional and roleplay characters: drive, contradiction, voice, pressure responses, relationships, and roleplay openers. Use when the character is the main problem; use creative-revision when the task is polishing existing prose."
 ---
 
 # Creative Character

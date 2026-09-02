@@ -1,6 +1,6 @@
 ---
 name: prompt-design
-description: "Use for designing new prompts, system instructions, agent instructions, reusable prompt templates, role/task specs, output contracts, and model behavior guidelines from scratch."
+description: "Designs new prompts, system instructions, agent instructions, skills, reusable templates, output contracts, and model behavior guidelines from scratch. Use when no prompt exists yet; use prompt-revision to change an existing one and prompt-evaluation to assess without rewriting."
 ---
 
 # Prompt Design
@@ -33,6 +33,10 @@ Design prompts that are explicit, modular, non-contradictory, and easy for a mod
 - Avoid stacking many near-duplicate tone rules.
 - Put routing and trigger criteria in descriptions or top-level router text, not buried in bodies that may never load.
 - Make output contracts testable: define required sections, allowed omissions, stop conditions, and what a good clarification looks like.
+- Write triggers and rules as plain conditions. Current models over-trigger on emphatic wording (CRITICAL, MUST, ALWAYS) and on "if in doubt" defaults.
+- Do not ask the model to reproduce, transcribe, or explain its reasoning in the response; on Claude this can trigger a refusal. Read thinking output through the API when visibility is needed.
+- Formatting rules say when structure is appropriate rather than forbidding it.
+- For prompts that run on Claude, read [Claude model notes](../prompt-revision/references/claude-models.md) for the current snippets: progress updates, autonomy and scope blocks, quoting, targeted edits, batching, and API constraints.
 
 ## Output Patterns
 
@@ -52,7 +56,7 @@ For a complex or reusable prompt, use the sections that earn their place and omi
 ## Validation
 ```
 
-For an Agent Skill, include the required frontmatter keys `name` and `description`. Put trigger information in `description`, and add provider-specific optional fields only when the target runtime needs them.
+For an Agent Skill, include the required frontmatter keys `name` and `description`. Write `description` in third person as what the skill does plus when to use it, under 1,024 characters, with an exclusion only where a routing collision is likely; keep `name` to lowercase letters, digits, and hyphens under 64 characters. Keep the body under 500 lines and link references one level deep. Add provider-specific optional fields only when the target runtime needs them.
 
 ## Evaluation Handoff
 

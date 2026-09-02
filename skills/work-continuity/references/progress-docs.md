@@ -22,6 +22,11 @@ Updated: <YYYY-MM-DD HH:mm timezone>
 ## Decisions
 
 - <decision> — <reason it affects later work>
+- Set aside: <approach> — <why not>
+
+## Constraints and preferences
+
+- <stated by the user, close to their words>
 
 ## Changes and validation
 
