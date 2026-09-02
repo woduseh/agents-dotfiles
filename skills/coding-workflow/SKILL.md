@@ -1,6 +1,6 @@
 ---
 name: coding-workflow
-description: "Use for software engineering work: implementing features, fixing bugs, refactoring, reviewing code, validating tests/builds, frontend changes, repository maintenance, and local development workflows."
+description: "Implements, debugs, refactors, reviews, and validates software: features, bug fixes, tests and builds, frontend changes, repository maintenance, and local development workflows. Use for any request to change, explain, diagnose, review, or verify code. Hand off to release-prep for version, changelog, and release-readiness work."
 ---
 
 # Coding Workflow
@@ -17,14 +17,15 @@ Use this skill when the user wants code changed, explained, debugged, reviewed, 
 - Keep changes scoped to the request and avoid unrelated cleanup.
 - Treat the worktree as shared. Do not revert user changes.
 - Validate at the narrowest useful level first; broaden only when risk justifies it.
+- Where the task is ambiguous, implement the reading its wording and the surrounding code most directly support, state that assumption in the summary, and do not build for the other readings as well.
 
 ## Workflow
 
 1. Determine the mode: implementation, debugging, review, architecture, validation, or explanation.
 2. Read the minimum files needed to understand the behavior.
-3. State a brief plan for non-trivial work.
+3. For non-trivial work, say in a line what you will do; when a trade-off matters, give a recommendation with the alternatives that change the outcome, then proceed.
 4. Edit with focused patches.
-5. Run relevant checks when available.
+5. Run relevant checks when available and report their actual result; a skipped or failing check is reported as such, with its output.
 
 ## Debugging
 

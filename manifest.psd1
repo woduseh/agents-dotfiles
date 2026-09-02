@@ -12,13 +12,7 @@
         }
     )
 
-    Directories = @(
-        @{
-            Name       = 'Claude task guides'
-            Home       = '.claude/guides'
-            Repository = 'config/claude/guides'
-        }
-    )
+    Directories = @()
 
     SkillSourceRoot   = '.agents/skills'
     SkillInstallRoots = @(

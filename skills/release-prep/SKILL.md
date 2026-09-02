@@ -1,6 +1,6 @@
 ---
 name: release-prep
-description: Prepare software releases and release-readiness reviews with version bump, changelog, docs, CI/build/test selection, risk list, and final checklist. Use when the user asks for release prep, 1.0.0 readiness, changelog or docs updates tied to a release, version bump planning, or pre-release validation.
+description: "Prepares software releases and readiness reviews: version bump, changelog, docs, CI and test selection, risk list, and final checklist. Use for release prep, 1.0.0 readiness, release-tied changelog or docs updates, version planning, or pre-release validation; ordinary code changes belong to coding-workflow."
 ---
 
 # Release Prep
@@ -22,7 +22,7 @@ Use this skill to turn release work into a repeatable checklist instead of ad ho
 - Prefer the existing project versioning rules over generic semver guesses.
 - Keep release notes concise and user-facing.
 - Separate "ready to merge" from "ready to publish" when packaging, signing, store upload, or tags are still pending.
-- If checks fail, switch to triage: identify the first meaningful failure, map it to likely cause, and propose the smallest fix.
+- If checks fail, switch to triage: identify the first meaningful failure, map it to likely cause, and propose the smallest fix. Report the failing output itself; never mark a check as passed without its result.
 
 ## Output Contract
 

@@ -21,6 +21,7 @@ Tasks:
 4. Reproduce with the narrowest safe local command when practical.
 5. Recommend the smallest fix and the validation command that should prove it.
 6. Do not rewrite unrelated files or reset the worktree. If editing is assigned, keep to the named files and report every touched path.
+7. Report only what a tool result in this run supports; mark anything unverified as such.
 
 Return:
 
