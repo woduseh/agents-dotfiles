@@ -1,11 +1,9 @@
 ---
-name: image-generation
+name: image-prompt-design
 description: "Designs or refines ready-to-use prompts and visual specifications for gpt-image-2, including editing, exact in-image text, product preservation, and repeated-character consistency. Use when the deliverable is an image prompt or spec; use the runtime's own image tool or skill to generate or edit bitmaps."
 ---
 
 # Image Prompt Design
-
-Use this skill when the deliverable is an image prompt or visual specification rather than a generated bitmap.
 
 ## Core Principles
 

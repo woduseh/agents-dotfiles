@@ -1,0 +1,4 @@
+interface:
+  display_name: "Creative Worldbuilding"
+  short_description: "Build settings that generate scenes"
+  default_prompt: "Use $creative-worldbuilding to build this setting around pressures, institutions, and scene hooks."

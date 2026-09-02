@@ -1,0 +1,21 @@
+{
+  "purpose": "Trigger seeds for the skill pairs whose descriptions border each other. Run each query in a fresh session with all skills installed and check that the expected skill loads and the excluded one does not.",
+  "cases": [
+    {"query": "Give me five premises for a heist story set in a monastery.", "expect": "creative-brainstorming", "exclude": ["creative-writing"]},
+    {"query": "Write the opening scene: the novice discovers the vault is already empty.", "expect": "creative-writing", "exclude": ["creative-brainstorming"]},
+    {"query": "Here's my draft scene. Tighten the pacing but keep my voice.", "expect": "creative-revision", "exclude": ["creative-character", "creative-writing"]},
+    {"query": "The antagonist feels flat. Rework who she is, not the prose.", "expect": "creative-character", "exclude": ["creative-revision"]},
+    {"query": "Design the guild system and the three factions that run this city.", "expect": "creative-worldbuilding", "exclude": ["creative-lore-consolidation"]},
+    {"query": "Here are 40 chat logs about my setting. Turn them into one canon document and flag contradictions.", "expect": "creative-lore-consolidation", "exclude": ["creative-worldbuilding"]},
+    {"query": "Write a system prompt for a support bot that triages billing questions.", "expect": "prompt-design", "exclude": ["prompt-revision", "prompt-evaluation"]},
+    {"query": "Here is my current system prompt. Shorten it and remove contradictions.", "expect": "prompt-revision", "exclude": ["prompt-design", "prompt-evaluation"]},
+    {"query": "Don't change it yet. Where will this prompt fail, and how would you test that?", "expect": "prompt-evaluation", "exclude": ["prompt-revision"]},
+    {"query": "How should I split these instructions between AGENTS.md and skills?", "expect": "agent-orchestration", "exclude": ["prompt-design"]},
+    {"query": "Write a gpt-image-2 prompt for a product shot of this bottle on slate.", "expect": "image-prompt-design", "exclude": []},
+    {"query": "Generate the image now.", "expect": null, "exclude": ["image-prompt-design"], "note": "Bitmap generation belongs to the runtime's image tool."},
+    {"query": "Fix the failing null check in OrderService and add a test.", "expect": "coding-workflow", "exclude": ["release-prep"]},
+    {"query": "Bump to 1.2.0, update the changelog, and tell me what still blocks the release.", "expect": "release-prep", "exclude": ["coding-workflow"]},
+    {"query": "Continue from yesterday's progress note on the importer.", "expect": "work-continuity", "exclude": []},
+    {"query": "This refactor is big and touches twelve files.", "expect": null, "exclude": ["work-continuity"], "note": "Size alone does not warrant a progress note."}
+  ]
+}

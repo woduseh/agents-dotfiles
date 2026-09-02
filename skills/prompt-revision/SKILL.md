@@ -5,8 +5,6 @@ description: "Changes, compresses, migrates, reorganizes, translates, or conflic
 
 # Prompt Revision
 
-Use this skill when the user provides an existing prompt or instruction set and wants it improved.
-
 ## Revision Goals
 
 - Preserve intended behavior.
@@ -50,18 +48,8 @@ When the prompt runs on a current Claude model, read [references/claude-models.m
 
 ## Specialized Prompt Systems
 
-For roleplay, preset, lorebook, toggle, or template-heavy prompts, read [references/specialized-runtimes.md](references/specialized-runtimes.md) before changing syntax or structure.
+For roleplay, preset, lorebook, toggle, or template-heavy prompts, preserve runtime semantics before improving wording: block order, conditional syntax, variables, toggles, provider assumptions, insertion points, and output schemas. Keep always-on context distinct from conditional blocks with explicit activation rules, and verify unfamiliar decorators, macros, or template syntax against the project's current documentation or user-provided material before changing it.
 
 ## Evaluation Handoff
 
-After a substantive revision, prepare a short handoff for `prompt-evaluation` when reliability matters:
-
-```markdown
-Intended behavior: ...
-Changed behavior contract: ...
-Runtime semantics to preserve: ...
-Likely failure modes: 1) ... 2) ... 3) ...
-Suggested tests: minimal input / ambiguous input / conflict case / output contract case
-```
-
-Use this especially when the revision changes routing, tool use, safety boundaries, output format, or long-context behavior.
+After a substantive revision, fill the handoff block defined in [prompt-evaluation](../prompt-evaluation/SKILL.md) when reliability matters. Use it especially when the revision changes routing, tool use, safety boundaries, output format, or long-context behavior.

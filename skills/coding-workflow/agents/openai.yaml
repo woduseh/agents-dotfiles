@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coding Workflow"
+  short_description: "Implement, debug, review, and validate code"
+  default_prompt: "Use $coding-workflow to make this code change with focused patches and relevant checks."

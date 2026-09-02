@@ -5,8 +5,6 @@ description: "Prepares software releases and readiness reviews: version bump, ch
 
 # Release Prep
 
-Use this skill to turn release work into a repeatable checklist instead of ad hoc cleanup.
-
 ## Workflow
 
 1. Establish the release target: intended version, release type, repo/package surface, and whether the user wants only a readiness review or actual edits.

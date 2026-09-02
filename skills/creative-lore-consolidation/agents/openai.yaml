@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lore Consolidation"
+  short_description: "Turn scattered notes into canon"
+  default_prompt: "Use $creative-lore-consolidation to turn this material into coherent canon and flag contradictions."

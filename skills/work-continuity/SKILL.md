@@ -5,8 +5,6 @@ description: "Resumes work from existing progress or design notes, prepares hand
 
 # Work Continuity
 
-Use this skill to make genuinely resumable work recoverable without turning ordinary tasks into documentation work.
-
 ## When to Use It
 
 Use a progress or design note when at least one is true:

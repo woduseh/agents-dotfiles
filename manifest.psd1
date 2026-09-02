@@ -30,7 +30,7 @@
         'creative-worldbuilding'
         'creative-writing'
         'engineering-investigation-subagents'
-        'image-generation'
+        'image-prompt-design'
         'prompt-design'
         'prompt-evaluation'
         'prompt-revision'

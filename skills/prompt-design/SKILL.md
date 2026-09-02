@@ -5,8 +5,6 @@ description: "Designs new prompts, system instructions, agent instructions, skil
 
 # Prompt Design
 
-Use this skill when creating a prompt or instruction set whose goal is reliable model behavior.
-
 ## Goal
 
 Design prompts that are explicit, modular, non-contradictory, and easy for a model to follow. Favor clear behavioral contracts over ornate wording.
@@ -60,12 +58,7 @@ For an Agent Skill, include the required frontmatter keys `name` and `descriptio
 
 ## Evaluation Handoff
 
-When the prompt will be reused, include a compact evaluation note:
-
-- Intended behavior in one sentence.
-- Success criteria that can be observed in output.
-- 2-5 seed cases covering normal use, minimal input, ambiguity, and a likely failure.
-- Any runtime semantics that must be preserved, such as variables, tools, insertion points, or output shape.
+When the prompt will be reused, fill the handoff block defined in [prompt-evaluation](../prompt-evaluation/SKILL.md): intended behavior, behavior contract, runtime semantics to preserve, likely failure modes, and suggested tests, including the 2-5 seed cases from the design workflow.
 
 ## Specialized Prompt Systems
 

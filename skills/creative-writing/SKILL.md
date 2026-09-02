@@ -5,8 +5,6 @@ description: "Writes new creative prose: scenes, dialogue, monologues, openings,
 
 # Creative Writing
 
-Use this skill when the user wants new creative prose.
-
 ## Goal
 
 Write text that serves the scene's emotional movement, voice, and sensory reality. Avoid making prose overly tidy, generic, or explanatory.

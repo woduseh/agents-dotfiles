@@ -5,8 +5,6 @@ description: "Creates, deepens, or diagnoses fictional and roleplay characters: 
 
 # Creative Character
 
-Use this skill when the character is the main creative problem.
-
 ## Goal
 
 Create characters that perform consistently in scenes through drive, contradiction, voice, pressure responses, and relationships.
@@ -41,7 +39,5 @@ Choose the format that fits:
 - Diagnosis plus revision plan.
 
 ## Roleplay Characters
-
-For LLM roleplay characters, first use any local project instructions available in the current workspace. Do not rely on absolute paths to external projects.
 
 Use explicit scaffolding for control-heavy characters. Use self-introduction style when voice, omission, and self-presentation should carry more of the design. For cast-heavy bots, decide what belongs in always-on character text versus conditional lore.
