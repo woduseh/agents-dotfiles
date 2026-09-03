@@ -21,19 +21,10 @@
     )
 
     Skills = @(
-        'agent-orchestration'
-        'coding-workflow'
-        'creative-brainstorming'
-        'creative-character'
         'creative-lore-consolidation'
-        'creative-revision'
         'creative-worldbuilding'
         'creative-writing'
-        'engineering-investigation-subagents'
-        'image-prompt-design'
-        'prompt-design'
-        'prompt-evaluation'
-        'prompt-revision'
+        'prompt-engineering'
         'release-prep'
         'work-continuity'
     )

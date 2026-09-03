@@ -1,4 +1,4 @@
 interface:
   display_name: "Creative Writing"
-  short_description: "Write scenes, dialogue, and prose"
-  default_prompt: "Use $creative-writing to write this piece through action, perception, and subtext."
+  short_description: "Write, revise, or brainstorm creative prose"
+  default_prompt: "Use $creative-writing to write, revise, or brainstorm this piece while preserving its voice and requested intensity."

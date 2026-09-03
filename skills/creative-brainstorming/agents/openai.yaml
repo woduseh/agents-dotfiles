@@ -1,4 +1,0 @@
-interface:
-  display_name: "Creative Brainstorming"
-  short_description: "Generate distinct creative directions"
-  default_prompt: "Use $creative-brainstorming to offer distinct directions for this idea and recommend one."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Investigation Subagents"
-  short_description: "CI and MCP investigation prompts"
-  default_prompt: "Use $engineering-investigation-subagents to run the smallest suitable bounded investigation and integrate its evidence into the main task."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Prompt Design"
-  short_description: "Design a new prompt or instruction set"
-  default_prompt: "Use $prompt-design to design this prompt with explicit scope, rules, and output contract."
