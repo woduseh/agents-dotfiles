@@ -1,4 +1,0 @@
-interface:
-  display_name: "Creative Revision"
-  short_description: "Revise prose while preserving voice"
-  default_prompt: "Use $creative-revision to improve this text at the requested depth while keeping its voice."

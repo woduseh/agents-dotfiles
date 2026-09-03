@@ -1,16 +1,16 @@
 # Claude Model Notes
 
-Read this when the prompt, skill, or agent instruction runs on a current Claude model (Claude Fable 5.1 and Claude Mythos 5.1, and mostly Claude Fable 5 and Claude Opus 5). It lists what to remove, what to add for a given symptom, and the API constraints a prompt must respect.
+Read this when the prompt, skill, or agent instruction runs on a current Claude model. The baseline is Claude Fable 5.1 (and Claude Mythos 5.1, which shares the model); most of it also holds for Claude Fable 5 and Claude Opus 5. It lists what to remove, what to add for a given symptom, and the API constraints a prompt must respect.
 
-Last verified: 2026-09-02. Sources: the Anthropic docs pages "Prompting Claude Fable 5.1", "Migrating to Claude Fable 5.1 and Claude Mythos 5.1", "Prompting Claude Fable 5", and "Prompting best practices". Snippets in quotation blocks are reproduced from those pages; everything else is paraphrased. Re-verify against the current pages before relying on version-specific claims.
+Last verified: 2026-09-03. Sources: the Anthropic docs pages "Prompting Claude Fable 5.1", "Migrating to Claude Fable 5.1 and Claude Mythos 5.1", "Prompting Claude Fable 5", and "Prompting best practices" (platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices). Snippets in quotation blocks are reproduced from those pages; everything else is paraphrased. Re-verify against the current pages before relying on version-specific claims.
 
 ## Contents
 
 - Remove or replace
 - Add when the symptom appears
+- General techniques
 - Effort
 - API constraints for prompts that build requests
-- Skill and description conventions
 
 ## Remove or replace
 
@@ -89,6 +89,23 @@ For interactive, human-in-the-loop products use the softer form instead: pause o
 
 **Benign coding requests return `stop_reason: "refusal"`:** ask "Are there any bugs in this program?" rather than "Does this compile without errors?"; give context or documentation for lesser-known languages; keep base64 payloads out of tool results.
 
+## General techniques
+
+These hold across current Claude models and are the defaults to reach for before any model-specific block.
+
+- Give the reason behind a rule; the model generalizes from the explanation better than from the bare rule ("the output is read aloud, so no ellipses" beats "never use ellipses").
+- Say what to do instead of what not to do ("write in flowing prose paragraphs" beats "no markdown"), and match the prompt's own formatting to the output you want.
+- Wrap mixed content in XML tags (`<instructions>`, `<context>`, `<input>`, `<example>`) with consistent names. Use three to five examples that are relevant and diverse, inside `<examples>`.
+- For inputs over about 20k tokens, put the documents at the top inside `<document>` tags with `<source>` metadata, the query and instructions at the end, and ask for relevant quotes first when the task depends on finding them.
+- One sentence of role in the system prompt is enough to focus behavior.
+- Action posture is steerable in both directions. To have the model implement rather than suggest, say so ("implement changes rather than only suggesting them; infer the most useful likely action and proceed"). To keep it from acting on ambiguous requests, say that too ("default to information and recommendations; edit only when explicitly asked").
+- Reversibility guidance for agents: encourage local, reversible actions (editing files, running tests) and require a check-in before destructive, hard-to-reverse, or externally visible ones (deleting, force-push, reset --hard, pushing, commenting on PRs, sending messages), and forbid destructive shortcuts such as `--no-verify` or discarding unfamiliar files.
+- Over-engineering damping, when the model adds files, abstractions, defensive handling, or comments beyond the request: scope only what was asked; no docstrings or annotations on untouched code; no error handling for scenarios that cannot happen; no helpers for one-time operations; the minimum complexity for the current task.
+- Subagent damping, when it delegates where a direct call would do: subagents for parallel, isolated-context, or independent workstreams; direct work for simple, sequential, single-file, or context-carrying tasks.
+- Grounding for code questions: never speculate about code not opened; read a referenced file before answering.
+- Self-check ("before you finish, verify your answer against …") helps on most models; on Claude Opus 5 it causes over-verification, so remove it there.
+- Temporary files: the model may create scratch scripts while iterating; ask it to remove them at the end if that matters.
+
 ## Effort
 
 Effort is the primary intelligence, latency, and cost control. Start at `high` and sweep `low`, `medium`, `xhigh`, `max` on your own evals; level names do not map to the same thinking across model generations. On Claude Fable 5.1, `medium` roughly matches Claude Fable 5 at lower cost and `low` competes with smaller models on cost per task. Gains over the prior model are largest at `xhigh` and `max`, which also add time to first response. Change effort mid-conversation with an effort-only `role: "system"` message (beta) rather than per request, to keep cache hits.
@@ -101,9 +118,3 @@ Effort is the primary intelligence, latency, and cost control. Start at `high` a
 - Progress text between tool calls arrives as `thinking` blocks and is empty under the default `thinking.display: "omitted"`; set `"updates"` (beta) or `"summarized"` to render it.
 - Handle `stop_reason: "refusal"` and `stop_details.category`; `fallbacks: "default"` (beta) re-runs a declined request on a permitted model.
 
-## Skill and description conventions
-
-- `name`: at most 64 characters, lowercase letters, digits, and hyphens; no XML tags; must not contain "anthropic" or "claude".
-- `description`: non-empty, at most 1,024 characters, no XML tags, third person, what the skill does plus when to use it, and an exclusion only where a routing collision is likely.
-- Body under 500 lines; move mode-specific detail into references linked one level deep from SKILL.md; give reference files over about 100 lines a contents list; use forward slashes in paths.
-- Skills written for earlier models are often too prescriptive. Remove steps the model performs by default, keep exact low-freedom steps only for fragile operations, and re-test.

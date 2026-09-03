@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prompt Engineering"
+  short_description: "Design, revise, evaluate, or migrate prompts and skills"
+  default_prompt: "Use $prompt-engineering to design, revise, or evaluate this prompt or instruction set for its target model, preserving its runtime semantics."

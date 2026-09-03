@@ -1,4 +1,0 @@
-interface:
-  display_name: "Creative Character"
-  short_description: "Design or diagnose a character"
-  default_prompt: "Use $creative-character to design or diagnose this character through drive, contradiction, and voice."

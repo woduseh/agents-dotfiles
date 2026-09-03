@@ -4,8 +4,8 @@
 
 ## 저장 범위
 
-- `config/codex/AGENTS.md`: Codex 전역 지침
-- `config/claude/CLAUDE.md`: Claude Code 전역 지침 (작업별 규칙은 Skill이 담당)
+- `config/codex/AGENTS.md`: Codex 전역 지침 (같은 범위를 Codex 문체로 유지)
+- `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
 - `skills/`: `.agents/skills`를 원본으로 삼는 사용자 제작 Skill
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사

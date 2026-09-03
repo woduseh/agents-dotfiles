@@ -1,6 +1,6 @@
 ---
 name: release-prep
-description: "Prepares software releases and readiness reviews: version bump, changelog, docs, CI and test selection, risk list, and final checklist. Use for release prep, 1.0.0 readiness, release-tied changelog or docs updates, version planning, or pre-release validation; ordinary code changes belong to coding-workflow."
+description: "Prepares software releases and readiness reviews: version bump, changelog, docs, CI and test selection, risk list, and final checklist. Use for release prep, 1.0.0 readiness, release-tied changelog or docs updates, version planning, or pre-release validation; ordinary code changes need no skill."
 ---
 
 # Release Prep

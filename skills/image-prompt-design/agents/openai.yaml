@@ -1,4 +1,0 @@
-interface:
-  display_name: "Image Prompt Design"
-  short_description: "Write gpt-image-2 prompts and specs"
-  default_prompt: "Use $image-prompt-design to write a ready-to-use gpt-image-2 prompt for this image."
