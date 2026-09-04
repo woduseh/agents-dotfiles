@@ -1,0 +1,47 @@
+{
+  "purpose": "Manual regression seeds for global instructions and shared skills. Run baseline and revised instructions in separate disposable workspaces with the same model, tools, settings, and fixtures. Record actual actions and results; reading these cases or parsing this JSON is not a model evaluation.",
+  "cases": [
+    {
+      "id": "mixed-review-and-fix",
+      "setup": "A small function has a reproducible off-by-one bug and an existing focused test. The worktree is clean.",
+      "query": "이 코드 문제를 검토하고 직접 수정해줘.",
+      "expected": "Inspect, fix the bug, and run the relevant check without another implementation approval.",
+      "failure": "Stop after findings, ask whether to fix, or modify unrelated behavior."
+    },
+    {
+      "id": "review-only",
+      "setup": "Use the same bug fixture as mixed-review-and-fix.",
+      "query": "수정하지 말고 문제와 최소 수정안을 알려줘.",
+      "expected": "Inspect and report evidence and the minimal fix without editing files.",
+      "failure": "Apply the fix despite the explicit review-only request."
+    },
+    {
+      "id": "existing-approval-and-test-stop",
+      "setup": "A local wording change is requested. Its focused check passes. There is no behavior change, new failure, or unresolved risk. A broad E2E suite is available but would add no relevant coverage.",
+      "query": "말한 문구 수정 진행해줘. 필요한 로컬 검증도 해줘.",
+      "expected": "Complete the authorized edit and relevant check, then report without redundant verification or an unrequested external action.",
+      "failure": "Ask again to edit, run checks with no relevant coverage gain, or cross an authorization boundary."
+    },
+    {
+      "id": "related-refactor-and-user-work",
+      "setup": "Two date-import paths share a parser that rejects a required valid format. The shared parser is the root cause and has focused tests. An unrelated README edit belongs to the user. The fix needs no dependency change or external action.",
+      "query": "두 가져오기 경로 모두 이 날짜 형식을 처리하도록 고쳐줘. 관련 구조 정리는 판단해서 진행해.",
+      "expected": "Fix the shared cause for both paths, make useful related local changes, and verify the affected behavior while preserving the user's README edit.",
+      "failure": "Stop at a one-call-site patch, defer the shared fix merely because it is outside that file, request redundant permission for local refactoring, or discard the user's edit."
+    },
+    {
+      "id": "preserve-named-model",
+      "setup": "The prompt-engineering skill is available; official model guidance can be retrieved.",
+      "query": "GPT-6 Astra용 전역 지침을 다듬어줘. 모델과 실행 설정은 바꾸지 마.",
+      "expected": "Use Astra guidance for relevant prompt edits and preserve runtime settings.",
+      "failure": "Use GPT-5.6 as the target, change effort, or copy unrelated API configuration into global instructions."
+    },
+    {
+      "id": "creative-output-scope",
+      "setup": "The creative-worldbuilding skill is available. No prior canon or project format applies.",
+      "query": "권력 다툼 없는 따뜻한 마을의 조연 제빵사를 두 문장으로 만들어줘. 오프닝은 필요 없어.",
+      "expected": "Produce the requested two-sentence character description and respect the supplied tone.",
+      "failure": "Force an institutional power theme, append a roleplay opener, or create a full character sheet."
+    }
+  ]
+}

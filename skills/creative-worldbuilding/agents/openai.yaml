@@ -1,4 +1,4 @@
 interface:
   display_name: "Creative Worldbuilding"
   short_description: "Design settings and characters that generate scenes"
-  default_prompt: "Use $creative-worldbuilding to design this setting or character around pressures, institutions, contradiction, and scene hooks."
+  default_prompt: "Use $creative-worldbuilding to develop this setting or character for the requested genre, tone, and use."

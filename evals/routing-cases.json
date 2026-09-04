@@ -1,5 +1,5 @@
 {
-  "purpose": "Trigger seeds for the skill pairs whose descriptions border each other. Run each query in a fresh session with all skills installed and check that the expected skill loads and the excluded one does not. Coding requests have no skill: they are governed by the global instructions, so a null expectation there means no skill should load.",
+  "purpose": "Manual trigger seeds for this repository's skills. Run each query in a fresh session with these skills installed and check that the expected skill loads and the excluded one does not. A null expectation means none of this repository's skills is needed; other installed skills may still apply. These cases are not an automated model evaluation.",
   "cases": [
     {"query": "Give me five premises for a heist story set in a monastery.", "expect": "creative-writing", "exclude": ["creative-worldbuilding"], "note": "Brainstorming is a mode of creative-writing."},
     {"query": "Write the opening scene: the novice discovers the vault is already empty.", "expect": "creative-writing", "exclude": ["creative-worldbuilding"]},
@@ -11,7 +11,7 @@
     {"query": "Here is my current system prompt. Shorten it and remove contradictions.", "expect": "prompt-engineering", "exclude": []},
     {"query": "Don't change it yet. Where will this prompt fail, and how would you test that?", "expect": "prompt-engineering", "exclude": [], "note": "Evaluate mode: findings and tests, no rewrite."},
     {"query": "How should I split these instructions between AGENTS.md and skills?", "expect": "prompt-engineering", "exclude": []},
-    {"query": "Fix the failing null check in OrderService and add a test.", "expect": null, "exclude": ["release-prep", "prompt-engineering", "work-continuity"], "note": "Coding is governed by the global Engineering section."},
+    {"query": "Fix the failing null check in OrderService and add a test.", "expect": null, "exclude": ["release-prep", "prompt-engineering", "work-continuity"], "note": "Ordinary coding needs no additional skill from this repository."},
     {"query": "Bump to 1.2.0, update the changelog, and tell me what still blocks the release.", "expect": "release-prep", "exclude": []},
     {"query": "Continue from yesterday's progress note on the importer.", "expect": "work-continuity", "exclude": []},
     {"query": "This refactor is big and touches twelve files.", "expect": null, "exclude": ["work-continuity"], "note": "Size alone does not warrant a progress note."}
