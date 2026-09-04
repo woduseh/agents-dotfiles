@@ -62,7 +62,7 @@ foreach ($dir in $skillDirs) {
         $problems.Add("$($dir.Name): missing agents/openai.yaml")
     }
 
-    if ($manifest.Skills -notcontains $dir.Name) {
+    if ($manifest.Skills -notcontains $dir.Name -and $manifest.RemovedSkills -notcontains $dir.Name) {
         $problems.Add("$($dir.Name): not listed in manifest.psd1")
     }
 }
@@ -71,6 +71,11 @@ foreach ($listed in $manifest.Skills) {
     if (-not (Test-Path -LiteralPath (Join-Path $skillsRoot $listed) -PathType Container)) {
         $problems.Add("manifest lists '$listed' but skills/$listed does not exist")
     }
+}
+
+foreach ($listed in $manifest.RemovedSkills) {
+    if ($listed -notmatch '^[a-z0-9-]{1,64}$') { $problems.Add("Invalid removed skill name: $listed") }
+    if ($manifest.Skills -contains $listed) { $problems.Add("Skill is both installed and removed: $listed") }
 }
 
 if ($problems.Count -gt 0) {

@@ -1,35 +1,13 @@
 ---
 name: creative-lore-consolidation
-description: "Turns scattered creative notes, chat history, and drafts into coherent canon: world documents, lorebooks, timelines, continuity audits, and contradiction reports. Use when existing material needs organizing or reconciling; use creative-worldbuilding to invent new material."
+description: "Consolidates existing creative notes, chats, and drafts into canon, lorebooks, timelines, or continuity audits. Use for organizing and reconciling source material; use creative-worldbuilding for inventing settings or characters."
 ---
 
 # Creative Lore Consolidation
 
-## Goal
+Turn the supplied material into a usable reference in the requested format.
 
-Convert fragments into usable canon without flattening atmosphere or inventing unsupported facts.
-
-## Workflow
-
-1. Gather source material and identify authoritative priority if sources conflict.
-2. Separate canon, inference, open questions, and rejected/obsolete material.
-3. Group by function: world rules, timeline, factions, places, characters, relationships, systems, secrets, scene hooks.
-4. Resolve contradictions explicitly or mark them for user decision.
-5. Write concise markdown sections with stable headings.
-6. Preserve evocative language where it carries tone, but remove duplicate clutter. Keeping source wording here is deliberate and overrides the general rule of restating retrieved material.
-7. For roleplay/lorebook use, separate always-on anchors from conditional entries.
-
-## Output Patterns
-
-Use one of these depending on the request:
-
-- Canon bible.
-- Lorebook entry set.
-- Continuity audit.
-- Timeline.
-- Character/world index.
-- Conflict report with recommended resolutions.
-
-## Runtime-Specific Lore
-
-Use runtime-specific decorators, keywords, folders, variables, and template syntax only when the output is meant for that runtime and the syntax has been verified from current local docs or user-provided material.
+- Preserve established facts, atmosphere, distinctive wording, and source attribution where needed.
+- Distinguish canon from inference and proposed additions. Resolve conflicts using the source priority established by the user; make unresolved contradictions visible with recommended resolutions.
+- Organize around how the reference will be used, removing duplication without losing meaningful differences.
+- For a runtime-ready lorebook, separate persistent context from conditional entries and use the target runtime's verified syntax.

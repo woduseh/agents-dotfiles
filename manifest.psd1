@@ -20,7 +20,10 @@
         '.claude/skills'
     )
 
-    Skills = @(
+    Skills = @()
+
+    # Keep removal entries so machines that missed earlier syncs also uninstall them.
+    RemovedSkills = @(
         'creative-lore-consolidation'
         'creative-worldbuilding'
         'creative-writing'

@@ -12,7 +12,68 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $homeRoot = [IO.Path]::GetFullPath($HomePath)
 $manifest = Import-PowerShellDataFile -LiteralPath (Join-Path $repoRoot 'manifest.psd1')
-$backupRoot = Join-Path $homeRoot ".agents-dotfiles-backups/$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+$backupRoot = Join-Path $homeRoot ".agents-dotfiles-backups/$(Get-Date -Format 'yyyyMMdd-HHmmss-fffffff')-$([guid]::NewGuid().ToString('N').Substring(0, 8))"
+$removedSkills = @($manifest.RemovedSkills)
+foreach ($skill in @($manifest.Skills) + $removedSkills) {
+    if ($skill -notmatch '^[a-z0-9-]{1,64}$') { throw "Invalid skill name: $skill" }
+}
+foreach ($skill in $removedSkills) {
+    if ($manifest.Skills -contains $skill) { throw "Skill is both installed and removed: $skill" }
+}
+
+function Get-SkillPath {
+    param([string]$InstallRoot, [string]$Skill)
+    $root = [IO.Path]::GetFullPath((Join-Path $homeRoot $InstallRoot))
+    $homePrefix = $homeRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+    if (-not $root.StartsWith($homePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Skill install root must be inside HomePath: $InstallRoot"
+    }
+    [IO.Path]::GetFullPath((Join-Path $root $Skill))
+}
+
+function Assert-NoLinks {
+    param([string]$Path)
+    $current = $Path
+    while ($current) {
+        if (Test-Path -LiteralPath $current) {
+            $item = Get-Item -LiteralPath $current -Force
+            if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                throw "Refusing removal through a link: $current"
+            }
+        }
+        $current = Split-Path -Parent $current
+    }
+}
+
+function Remove-ManagedSkill {
+    param([string]$InstallRoot, [string]$Skill)
+    $target = Get-SkillPath $InstallRoot $Skill
+    Assert-NoLinks (Split-Path -Parent $target)
+    $item = Get-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
+    if ($null -eq $item) { return }
+    if (-not $item.PSIsContainer) {
+        throw "Expected a skill directory: $target"
+    }
+    $relative = [IO.Path]::GetRelativePath($homeRoot, $target)
+    $backup = [IO.Path]::GetFullPath((Join-Path $backupRoot $relative))
+    $backupPrefix = [IO.Path]::GetFullPath($backupRoot).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+    if (-not $backup.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Backup path escapes backup directory: $backup"
+    }
+    Assert-NoLinks $backup
+    Write-Host "[REMOVE] Skill: $Skill -> backup $backup"
+    if ($Apply) {
+        New-Item -ItemType Directory -Path (Split-Path -Parent $backup) -Force | Out-Null
+        # Directory.Move relocates the directory entry, including a junction itself,
+        # without traversing links or deleting their target contents.
+        [IO.Directory]::Move($target, $backup)
+    }
+}
+
+# Validate removal paths before any install writes.
+foreach ($installRoot in $manifest.SkillInstallRoots) {
+    foreach ($skill in $removedSkills) { $null = Get-SkillPath $installRoot $skill }
+}
 
 function Get-Hash {
     param([string]$Path)
@@ -155,10 +216,17 @@ if ($Mode -eq 'Check') {
         }
     }
 
-    $localSkillRoot = Join-Path $homeRoot $manifest.SkillSourceRoot
-    foreach ($skill in $manifest.Skills) {
-        if (-not (Test-SameTree "Skill: $skill" (Join-Path $localSkillRoot $skill) (Join-Path $repoRoot "skills/$skill"))) {
-            $success = $false
+    foreach ($installRoot in $manifest.SkillInstallRoots) {
+        foreach ($skill in $manifest.Skills) {
+            if (-not (Test-SameTree "Skill: $installRoot/$skill" (Get-SkillPath $installRoot $skill) (Join-Path $repoRoot "skills/$skill"))) {
+                $success = $false
+            }
+        }
+        foreach ($skill in $removedSkills) {
+            if ($null -ne (Get-Item -LiteralPath (Get-SkillPath $installRoot $skill) -Force -ErrorAction SilentlyContinue)) {
+                Write-Host "[REMOVE-PENDING] $installRoot/$skill"
+                $success = $false
+            }
         }
     }
 
@@ -193,11 +261,14 @@ if ($Mode -eq 'Export') {
             $relativeDestination = "$installRoot/$skill"
             Copy-OneTree "Skill: $skill" (Join-Path $repoRoot "skills/$skill") (Join-Path $homeRoot $relativeDestination) $relativeDestination
         }
+        foreach ($skill in $removedSkills) {
+            Remove-ManagedSkill $installRoot $skill
+        }
     }
 }
 
 if (-not $Apply) {
-    Write-Host 'Dry run only. Re-run with -Apply to copy files.'
+    Write-Host 'Dry run only. Re-run with -Apply to copy files and remove retired skills.'
 } elseif ($Mode -eq 'Install' -and (Test-Path -LiteralPath $backupRoot)) {
     Write-Host "Backup: $backupRoot"
 }
