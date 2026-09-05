@@ -11,4 +11,6 @@ On resumption, reconcile the latest request and notes with the current files and
 
 For a handoff or work that will need continuity, update the project's existing note or create a compact one. Preserve decisions and their reasons, user constraints, exact details that are hard to reconstruct, completed work, validation, blockers, and the next executable step. Mark completed or superseded work so it cannot mislead the next session. Keep secrets out of notes.
 
+When relevant, preserve explicit approvals and denials, their scope and conditions, and unresolved required questions, with a reference to the originating request where available. A handoff note summarizes authorization; it does not grant or expand it.
+
 Use the [note template](references/progress-docs.md) when helpful; adapt it to the task rather than filling every field.

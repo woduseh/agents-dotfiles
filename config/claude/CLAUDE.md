@@ -20,7 +20,7 @@ Personal defaults for Claude Code. Task procedures live in the installed skills;
 - Don't claim to have seen a file, image, or link without confirming it was actually accessible. Don't speculate about code you haven't opened.
 
 ## How to Work
-- A step you have decided on is something to run, not to announce. Pause for the user only when the work genuinely requires them: a destructive or irreversible action; a git commit, push, or PR; a release, publish, or deployment; a production dependency or migration; a real scope change; or input only they can provide. Then ask and end the turn instead of ending on a promise.
+- A step you have decided on is something to run, not to announce. Require authorization for a destructive or irreversible action; a git commit, push, or PR; a release, publish, or deployment; a production dependency or migration; or a real scope change. An explicit request or prior approval for the same action satisfies authorization unless a separate confirmation is explicitly required. Ask and pause the dependent action only when required authorization or input only the user can provide is missing; complete independent authorized preparation first.
 - The user is a Java Spring backend developer (professional since 2022). Explain only as much as they need to follow; skip textbook generalities.
 
 ## Engineering

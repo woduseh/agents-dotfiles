@@ -49,15 +49,15 @@ The short form "Please remove all mannered prose." also works.
 
 **Summaries reproduce source wording without marking it:** add one complete example to the system prompt: the user's request, a correct response, and a one-sentence rationale saying that each source is conveyed in the assistant's own indirect speech with at most one short marked quotation. Replace the tool-call placeholders in the example with the real tool's name so the model reads them as templated tool output.
 
-**Turn ends before the work is done, or the model asks permission for requested work:** the opening sentence carries most of the effect; keep it as written. Add a sentence after it listing any confirmations the product still requires.
+**Turn ends before the work is done, or the model asks permission for requested work:** use the repository-authored template below. It is adapted guidance, not a verbatim source quotation; match it to the actual execution context.
 
-> You are operating autonomously. The user is not watching in real time and cannot answer questions mid-task, so asking 'Want me to…?' or 'Shall I…?' will block the work. For reversible actions that follow from the original request, proceed without asking. Stop only for destructive actions or genuine scope changes the user must decide. Offering follow-ups after the task is done is fine; asking permission before doing the work is not.
->
-> Exception: when the user is describing a problem, asking a question, or thinking out loud rather than requesting a change, the deliverable is your assessment. Report your findings and stop. Don't apply a fix until they ask for one.
->
-> Before ending your turn, check your last paragraph. If it is a plan, an analysis, a question, a list of next steps, or a promise about work you have not done ('I'll…', 'let me know when…'), do that work now with tool calls. That includes retrying after errors and gathering missing information yourself. Do not stop because the context or session is long. End your turn only when the task is complete or you are blocked on input only the user can provide.
+```text
+Complete the requested deliverable within the active scope and authorization policy. For assessment-only requests, the findings are the completed deliverable. For implementation requests, carry out the authorized work and relevant verification rather than ending with an offer or a plan.
 
-For interactive, human-in-the-loop products use the softer form instead: pause only for a destructive or irreversible action, a real scope change, or input only the user can provide; ask and end the turn rather than ending on a promise.
+Follow the active authorization policy and preserve every explicit approval requirement. An explicit request or prior approval counts within its stated scope unless a separate confirmation is explicitly required. Ask only for missing authorization, after completing independent authorized preparation. Do not assume the user is unavailable unless the execution context establishes that.
+
+Resolve routine choices from context. Ask for required information that cannot be reasonably inferred, and continue independent authorized work while waiting. Optional preferences need not block work when a reasonable default exists; silence never supplies required input or approval. If completion is blocked, report the completed work, evidence of the blocker, and the specific input or external change needed to continue.
+```
 
 **Unrequested fixes or extensions, or more committed test files than the task called for:**
 
@@ -99,7 +99,7 @@ These hold across current Claude models and are the defaults to reach for before
 - For inputs over about 20k tokens, put the documents at the top inside `<document>` tags with `<source>` metadata, the query and instructions at the end, and ask for relevant quotes first when the task depends on finding them.
 - One sentence of role in the system prompt is enough to focus behavior.
 - Action posture is steerable in both directions. To have the model implement rather than suggest, say so ("implement changes rather than only suggesting them; infer the most useful likely action and proceed"). To keep it from acting on ambiguous requests, say that too ("default to information and recommendations; edit only when explicitly asked").
-- Reversibility guidance for agents: encourage local, reversible actions (editing files, running tests) and require a check-in before destructive, hard-to-reverse, or externally visible ones (deleting, force-push, reset --hard, pushing, commenting on PRs, sending messages), and forbid destructive shortcuts such as `--no-verify` or discarding unfamiliar files.
+- Reversibility guidance for agents: encourage local, reversible actions within the requested scope (editing files, running tests). Require authorization for destructive, hard-to-reverse, or externally visible actions (deleting, force-push, reset --hard, pushing, commenting on PRs, sending messages). Apply the authorization rule in the repository-authored template above, including existing approvals and any explicitly required separate confirmation. Forbid destructive shortcuts such as `--no-verify` or discarding unfamiliar files.
 - Over-engineering damping, when the model adds files, abstractions, defensive handling, or comments beyond the request: scope only what was asked; no docstrings or annotations on untouched code; no error handling for scenarios that cannot happen; no helpers for one-time operations; the minimum complexity for the current task.
 - Subagent damping, when it delegates where a direct call would do: subagents for parallel, isolated-context, or independent workstreams; direct work for simple, sequential, single-file, or context-carrying tasks.
 - Grounding for code questions: never speculate about code not opened; read a referenced file before answering.
