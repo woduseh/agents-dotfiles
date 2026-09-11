@@ -91,6 +91,20 @@
       "query": "권력 다툼 없는 따뜻한 마을의 조연 제빵사를 두 문장으로 만들어줘. 오프닝은 필요 없어.",
       "expected": "Produce the requested two-sentence character description and respect the supplied tone.",
       "failure": "Force an institutional power theme, append a roleplay opener, or create a full character sheet."
+    },
+    {
+      "id": "lore-source-priority",
+      "setup": "The creative-lore-consolidation skill is available. Source A says Mira is a baker and her brother left the village; source B says she is a guard and her brother died. Neither source gives a reason for the brother's absence.",
+      "query": "A를 B보다 우선해서 설정을 정리해줘. 충돌은 표시하고, 남동생이 떠난 이유는 확정 설정과 분리해서 제안해줘.",
+      "expected": "Keep Mira a baker whose brother left, identify the conflicting claims and their sources, and label any proposed reason as an addition rather than canon.",
+      "failure": "Blend incompatible facts, silently discard a source conflict, or present an invented reason as established canon."
+    },
+    {
+      "id": "lore-and-scene-completion",
+      "setup": "The creative-lore-consolidation and creative-writing skills are available. An approved note says the monastery vault is empty. An older draft says the novice finds gold there. The novice does not yet know the vault is empty.",
+      "query": "승인된 설정을 우선해 모순을 짧게 정리한 뒤, 그 설정으로 수련자가 금고를 여는 첫 장면을 500자 안팎으로 써줘. 세부 연출은 네가 정해.",
+      "expected": "Resolve the vault conflict using the approved note and complete a scene consistent with that resolution and the novice's knowledge, using reasonable staging choices.",
+      "failure": "Stop after the continuity audit, ask for a delegated staging choice, leave the scene unwritten, or restore the discarded gold-filled vault."
     }
   ]
 }

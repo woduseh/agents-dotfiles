@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering
-description: "Designs, revises, or evaluates prompts, global agent instructions, and skills, including model migrations and instruction architecture. Use when an instruction set or its evaluation is the deliverable, not for ordinary tasks that merely use a prompt."
+description: "Designs, revises, or evaluates prompts, agent instructions, and skills, including prompt migrations. Use when the instruction set or its evaluation is the deliverable."
 ---
 
 # Prompt Engineering
