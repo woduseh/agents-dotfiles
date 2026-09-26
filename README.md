@@ -6,14 +6,16 @@
 
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
-- `skills/`: 개인 Skill 원본 (`test-audit`은 설치 대상, 기존 6개는 보관만 함)
+- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`은 설치 대상, 기존 6개는 보관만 함)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
 - `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·검증 종료·모델 보존을 확인하는 수동 평가 시드
 
-Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `test-audit`이 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`와 `test-audit`이 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+
+`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
 
 ## 의도적으로 제외한 항목
 
