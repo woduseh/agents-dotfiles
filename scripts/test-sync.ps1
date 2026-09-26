@@ -41,6 +41,9 @@ foreach ($relative in @('manifest.psd1', 'scripts/sync.ps1', 'config/codex/AGENT
     Write-Fixture (Join-Path $fixtureRepo $relative) (Get-Content -LiteralPath (Join-Path $repoRoot $relative) -Raw)
 }
 $manifestText = Get-Content -LiteralPath (Join-Path $fixtureRepo 'manifest.psd1') -Raw
+# Keep the removal fixture independent of the repository's active skill list.
+$manifestText = $manifestText -replace '(?m)^    Skills = @\([^)]*\)', '    Skills = @()'
+Write-Fixture (Join-Path $fixtureRepo 'manifest.psd1') $manifestText
 $manifest = Import-PowerShellDataFile (Join-Path $fixtureRepo 'manifest.psd1')
 foreach ($root in $manifest.SkillInstallRoots) {
     foreach ($skill in $manifest.RemovedSkills) {
