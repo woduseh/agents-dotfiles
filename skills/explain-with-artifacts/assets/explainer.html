@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>요청 흐름 살펴보기 — 설명용 예시</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fa; --surface: #ffffff; --ink: #1d2b3d;
+      --muted: #516174; --line: #ccd5df; --accent: #126456; --tint: #eaf4f0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111923; --surface: #1b2633; --ink: #edf2f7;
+        --muted: #b1bfd0; --line: #526377; --accent: #95dfc7; --tint: #203c38;
+      }
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.75 system-ui, -apple-system, "Segoe UI", sans-serif;
+      word-break: keep-all; overflow-wrap: anywhere;
+    }
+    main { max-width: 1080px; margin: auto; padding: 48px 28px 64px; }
+    header { max-width: 780px; margin-bottom: 36px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.35; letter-spacing: -.04em; }
+    h2 { font-size: 1.25rem; line-height: 1.5; margin-bottom: 12px; }
+    .eyebrow { color: var(--accent); font-weight: 700; font-size: .8rem; letter-spacing: .09em; }
+    .lead { color: var(--muted); font-size: 1.05rem; }
+    .notice { border-left: 3px solid var(--accent); padding: 10px 16px; background: var(--tint); }
+    section { margin-top: 32px; }
+    .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; list-style: none; padding: 0; }
+    .flow li { position: relative; min-width: 0; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; }
+    .flow li:not(:last-child)::after { content: "→"; position: absolute; right: -17px; top: 21px; color: var(--muted); }
+    .flow li[data-current] { border-color: var(--accent); background: var(--tint); }
+    .step-pick { display: block; width: 100%; text-align: left; padding: 16px 16px 4px; border: 0; background: transparent; }
+    .step-number { display: block; color: var(--muted); font-size: .8rem; }
+    .step-pick strong { font-size: 1.05rem; }
+    .step-note { padding: 0 16px 16px; margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+    button { font: inherit; color: inherit; cursor: pointer; border-radius: 8px; }
+    button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+    .step-pick:disabled { cursor: default; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+    .controls button { padding: 8px 16px; background: var(--surface); border: 1px solid var(--line); }
+    .controls button:disabled { opacity: .5; cursor: default; }
+    .current { min-height: 3.5em; color: var(--accent); font-weight: 600; }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .comparison > div { min-width: 0; border-top: 2px solid var(--line); padding-top: 16px; }
+    .comparison h3 { margin: 0 0 8px; font-size: 1rem; }
+    .comparison p { color: var(--muted); margin-bottom: 0; }
+    details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin: 14px 0 0; color: var(--muted); }
+    code { font-family: ui-monospace, monospace; font-size: .9em; }
+    footer { margin-top: 32px; color: var(--muted); font-size: .85rem; }
+    @media (max-width: 680px) {
+      main { padding: 28px 18px 40px; }
+      .flow, .comparison { grid-template-columns: 1fr; }
+      .flow li:not(:last-child)::after { content: "↓"; top: auto; bottom: -22px; right: 50%; }
+      .current { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <!-- Replace this illustrative content and remove sections the explanation does not need. -->
+  <header>
+    <p class="eyebrow">EXPLAINER / 설명용 예시</p>
+    <h1>요청은 어디를 거쳐 처리될까요?</h1>
+    <p class="lead">입력에서 결과까지, 네 단계를 순서대로 살펴보는 작은 설명 페이지예요.</p>
+    <p class="notice"><strong>실제 코드에 연결되지 않은 모형이에요.</strong><br>
+      아래 내용은 템플릿 사용 예시이며, 특정 앱의 동작이나 검증 결과를 나타내지 않아요.</p>
+  </header>
+
+  <section aria-labelledby="flow-title">
+    <h2 id="flow-title">전체 흐름</h2>
+    <p>입력이 받아들여지는 단순한 경로만 표현했어요. 각 단계의 설명은 언제든 읽을 수 있어요.</p>
+    <!-- Keep the step copy in the HTML: it remains readable without JavaScript. -->
+    <ol class="flow" id="flow">
+      <li>
+        <button class="step-pick" type="button" disabled>
+          <span class="step-number">01</span><strong>입력 받기</strong>
+        </button>
+        <p class="step-note">사용자가 요청에 필요한 값을 전달해요.</p>
+      </li>
+      <li>
+        <button class="step-pick" type="button" disabled>
+          <span class="step-number">02</span><strong>유효성 확인</strong>
+        </button>
+        <p class="step-note">처리를 시작하는 데 필요한 조건을 확인해요.</p>
+      </li>
+      <li>
+        <button class="step-pick" type="button" disabled>
+          <span class="step-number">03</span><strong>작업 처리</strong>
+        </button>
+        <p class="step-note">조건을 만족한 요청에 대해 작업을 수행해요.</p>
+      </li>
+      <li>
+        <button class="step-pick" type="button" disabled>
+          <span class="step-number">04</span><strong>결과 반환</strong>
+        </button>
+        <p class="step-note">작업 결과를 요청한 쪽에 전달해요.</p>
+      </li>
+    </ol>
+    <div class="controls" id="controls" role="group" aria-label="단계 이동" hidden>
+      <button id="previous" type="button">이전 단계</button>
+      <button id="next" type="button">다음 단계</button>
+      <button id="reset" type="button">처음으로</button>
+    </div>
+    <p class="current" id="current" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+  </section>
+
+  <!-- For a real before/after comparison, use the same input and identify both revisions. -->
+  <section aria-labelledby="scope-title">
+    <h2 id="scope-title">이 모형이 보여주는 범위</h2>
+    <div class="comparison">
+      <div>
+        <h3>표현한 것</h3>
+        <p>입력부터 결과까지의 순서와 각 단계의 역할을 보여줘요. 버튼은 현재 살펴보는 단계만 바꿔요.</p>
+      </div>
+      <div>
+        <h3>표현하지 않은 것</h3>
+        <p>입력 거절, 작업 실패, 취소, 재시도, 동시 실행은 생략했어요. 실제 서비스 호출도 하지 않아요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="근거와 한계">
+    <details>
+      <summary>근거와 확인 범위 보기</summary>
+      <p><strong>근거 상태:</strong> 가상의 설명용 예시예요. 실제 코드·실행 로그·측정값은 사용하지 않았어요.</p>
+      <p><strong>실제 설명을 만들 때:</strong> 중요한 주장에 관련 파일·심벌, 기준 커밋,
+        또는 실행 결과를 연결하고, 직접 확인한 내용과 추정을 구분해 주세요.</p>
+      <p><strong>주의:</strong> 이 화면의 조작이 정상이어도, 화면이 설명하는 앱의 정확성이 검증된 것은 아니에요.</p>
+    </details>
+  </section>
+  <footer>외부 라이브러리·서비스 없이 파일 하나로 열리는 예시예요. 필요한 부분만 남겨 사용해 주세요.</footer>
+</main>
+<script>
+  // This changes the explanation's selected stage; it does not simulate a real service.
+  const stages = [...document.querySelectorAll('#flow > li')];
+  const picks = stages.map(stage => stage.querySelector('.step-pick'));
+  const previous = document.querySelector('#previous');
+  const next = document.querySelector('#next');
+  const current = document.querySelector('#current');
+  let selected = 0;
+
+  function selectStage(index) {
+    selected = Math.max(0, Math.min(stages.length - 1, index));
+    stages.forEach((stage, position) => {
+      const active = position === selected;
+      stage.toggleAttribute('data-current', active);
+      picks[position].setAttribute('aria-pressed', String(active));
+    });
+    const stage = stages[selected];
+    const title = stage.querySelector('strong').textContent;
+    const note = stage.querySelector('.step-note').textContent;
+    current.textContent = `${selected + 1} / ${stages.length} · ${title} — ${note}`;
+    previous.disabled = selected === 0;
+    next.disabled = selected === stages.length - 1;
+  }
+
+  picks.forEach((pick, index) => {
+    pick.disabled = false;
+    pick.addEventListener('click', () => selectStage(index));
+  });
+  previous.addEventListener('click', () => selectStage(selected - 1));
+  next.addEventListener('click', () => selectStage(selected + 1));
+  document.querySelector('#reset').addEventListener('click', () => selectStage(0));
+  selectStage(0);
+  document.querySelector('#controls').hidden = false;
+  current.hidden = false;
+</script>
+</body>
+</html>

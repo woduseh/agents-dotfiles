@@ -11,9 +11,15 @@
     {"query": "Here is my current system prompt. Shorten it and remove contradictions.", "expect": "prompt-engineering", "exclude": []},
     {"query": "Don't change it yet. Where will this prompt fail, and how would you test that?", "expect": "prompt-engineering", "exclude": [], "note": "Evaluate mode: findings and tests, no rewrite."},
     {"query": "How should I split these instructions between AGENTS.md and skills?", "expect": "prompt-engineering", "exclude": []},
-    {"query": "Fix the failing null check in OrderService and add a test.", "expect": null, "exclude": ["release-prep", "prompt-engineering", "work-continuity"], "note": "Ordinary coding needs no additional skill from this repository."},
+    {"query": "Fix the failing null check in OrderService and add a test.", "expect": "test-audit", "exclude": ["release-prep", "prompt-engineering", "work-continuity", "explain-with-artifacts"], "note": "Adding regression coverage uses test-audit; ordinary implementation does not request an explainer."},
     {"query": "Bump to 1.2.0, update the changelog, and tell me what still blocks the release.", "expect": "release-prep", "exclude": []},
     {"query": "Continue from yesterday's progress note on the importer.", "expect": "work-continuity", "exclude": []},
-    {"query": "This refactor is big and touches twelve files.", "expect": null, "exclude": ["work-continuity"], "note": "Size alone does not warrant a progress note."}
+    {"query": "This refactor is big and touches twelve files.", "expect": null, "exclude": ["work-continuity"], "note": "Size alone does not warrant a progress note."},
+    {"query": "실제 코드에서 요청이 전달되는 흐름을 간단한 도식으로 보여줘. 새 설계 리뷰는 필요 없어.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
+    {"query": "이 설정의 입력을 바꾸면서 결과를 이해할 수 있는 작은 HTML을 만들어줘.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
+    {"query": "이미 확인한 변경 내역과 실행 결과로 전후 동작을 시각적으로 비교해줘. 다시 리뷰하거나 테스트하지 마.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
+    {"query": "이 함수가 무슨 일을 하는지 두 문장으로 설명해줘.", "expect": null, "exclude": ["explain-with-artifacts", "engineering-review", "test-audit"]},
+    {"query": "이 열 가지 설정을 이름, 기본값, 용도, 주의사항의 마크다운 표로 정리해줘.", "expect": null, "exclude": ["explain-with-artifacts"], "note": "Table dimensions do not request HTML or trigger the explainer."},
+    {"query": "이 모듈 경계가 과도하게 복잡한지 실제 코드로 검토해줘. 결과는 채팅에 간단히 써줘.", "expect": "engineering-review", "exclude": ["explain-with-artifacts"]}
   ]
 }

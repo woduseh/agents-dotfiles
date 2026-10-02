@@ -1,0 +1,4 @@
+interface:
+  display_name: "Explain with Artifacts"
+  short_description: "Explain flows and changes with grounded visual artifacts"
+  default_prompt: "Use $explain-with-artifacts to explain this with the lightest useful format, grounding important claims in sources and distinguishing models from verified behavior."
