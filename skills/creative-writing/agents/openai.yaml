@@ -1,4 +1,7 @@
 interface:
   display_name: "Creative Writing"
   short_description: "Write, revise, or brainstorm creative prose"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#EC4899"
   default_prompt: "Use $creative-writing to write, revise, or brainstorm this piece while preserving its voice and requested intensity."
