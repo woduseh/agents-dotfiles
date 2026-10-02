@@ -1,4 +1,7 @@
 interface:
   display_name: "Commit Context"
   short_description: "Preserve and recover the reasons behind code changes"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#F59E0B"
   default_prompt: "Use $commit-context to preserve or recover verified decision context, keeping routine changes brief and respecting the authorized Git scope."
