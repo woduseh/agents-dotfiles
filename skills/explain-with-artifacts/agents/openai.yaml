@@ -1,4 +1,7 @@
 interface:
   display_name: "Explain with Artifacts"
   short_description: "Explain flows and changes with grounded visual artifacts"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#0EA5E9"
   default_prompt: "Use $explain-with-artifacts to explain this with the lightest useful format, grounding important claims in sources and distinguishing models from verified behavior."

@@ -1,4 +1,7 @@
 interface:
   display_name: "Release Prep"
   short_description: "Release checks, docs, CI, changelog"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#8B5CF6"
   default_prompt: "Use $release-prep to check versioning, changelog, docs, validation, and remaining release risks for this project."

@@ -1,4 +1,7 @@
 interface:
   display_name: "Prompt Engineering"
   short_description: "Design, revise, evaluate, or migrate prompts and skills"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#6366F1"
   default_prompt: "Use $prompt-engineering to design, revise, or evaluate this prompt or instruction set for its target model, preserving its runtime semantics."

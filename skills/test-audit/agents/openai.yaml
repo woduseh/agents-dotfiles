@@ -1,4 +1,7 @@
 interface:
   display_name: "Test Audit"
   short_description: "Review test value and choose meaningful coverage"
+  icon_small: "./assets/icon.png"
+  icon_large: "./assets/icon.png"
+  brand_color: "#2FB487"
   default_prompt: "Use $test-audit to choose meaningful regression coverage or review tests within the requested scope."
