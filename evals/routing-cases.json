@@ -20,6 +20,11 @@
     {"query": "이미 확인한 변경 내역과 실행 결과로 전후 동작을 시각적으로 비교해줘. 다시 리뷰하거나 테스트하지 마.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
     {"query": "이 함수가 무슨 일을 하는지 두 문장으로 설명해줘.", "expect": null, "exclude": ["explain-with-artifacts", "engineering-review", "test-audit"]},
     {"query": "이 열 가지 설정을 이름, 기본값, 용도, 주의사항의 마크다운 표로 정리해줘.", "expect": null, "exclude": ["explain-with-artifacts"], "note": "Table dimensions do not request HTML or trigger the explainer."},
-    {"query": "이 모듈 경계가 과도하게 복잡한지 실제 코드로 검토해줘. 결과는 채팅에 간단히 써줘.", "expect": "engineering-review", "exclude": ["explain-with-artifacts"]}
+    {"query": "이 모듈 경계가 과도하게 복잡한지 실제 코드로 검토해줘. 결과는 채팅에 간단히 써줘.", "expect": "engineering-review", "exclude": ["explain-with-artifacts"]},
+    {"query": "이번 변경에서 호환성 분기를 유지한 이유와 실제 검증 결과를 커밋 메시지에 남겨줘. 커밋 실행은 하지 마.", "expect": "commit-context", "exclude": ["release-prep", "work-continuity"], "note": "Record non-obvious decision context without expanding Git authorization."},
+    {"query": "현재 코드와 지침으로 설명되지 않는 이 설계 선택의 이유를 관련 Git 이력에서 찾아줘. 새 설계 리뷰나 코드는 필요 없어.", "expect": "commit-context", "exclude": ["engineering-review", "work-continuity"]},
+    {"query": "문서 오탈자 한 글자만 고친 staged diff야. 한 줄 커밋 메시지만 써줘.", "expect": null, "exclude": ["commit-context", "release-prep"], "note": "A routine message does not need the decision-context procedure."},
+    {"query": "다음 세션에 이어갈 수 있게 미완료 작업과 다음 단계를 인계 노트로 남겨줘. 커밋 메시지는 필요 없어.", "expect": "work-continuity", "exclude": ["commit-context"]},
+    {"query": "이미 확정된 1.2.0 변경 목록으로 사용자용 릴리즈 노트만 써줘. 설계 이력은 필요 없어.", "expect": "release-prep", "exclude": ["commit-context"]}
   ]
 }

@@ -24,6 +24,7 @@ Personal defaults for Claude Code. Task procedures live in the installed skills;
 - The user is a Java Spring backend developer (professional since 2022). Explain only as much as they need to follow; skip textbook generalities.
 
 ## Engineering
+- Keep commit subjects concise and follow repository conventions. For non-obvious changes, preserve verified rationale and material trade-offs in the body; use `commit-context` for those messages or to recover missing decision context. Keep routine changes brief; never invent reasons or validation.
 - Inspect the relevant code before changing it. Prefer the project's conventions, patterns, dependencies, and helpers over personal preference or new ones.
 - KISS > YAGNI > DRY. Choose the simplest design that satisfies current requirements and existing contracts; accept local duplication when abstraction would obscure intent or serve only hypothetical reuse. Add layers, configurability, dependencies, fallbacks, guards, catches, retries, or impossible-state handling only for a current requirement, observed failure, existing contract, or real trust boundary.
 - Make the smallest coherent change that delivers the request. A pre-existing bug, performance concern, or cleanup you notice goes in the summary as a follow-up, not into this change, unless the requested behavior cannot work without it.

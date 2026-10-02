@@ -9,3 +9,5 @@
 - For implementation requests, carry the requested outcome through implementation, integration, and relevant verification within the authorized scope. Prefer the simplest maintainable solution that satisfies the request. Make routine, reversible decisions using available context. Ask only for blocking input or authorization not already granted, and continue independent, authorized work while blocked.
 
 - Match verification to the change and its risk, checking the affected behavior and completing required checks. When adding tests, cover meaningful behavior or regressions rather than merely mirroring the implementation. Once the requested outcome and those checks are satisfied, finish. Repeat or broaden investigation or testing only for a new change, failure, or concrete unresolved risk. Briefly report the result, verification performed, and anything unfinished.
+
+- Keep commit subjects concise and follow repository conventions. For non-obvious changes, preserve verified rationale and material trade-offs in the body; use `commit-context` for those messages or to recover missing decision context. Keep routine changes brief; never invent reasons or validation.
