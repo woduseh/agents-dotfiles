@@ -6,16 +6,39 @@
 
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
-- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`은 설치 대상, 기존 6개는 보관만 함)
+- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`는 설치 대상, 기존 6개는 보관만 함)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
 - `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·검증 종료·모델 보존을 확인하는 수동 평가 시드
 
-Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`와 `test-audit`이 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`가 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
 
-`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
+`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에, `explain-with-artifacts`는 근거가 있는 시각적·인터랙티브 설명에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
+
+## 시각적 설명 스킬
+
+`explain-with-artifacts`는 흐름도, 단계별 설명, 변경 전후 비교, 입력에 따른 결과 탐색을 요청할 때 사용합니다. 간단한 설명은 글이나 표로 끝내며, 긴 답변·큰 변경·표 크기만으로 HTML을 만들지 않습니다. 기존 리뷰나 테스트를 다시 수행하는 스킬도 아닙니다.
+
+예시 요청:
+
+```text
+$explain-with-artifacts
+이 요청이 UI에서 처리기로 전달되는 흐름을 실제 코드에 근거해 보여줘.
+글이나 도식으로 충분하면 파일은 만들지 마.
+```
+
+```text
+$explain-with-artifacts
+이 변경의 전후를 같은 입력으로 비교하는 작은 HTML을 만들어줘.
+중요한 설명에 관련 코드와 기준 커밋을 연결하고,
+실제 확인한 동작과 설명용 모형을 구분해줘. 앱 본체는 수정하지 마.
+```
+
+HTML이 필요할 때는 [가벼운 예제 템플릿](skills/explain-with-artifacts/assets/explainer.html)을 출발점으로 사용합니다. 외부 라이브러리나 서버 없이 브라우저에서 직접 열 수 있고, 단계 이동·초기화·근거 펼치기를 포함합니다. JavaScript 없이도 설명 본문은 읽을 수 있습니다. 템플릿 자체는 실제 프로젝트에 연결되지 않은 가상의 예시입니다.
+
+설명 결과물은 요청한 위치나 임시 산출물 공간에 두며 기본적으로 앱이나 Git에 추가하지 않습니다. 실제 코드·실행 근거, 추정, 모형을 구분하고 브라우저 검증을 하지 못한 경우에는 그 한계를 알립니다. 영상·음성 생성, 별도 MCP 서버, 전용 렌더러는 포함하지 않습니다.
 
 ## 의도적으로 제외한 항목
 
@@ -75,7 +98,7 @@ pwsh -File ./scripts/lint-skills.ps1
 pwsh -File ./scripts/test-sync.ps1
 ```
 
-`evals/`는 실제 모델 실행용 입력과 기대 행동을 기록한 수동 평가 자료입니다. 스킬 평가 시드는 현재 보관된 스킬을 별도 평가 환경에 설치했을 때의 자료입니다. 정적 검사 통과는 모델의 행동 검증을 뜻하지 않습니다. 지침 변경 전후를 비교할 때는 같은 모델·설정·테스트 자료를 사용한 별도 세션에서 실행합니다.
+`evals/`는 실제 모델 실행용 입력과 기대 행동을 기록한 수동 평가 자료입니다. 스킬 평가 시드에는 활성 스킬과 보관된 스킬의 사례가 함께 있습니다. 각 사례에서 필요한 스킬을 별도 평가 환경에 설치한 뒤 확인합니다. 정적 검사 통과는 모델의 행동 검증을 뜻하지 않습니다. 지침 변경 전후를 비교할 때는 같은 모델·설정·테스트 자료를 사용한 별도 세션에서 실행합니다.
 
 테스트용 홈 경로를 지정할 수도 있습니다.
 

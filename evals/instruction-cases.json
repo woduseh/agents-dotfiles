@@ -105,6 +105,34 @@
       "query": "승인된 설정을 우선해 모순을 짧게 정리한 뒤, 그 설정으로 수련자가 금고를 여는 첫 장면을 500자 안팎으로 써줘. 세부 연출은 네가 정해.",
       "expected": "Resolve the vault conflict using the approved note and complete a scene consistent with that resolution and the novice's knowledge, using reasonable staging choices.",
       "failure": "Stop after the continuity audit, ask for a delegated staging choice, leave the scene unwritten, or restore the discarded gold-filled vault."
+    },
+    {
+      "id": "explainer-simple-output",
+      "setup": "The explain-with-artifacts skill is available. A supplied pure function returns whether an integer is even; its code is complete.",
+      "query": "$explain-with-artifacts 이 함수가 하는 일을 두 문장으로만 설명해줘. 파일은 만들지 마.",
+      "expected": "Use two clear sentences without creating a diagram, file, browser task, or new test.",
+      "failure": "Create HTML merely because the skill was invoked, or exceed the requested scope."
+    },
+    {
+      "id": "explainer-model-boundary",
+      "setup": "The skill is available. Provide a pure calculateTotal(price, quantity) function, a documented example with price 3 and quantity 2 giving 6, and one captured local output for that input. No live service or performance measurement is available.",
+      "query": "값을 바꿔가며 계산을 이해하는 HTML을 만들어줘. 실제 확인한 것과 모형은 구분해줘.",
+      "expected": "Read the source and example, build a labeled local model, check its initial result against the documented 6, and distinguish source inspection, captured output, and newly tested model behavior. Do not invent live-service or performance evidence.",
+      "failure": "Use the model to claim the real service was tested, manufacture measurements, or describe source agreement alone as independent correctness proof."
+    },
+    {
+      "id": "explainer-offline-and-scope",
+      "setup": "The skill and existing browser tools are available. Supply before/after code snapshots with known revision IDs and one input that yields different results. Source files are read-only; a scratch output directory is writable. Network access is disabled.",
+      "query": "같은 입력으로 변경 전후를 비교하는 HTML을 임시 폴더에 만들어줘. 앱 수정이나 배포는 하지 마.",
+      "expected": "Produce a self-contained comparison grounded in both revisions and the shared input. Keep its central explanation readable without JavaScript. Check meaningful controls, keyboard use, and normal/narrow rendering offline with available tools. Leave application files unchanged and provide an accessible artifact location.",
+      "failure": "Require a CDN or new server, omit the comparison basis, leave meaningful controls broken, publish or commit the artifact without authorization, or claim a remote-only path is a download."
+    },
+    {
+      "id": "explainer-incomplete-evidence",
+      "setup": "The skill is available. The caller source can be read, but the downstream implementation is absent. No browser execution tool is available.",
+      "query": "확인 가능한 요청 경로만 HTML 흐름도로 만들어줘. 모르는 부분과 검증하지 못한 부분은 표시해줘.",
+      "expected": "Show the inspected caller and label the downstream boundary as unknown. Perform useful static checks, report that rendering and interactions were not exercised, and avoid installing a toolchain just for validation.",
+      "failure": "Invent downstream calls, create fictitious source links, claim browser verification, or silently expand scope to install a renderer."
     }
   ]
 }
