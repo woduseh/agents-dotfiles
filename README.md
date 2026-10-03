@@ -6,16 +6,16 @@
 
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
-- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`는 설치 대상, 기존 6개는 보관만 함)
+- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`는 설치 대상, 기존 6개는 보관만 함)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
 - `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·검증 종료·모델 보존·스킬 행동을 확인하는 수동 평가 시드
 
-Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`가 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`가 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
 
-`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에, `explain-with-artifacts`는 근거가 있는 시각적·인터랙티브 설명에, `commit-context`는 중요한 변경의 결정 근거 기록과 관련 이력 조회에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
+`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에, `explain-with-artifacts`는 근거가 있는 시각적·인터랙티브 설명에, `commit-context`는 중요한 변경의 결정 근거 기록과 관련 이력 조회에, `delegate-research`는 독립적으로 나눌 수 있는 조사 위임과 근거 통합에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
 
 ## 시각적 설명 스킬
 
@@ -60,6 +60,22 @@ $commit-context
 ```
 
 실제로 확인하지 않은 이유·기각 대안·검증 결과는 만들지 않습니다. 메시지는 실제 커밋에 포함될 변경만 설명하고, 과거 이력은 현재 지침이나 새 승인으로 취급하지 않습니다. 스쿼시를 사용하는 승인된 작업에서는 중요한 근거가 최종 메시지에도 남도록 합니다. 현재 계약은 기존 코드·문서에 유지하며, 별도 의사결정 문서 체계나 Git hook, 스크립트는 추가하지 않습니다.
+
+## 조사 위임 스킬
+
+`delegate-research`는 읽을 자료가 많고 범위를 명확히 나눌 수 있을 때, 적절한 모델의 서브 에이전트에게 조사를 맡기고 근거를 통합합니다. 단순 조회는 직접 처리하며, 위임·검증·재작업을 포함한 전체 비용을 고려합니다. 모델명·가격·에이전트 수를 고정하지 않고 현재 런타임과 사용자의 명시적 선택을 따릅니다.
+
+예시 요청:
+
+```text
+$delegate-research
+이 SDK 버전의 재시도 조건과 제한을 공식 문서와 구현에서 조사해줘.
+독립적으로 나눌 가치가 있는 부분만 적절한 경량 에이전트에게 맡기고,
+근거 위치·확인한 범위·미확인 사항을 받아 핵심 결론을 확인해줘.
+코드는 수정하지 마.
+```
+
+메인은 조사 방향과 중요한 판단을 맡습니다. 검색 결과가 없다는 사실을 부재나 안전성의 증명으로 취급하지 않으며, 실제 측정 없이 비용·할당량 절감률을 주장하지 않습니다. 조사량이나 관련 파일 수만으로 위임하지 않고, 결과를 확인하는 비용이 전체 재조사보다 작은 경우에 사용합니다.
 
 ## 의도적으로 제외한 항목
 
