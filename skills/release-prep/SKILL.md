@@ -9,7 +9,7 @@ Complete the requested release stages and verify their results within the active
 
 Use repository release conventions and the intended release target to identify affected artifacts and required checks. Keep versions, release notes, packaging, and user-facing documentation consistent where affected; write release notes around changes users experience.
 
-When deployment is in scope, verify that the reviewed revision, package provenance, and installed artifact agree. Record a concise recovery point using the existing release record: the prior revision or artifact and how to restore it. Verify the affected installed user flows using the test-audit boundary guidance; packaging or unit-test success alone does not prove installed acceptance.
+When deployment is in scope, verify that the reviewed revision, package provenance, and installed artifact agree. Record a concise recovery point using the existing release record: the prior revision or artifact and how to restore it. Verify representative affected user flows in the intended installation; packaging or unit-test success alone does not prove installed acceptance.
 
 Resolve release blockers within the authorized scope. Distinguish a validated local release candidate from a published release, including any remaining signing, upload, or deployment requirements.
 

@@ -10,6 +10,6 @@
 
 - Match verification to the change and its risk, checking the affected behavior and completing required checks. When adding tests, cover meaningful behavior or regressions rather than merely mirroring the implementation. Once the requested outcome and those checks are satisfied, finish. Repeat or broaden investigation or testing only for a new change, failure, or concrete unresolved risk. Briefly report the result, verification performed, and anything unfinished.
 
-- Keep implementation and verification with one accountable owner. Delegate independent reading or review when useful, but serialize mutations of shared deployment state.
+- Keep one accountable owner for the final outcome and verification. Delegate independent implementation, test, or review tasks when useful; serialize mutations of shared deployment state.
 
 - Keep commit subjects concise and follow repository conventions. For non-obvious changes, preserve verified rationale and material trade-offs in the body; use `commit-context` for those messages or to recover missing decision context. Keep routine changes brief; never invent reasons or validation.
