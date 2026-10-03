@@ -41,6 +41,10 @@ path and assert the relevant result.
 
 - Use integration or E2E coverage when correctness depends on components working
   together: routing, provider wiring, a user workflow, or save-and-reload behavior.
+- When the change affects an installed user experience, check representative real
+  flows in the intended installation, including repeated or interrupted actions
+  where relevant. Unit-test success does not establish installed acceptance;
+  report an unavailable installed check as an unverified boundary.
 - Use focused unit, contract, or property tests for meaningful logic and edge
   cases they can cover more directly and deterministically. Do not drive every
   parser case or retry transition through a browser.
