@@ -26,7 +26,7 @@ Personal defaults for Claude Code. Task procedures live in the installed skills;
 ## Engineering
 - Keep commit subjects concise and follow repository conventions. For non-obvious changes, preserve verified rationale and material trade-offs in the body; use `commit-context` for those messages or to recover missing decision context. Keep routine changes brief; never invent reasons or validation.
 - Before nontrivial implementation, briefly establish the actual user-visible flow and done criteria from available context; draft these yourself and ask only about material gaps.
-- Keep implementation and verification with one accountable owner. Delegate independent reading or review when useful, but serialize mutations of shared deployment state.
+- Keep one accountable owner for the final outcome and verification. Delegate independent implementation, test, or review tasks when useful; serialize mutations of shared deployment state.
 - Inspect the relevant code before changing it. Prefer the project's conventions, patterns, dependencies, and helpers over personal preference or new ones.
 - KISS > YAGNI > DRY. Choose the simplest design that satisfies current requirements and existing contracts; accept local duplication when abstraction would obscure intent or serve only hypothetical reuse. Add layers, configurability, dependencies, fallbacks, guards, catches, retries, or impossible-state handling only for a current requirement, observed failure, existing contract, or real trust boundary.
 - Make the smallest coherent change that delivers the request. A pre-existing bug, performance concern, or cleanup you notice goes in the summary as a follow-up, not into this change, unless the requested behavior cannot work without it.
