@@ -1,21 +1,27 @@
 # agents-dotfiles
 
-컴퓨터를 바꿀 때 다시 설치할 수 있도록 개인 에이전트 지침과 사용자 제작 Skill을 보관하는 저장소입니다.
+컴퓨터를 바꿀 때 다시 설치할 수 있도록 개인 에이전트 지침과 관리 대상 Skill을 보관하는 저장소입니다.
 
 ## 저장 범위
 
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
-- `skills/`: 개인 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`는 설치 대상, 기존 6개는 보관만 함)
+- `skills/`: 개인·외부 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`, `codebase-design`은 설치 대상, 기존 6개는 보관만 함)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
 - `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·검증 종료·모델 보존·스킬 행동을 확인하는 수동 평가 시드
 
-Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`가 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`, `codebase-design`이 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
 
 `engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에, `explain-with-artifacts`는 근거가 있는 시각적·인터랙티브 설명에, `commit-context`는 중요한 변경의 결정 근거 기록과 관련 이력 조회에, `delegate-research`는 독립적으로 나눌 수 있는 조사 위임과 근거 통합에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
+
+## 코드베이스 설계 스킬
+
+`codebase-design`은 [Matt Pocock의 원본 스킬](https://github.com/mattpocock/skills/tree/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/codebase-design)을 가져온 외부 스킬입니다. 작은 인터페이스 뒤에 동작을 모으는 깊은 모듈, 호출자가 알아야 할 규칙, 변경 지점과 테스트 범위를 검토할 때 사용합니다. `engineering-review`의 근거 중심 구조 검토에 설계 용어와 판단 기준을 더합니다.
+
+원본 `SKILL.md`, `DEEPENING.md`, `DESIGN-IT-TWICE.md`, `agents/openai.yaml`을 수정 없이 보관합니다. 출처와 고정 커밋은 [UPSTREAM.md](skills/codebase-design/UPSTREAM.md), 원본 라이선스는 [LICENSE](skills/codebase-design/LICENSE)에 있습니다. `manifest.psd1`에 등록되어 다음 `Install -Apply`에서 Codex와 Claude 양쪽으로 동기화됩니다.
 
 ## 시각적 설명 스킬
 

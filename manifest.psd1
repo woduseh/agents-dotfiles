@@ -20,7 +20,7 @@
         '.claude/skills'
     )
 
-    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'commit-context', 'delegate-research')
+    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'commit-context', 'delegate-research', 'codebase-design')
 
     # Keep removal entries so machines that missed earlier syncs also uninstall them.
     RemovedSkills = @(
