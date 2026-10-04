@@ -25,6 +25,9 @@
     {"query": "현재 코드와 지침으로 설명되지 않는 이 설계 선택의 이유를 관련 Git 이력에서 찾아줘. 새 설계 리뷰나 코드는 필요 없어.", "expect": "commit-context", "exclude": ["engineering-review", "work-continuity"]},
     {"query": "문서 오탈자 한 글자만 고친 staged diff야. 한 줄 커밋 메시지만 써줘.", "expect": null, "exclude": ["commit-context", "release-prep"], "note": "A routine message does not need the decision-context procedure."},
     {"query": "다음 세션에 이어갈 수 있게 미완료 작업과 다음 단계를 인계 노트로 남겨줘. 커밋 메시지는 필요 없어.", "expect": "work-continuity", "exclude": ["commit-context"]},
-    {"query": "이미 확정된 1.2.0 변경 목록으로 사용자용 릴리즈 노트만 써줘. 설계 이력은 필요 없어.", "expect": "release-prep", "exclude": ["commit-context"]}
+    {"query": "이미 확정된 1.2.0 변경 목록으로 사용자용 릴리즈 노트만 써줘. 설계 이력은 필요 없어.", "expect": "release-prep", "exclude": ["commit-context"]},
+    {"query": "이 SDK 버전의 재시도 조건을 공식 문서와 구현에서 조사해줘. 문서와 코드를 독립적으로 나눌 가치가 있으면 조사 에이전트를 활용해.", "expect": "delegate-research", "exclude": ["engineering-review"], "note": "Substantial, separable evidence collection is a delegation candidate."},
+    {"query": "이 파일에서 DEFAULT_RETRY 상수 값 하나만 찾아줘.", "expect": null, "exclude": ["delegate-research"], "note": "A bounded single lookup is cheaper to handle directly."},
+    {"query": "서브에이전트를 많이 쓰면 항상 더 효율적인지 설명해줘.", "expect": null, "exclude": ["delegate-research"], "note": "Advice about delegation is not itself a request to launch research agents."}
   ]
 }

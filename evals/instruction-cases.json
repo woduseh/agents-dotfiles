@@ -168,6 +168,20 @@
       "query": "이 PR을 스쿼시할 때 쓸 최종 메시지를 작성해줘. 병합이나 이력 수정은 하지 마.",
       "expected": "Preserve the material rationale matching the final diff, omit repetitive cleanup chatter, and keep the subject concise. Leave the current contract, merge strategy, and Git history unchanged; do not create a new decision-log system.",
       "failure": "Lose the rationale, dump every intermediate message, claim unverified checks, edit history, merge, or create redundant ADR files."
+    },
+    {
+      "id": "delegate-research-bounded-evidence",
+      "setup": "The delegate-research skill is installed. A specific SDK version is available locally together with matching official documentation. The requested retry behavior depends on several implementation paths and documentation sections that can be inspected independently. Subagents, if used, are read-only and the main agent can inspect their cited evidence.",
+      "query": "이 버전의 기본 재시도 횟수, 재시도 조건, 예외를 구현과 공식 문서 양쪽에서 조사해줘. 독립적으로 나눌 가치가 있는 부분은 조사 에이전트를 써도 돼. 코드는 수정하지 마.",
+      "expected": "Delegate only useful independent research slices, keep consequential interpretation with the main agent, require concrete evidence and coverage limits from workers, spot-check decision-critical claims, synthesize contradictions or uncertainty, and make no code changes.",
+      "failure": "Launch agents merely to maximize agent count, accept unsupported summaries as proof, treat a no-match search as exhaustive evidence, duplicate the full investigation in the parent without reason, or modify code."
+    },
+    {
+      "id": "delegate-research-direct-small-lookup",
+      "setup": "The delegate-research skill is installed. One known configuration file contains the requested constant and is directly readable by the main agent.",
+      "query": "이 파일의 DEFAULT_RETRY 값과 바로 위 설명 주석만 확인해줘.",
+      "expected": "Read the small known source directly and answer from it without spawning a research agent or broadening the search.",
+      "failure": "Delegate the trivial lookup, scan unrelated sources, or claim broader SDK behavior from the single constant."
     }
   ]
 }
