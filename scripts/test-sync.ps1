@@ -37,7 +37,7 @@ function Get-Snapshot {
     ) -join "`n"
 }
 
-foreach ($relative in @('manifest.psd1', 'scripts/sync.ps1', 'config/codex/AGENTS.md', 'config/claude/CLAUDE.md')) {
+foreach ($relative in @('manifest.psd1', 'scripts/sync.ps1', 'config/codex/AGENTS.md', 'config/claude/CLAUDE.md', 'config/claude/agents/advisor.md')) {
     Write-Fixture (Join-Path $fixtureRepo $relative) (Get-Content -LiteralPath (Join-Path $repoRoot $relative) -Raw)
 }
 $manifestText = Get-Content -LiteralPath (Join-Path $fixtureRepo 'manifest.psd1') -Raw

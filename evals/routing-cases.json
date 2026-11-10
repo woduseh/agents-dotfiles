@@ -14,6 +14,9 @@
     {"query": "이 함수가 무슨 일을 하는지 두 문장으로 설명해줘.", "expect": null, "exclude": ["explain-with-artifacts", "engineering-review", "test-audit"]},
     {"query": "이 열 가지 설정을 이름, 기본값, 용도, 주의사항의 마크다운 표로 정리해줘.", "expect": null, "exclude": ["explain-with-artifacts"], "note": "Table dimensions do not request HTML or trigger the explainer."},
     {"query": "이번 변경에서 호환성 분기를 유지한 이유와 실제 검증 결과를 커밋 메시지에 남겨줘. 커밋 실행은 하지 마.", "expect": null, "exclude": ["engineering-review", "test-audit"], "note": "Commit rationale is covered by the global instructions, not a skill."},
-    {"query": "이 SDK 버전의 재시도 조건을 공식 문서와 구현에서 조사해줘.", "expect": null, "exclude": ["engineering-review", "explain-with-artifacts"], "note": "Research needs no skill; whether to use a subagent follows the global instructions."}
+    {"query": "이 SDK 버전의 재시도 조건을 공식 문서와 구현에서 조사해줘.", "expect": null, "exclude": ["engineering-review", "explain-with-artifacts"], "note": "Research needs no skill; whether to use a subagent follows the global instructions."},
+    {"query": "이제 compact 하려는데 그 전에 남은 일 있어?", "expect": "pre-compact", "exclude": ["engineering-review", "test-audit"]},
+    {"query": "I'm about to wrap up this session. Is anything left uncommitted or still running?", "expect": "pre-compact", "exclude": ["explain-with-artifacts"]},
+    {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact"], "note": "A commit or push request on its own follows the global instructions, not the pre-compact check."}
   ]
 }

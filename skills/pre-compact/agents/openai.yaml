@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pre-Compact"
+  short_description: "Check what a session would lose before compacting"
+  default_prompt: "Use $pre-compact to check what this session still has open before I compact it, and give me a focus line for the compaction."

@@ -10,6 +10,11 @@
             Home       = '.claude/CLAUDE.md'
             Repository = 'config/claude/CLAUDE.md'
         }
+        @{
+            Name       = 'Claude advisor subagent'
+            Home       = '.claude/agents/advisor.md'
+            Repository = 'config/claude/agents/advisor.md'
+        }
     )
 
     Directories = @()
@@ -20,7 +25,7 @@
         '.claude/skills'
     )
 
-    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts')
+    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'pre-compact')
 
     # Keep removal entries so machines that missed earlier syncs also uninstall them.
     RemovedSkills = @(
