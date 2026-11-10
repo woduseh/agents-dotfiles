@@ -1,50 +1,38 @@
 ---
 name: engineering-review
-description: Review architecture, module boundaries, refactoring plans, or maintainability and slop audits. Use for 구조 검토, 설계 리뷰, 리팩터링 검토, or reducing structural complexity; not routine bug fixes, style edits, or test-only reviews.
+description: Review or design code structure - architecture, module boundaries and interfaces, refactoring plans, and maintainability or slop audits. Use for 구조 검토, 설계 리뷰, 모듈 인터페이스 설계, 리팩터링 검토, or reducing structural complexity; not routine bug fixes, style edits, or test-only reviews.
 ---
 # Engineering review
 
-Reduce the cost of understanding, changing, and operating correct software. Review actual behavior and dependencies, not conformity to a pattern catalog. Keeping the current design is a valid outcome.
+The goal is to lower the cost of understanding, changing, and operating correct software. Judge a design against what this project actually needs (its purpose, users, scale, and compatibility commitments), not against a pattern catalog. Keeping the current design is a valid outcome.
 
-## Scope and context
+## Look at real behavior
 
-Honor the user's authorized scope and applicable project instructions. A review-only request remains read-only; carry requested implementation through verification. This skill adds no permissions or approval checkpoints.
+Trace entry points, callers, the owner of each piece of state, external effects, and consumers. Before calling code dead, check registrations, indirect calls, and supported external contracts. For a repository-wide request, sample representative paths across the main areas first, and say which areas you did not inspect.
 
-Establish the project's purpose, users, operating scale, and compatibility commitments before judging its design. Weigh abstractions and infrastructure against those actual needs, not an assumed deployment model. Preserve behavior unless the task authorizes changing it.
+## What counts as a finding
 
-## Find the relevant evidence
+A finding names a location and the concrete failure or maintenance cost it causes. "Violates SRP" is not a finding. "The discount rule lives in three handlers, so a rate change needs three edits" is one.
 
-- Identify the target: a change, module, feature, or repository-wide audit. Establish the current revision and relevant working-tree changes.
-- Use the repository's guidance, code map, or feature contracts when available to find entry points and owners. If they are absent, trace the code and tests directly; do not require a particular document layout or create one just for the review.
-- Follow callers through policy/calculation, state ownership, external effects, and consumers. Before declaring code dead, check registrations, indirect calls, imports, and supported external contracts.
-- Expand along observed dependencies and plausible failure paths. For a repository-wide request, inspect representative paths across the major areas before narrowing deeper work. Report uninspected areas rather than implying exhaustive coverage.
+Keep three kinds apart: demonstrated defects, maintenance risks, and hypotheses. A performance concern without a measurement is a hypothesis. Rank by impact and likelihood, and report few findings when there are few.
 
-## Select the lenses that matter
+## Judging module shape
 
-Use relevant rows, not a mandatory all-items checklist. Name concrete failure or maintenance costs rather than simply declaring a SOLID violation.
+- **Depth.** A module earns its interface when a lot of behavior sits behind a small one. The interface is everything a caller must know: the signature, and also invariants, ordering, error modes, and required configuration.
+- **Deletion test.** Imagine the module deleted. If the complexity disappears, the module only passed calls through. If the complexity reappears in every caller, the module earns its place.
+- **Boundaries.** A boundary is justified by something that actually varies or must be isolated across it: a second implementation, an external system, or time, randomness, and transport that tests need to control. A production implementation plus a test stand-in counts. Similar-looking code that encodes different rules can stay separate.
+- **Test surface.** Tests should cross the same interface that callers do. A need to test past the interface suggests the module has the wrong shape.
+- **State.** Each fact has one authoritative representation and one owner of its writes. Types, constructors, and storage constraints prevent invalid states better than convention does.
+- **Failures.** An empty default or a silent fallback disguises a failure as success. Establish that an effect is safe to repeat before adding a retry, because a timeout can leave the external outcome unknown.
 
-| Lens | Questions and decision criteria |
-| --- | --- |
-| Ownership, cohesion, and locality | Which rules change together, and who owns their state? Keep related rules near each other; separate independently changing concerns. Look for scattered policy, hidden global dependencies, and cycles that obstruct local reasoning. Many callers alone do not make a stable shared utility a problem. |
-| Information hiding and abstraction | What implementation decision does a boundary hide? Prefer a direct function or module when sufficient. Retain an adapter, strategy, interface, or shared owner when it isolates a real variation or important boundary. One implementation can justify a boundary; repeated syntax alone does not justify merging different rules. |
-| Data and invariants | What must remain true before and after a change? Identify the authoritative representation and prevent contradictory states with suitable types, constructors, and storage constraints. Distinguish persisted facts from derived views; review migration and atomicity when stored data changes. A status enum alone does not enforce valid transitions or required results. |
-| Effects, state, and concurrency | Keep calculations separable from I/O where useful. Identify allowed transitions and the owner of each write. Examine cancellation, late responses, duplicate submissions, ordering, and partial completion. Establish safety for duplicate effects before adding retries; a timeout can leave the external outcome unknown. |
-| Errors and observability | Distinguish expected absence, rejected input, operational failure, and unknown outcome. Preserve actionable diagnostics without exposing secrets or unnecessary user data. Do not disguise failures as success with empty defaults or silent fallbacks; avoid duplicate logging at every layer. |
-| Performance and resource cost | Identify the relevant workload and cost: algorithmic growth, I/O round trips, serialization, external service calls, allocations, or UI updates. Measure the suspected bottleneck or label the claim as a hypothesis. Add caching, batching, parallelism, or queues only with justified benefit and clear invalidation, ordering, or capacity semantics. |
-| Verification and maintenance | Which observable behavior distinguishes a correct change from a plausible mistake? Reuse checks at the affected boundary. Prefer outcomes and invariants over incidental implementation shape. Before removing tests, identify obsolete behavior or redundant coverage and check what protection remains. |
+## Choosing the remedy
 
-## Choose the smallest coherent improvement
+Consider leaving the code as it is, then the simplest local repair, before a larger reorganization. Prefer the smallest cohesive fix, which is not always the fewest changed lines. Name an alternative only when its trade-off affects the choice.
 
-- Explain the problem with a file/symbol reference and a concrete consequence. Separate demonstrated defects, maintenance risks, and unmeasured hypotheses. Prioritize by impact and likelihood; do not manufacture findings to fill a quota.
-- Consider leaving the code as-is and the simplest local repair before proposing a larger abstraction or reorganization. Discuss alternatives when their tradeoffs materially affect the choice. Prefer the smallest cohesive fix, not the fewest changed lines.
-- Keep shared business knowledge under one owner, but allow similar-looking code to remain separate when it represents different rules. Avoid forwarding layers, factories, event buses, frameworks, and compatibility scaffolding that add no current value. Do not prescribe a folder topology or pattern by default.
-- Check what a proposed deletion protects. Remove redundant internal validation when its invariant is established and preserved; retain necessary checks at untrusted input, persistence, and external-effect boundaries. Do not delete recovery or compatibility behavior merely because a search or one test did not exercise it.
-- Clean up code, tests, and owning documentation made obsolete by the agreed change; report independent improvements separately. Do not silently modify vendored snapshots or add a second source of truth for project contracts or verification commands.
+When the user wants to explore interfaces, sketch two or three materially different designs, compare them on depth, on where a future change would land, and on where the boundary sits, then recommend one.
 
-## Verify and finish
+When implementation is part of the request, preserve behavior unless the task changes it. For a behavior-preserving refactor, compare outputs and side effects before and after, not only compilation. Remove the code, tests, and documentation that the change makes obsolete, and report unrelated improvements separately.
 
-Use the current repository's instructions, scripts, and CI to select checks for affected behavior and plausible failures. Honor required gates and reuse still-applicable evidence; expand or repeat verification only for subsequent changes, failures, or unresolved risks.
+## Report
 
-For a behavior-preserving refactor, compare meaningful outputs and side effects, not only type-check success. For a performance claim, compare equivalent workloads and correctness before and after. Distinguish synthetic or mocked results from live-service or production evidence, and report blocked or unverified checks honestly.
-
-Report meaningful findings or completed changes with locations, consequences, the selected remedy, material tradeoffs, and actual verification. Keep the report proportional: no mandatory scorecard, diagram, finding count, or new report file. If no worthwhile change is supported, say so and finish.
+Give each finding its location, consequence, recommended remedy, and material trade-off, then say what was actually verified. Keep the report proportional to the findings: no scorecard, no fixed count, no new report file unless asked. If nothing is worth changing, say so.

@@ -28,3 +28,6 @@ config/claude/settings.json
 
 # Local verification workspaces
 work/
+
+# macOS Finder metadata
+.DS_Store

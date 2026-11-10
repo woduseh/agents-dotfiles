@@ -4,84 +4,73 @@
 
 ## 저장 범위
 
+- `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 글쓰기, 승인 경계, 코딩 기본 규칙)
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
-- `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 권한 경계, 코딩 기본 규칙; 작업별 절차는 Skill이 담당)
-- `skills/`: 개인·외부 Skill 원본 (`engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`, `codebase-design`은 설치 대상, 기존 6개는 보관만 함)
+- `skills/`: 설치 대상 Skill 원본
+- `manifest.psd1`: 동기화할 파일, 설치할 Skill(`Skills`), 제거할 Skill(`RemovedSkills`)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
-- `evals/routing-cases.json`: 설명이 인접한 Skill 쌍의 트리거 시드
-- `evals/instruction-cases.json`: 승인·작업 범위·검증 종료·모델 보존·스킬 행동을 확인하는 수동 평가 시드
+- `evals/routing-cases.json`: Skill 선택(트리거) 확인용 수동 시드
+- `evals/instruction-cases.json`: 승인·작업 범위·중단 조건·보고 형식을 확인하는 수동 시드
 
-Skill은 저장소에서 한 번만 관리합니다. `manifest.psd1`의 `Skills`는 설치 대상, `RemovedSkills`는 이전 관리 대상 중 제거할 이름입니다. `Install`은 `.agents/skills`와 `.claude/skills` 양쪽에 적용됩니다. 현재 `engineering-review`, `test-audit`, `explain-with-artifacts`, `commit-context`, `delegate-research`, `codebase-design`이 설치 대상이며 기존 6개는 `RemovedSkills`에 등록되어 있습니다.
+## Skill
 
-`engineering-review`는 설계·모듈 경계·리팩터링·구조 단순화 검토에, `test-audit`은 테스트 작성·수정·가치 검토에, `explain-with-artifacts`는 근거가 있는 시각적·인터랙티브 설명에, `commit-context`는 중요한 변경의 결정 근거 기록과 관련 이력 조회에, `delegate-research`는 독립적으로 나눌 수 있는 조사 위임과 근거 통합에 사용합니다. 공용 스킬에는 특정 프로젝트의 전제나 문서 경로를 넣지 않고, 작업 중인 저장소의 지침과 계약을 따릅니다.
+Skill은 저장소에서 한 번만 관리하고 `Install`이 `.agents/skills`와 `.claude/skills` 양쪽에 적용합니다.
 
-## 코드베이스 설계 스킬
+| Skill | 사용할 때 |
+| --- | --- |
+| `engineering-review` | 구조·모듈 경계·인터페이스 설계, 리팩터링 계획, 유지보수성 점검 |
+| `test-audit` | 테스트 작성·수정·검토, 회귀 검증 선택, 중복·구현 결합 테스트 정리 |
+| `explain-with-artifacts` | 근거가 있는 도식, 변경 전후 비교, 단계별 설명, 작은 인터랙티브 HTML |
 
-`codebase-design`은 [Matt Pocock의 원본 스킬](https://github.com/mattpocock/skills/tree/d81f3a183412e71a5b1e84ca21bc1a35eea03a60/skills/engineering/codebase-design)을 가져온 외부 스킬입니다. 작은 인터페이스 뒤에 동작을 모으는 깊은 모듈, 호출자가 알아야 할 규칙, 변경 지점과 테스트 범위를 검토할 때 사용합니다. `engineering-review`의 근거 중심 구조 검토에 설계 용어와 판단 기준을 더합니다.
+Skill에는 모델이 스스로 알 수 없는 판단 기준과 개인 선호만 둡니다. 일반적인 절차, 승인 규칙, 교과서적 지식은 넣지 않습니다. 승인과 범위는 전역 지침이 담당하므로 Skill마다 반복하지 않습니다. 공용 Skill에는 특정 프로젝트의 전제나 문서 경로를 넣지 않습니다.
 
-원본 `SKILL.md`, `DEEPENING.md`, `DESIGN-IT-TWICE.md`, `agents/openai.yaml`을 수정 없이 보관합니다. 출처와 고정 커밋은 [UPSTREAM.md](skills/codebase-design/UPSTREAM.md), 원본 라이선스는 [LICENSE](skills/codebase-design/LICENSE)에 있습니다. `manifest.psd1`에 등록되어 다음 `Install -Apply`에서 Codex와 Claude 양쪽으로 동기화됩니다.
+`engineering-review`의 모듈 형태 기준(깊은 모듈, 삭제 테스트, 경계의 근거)은 John Ousterhout의 *A Philosophy of Software Design*과 [Matt Pocock의 codebase-design 스킬](https://github.com/mattpocock/skills)의 개념을 다시 쓴 것입니다. `test-audit`는 OpenClaw의 `test-audit`를 바탕으로 다시 구성한 개인용 변형이며 원본의 MIT 고지를 `skills/test-audit/LICENSE.txt`에 보존합니다.
 
-## 시각적 설명 스킬
+### 제거한 Skill
 
-`explain-with-artifacts`는 흐름도, 단계별 설명, 변경 전후 비교, 입력에 따른 결과 탐색을 요청할 때 사용합니다. 간단한 설명은 글이나 표로 끝내며, 긴 답변·큰 변경·표 크기만으로 HTML을 만들지 않습니다. 기존 리뷰나 테스트를 다시 수행하는 스킬도 아닙니다.
+다음 Skill은 삭제했고 원본은 Git 이력에만 있습니다. 오래 동기화하지 않은 PC에서도 설치본이 제거되도록 `RemovedSkills` 항목은 유지합니다.
 
-예시 요청:
+| Skill | 제거 이유 |
+| --- | --- |
+| `delegate-research` | 위임을 권하는 상시 지침은 현재 Claude 모델에서 서브에이전트를 필요 이상으로 늘립니다. 위임 기준은 전역 지침 한 줄로 충분합니다. |
+| `commit-context` | 커밋 본문에 확인된 이유를 남기는 규칙은 전역 지침 한 줄이 담당합니다. 이력 조회 절차는 모델이 이미 수행합니다. |
+| `codebase-design` | 판단 기준을 `engineering-review`에 통합했습니다. 원본은 서브에이전트 3개 이상 병렬 실행을 지시했고 경계 기준이 다른 Skill과 충돌했습니다. |
+| `prompt-engineering` | 모델별 참고 문서가 한 세대 전(Fable 5.1) 기준이었습니다. 아래 공식 가이드를 직접 봅니다. |
+| `creative-writing`, `creative-worldbuilding`, `creative-lore-consolidation`, `release-prep`, `work-continuity` | 이미 설치 대상에서 빠져 보관만 하던 Skill입니다. |
 
-```text
-$explain-with-artifacts
-이 요청이 UI에서 처리기로 전달되는 흐름을 실제 코드에 근거해 보여줘.
-글이나 도식으로 충분하면 파일은 만들지 마.
+되살리려면 이력에서 폴더를 복원하고 이름을 `RemovedSkills`에서 `Skills`로 옮깁니다.
+
+```powershell
+git checkout c975f3c -- skills/commit-context
 ```
 
-```text
-$explain-with-artifacts
-이 변경의 전후를 같은 입력으로 비교하는 작은 HTML을 만들어줘.
-중요한 설명에 관련 코드와 기준 커밋을 연결하고,
-실제 확인한 동작과 설명용 모형을 구분해줘. 앱 본체는 수정하지 마.
-```
+## 지침을 고칠 때의 기준
 
-HTML이 필요할 때는 [가벼운 예제 템플릿](skills/explain-with-artifacts/assets/explainer.html)을 출발점으로 사용합니다. 외부 라이브러리나 서버 없이 브라우저에서 직접 열 수 있고, 단계 이동·초기화·근거 펼치기를 포함합니다. JavaScript 없이도 설명 본문은 읽을 수 있습니다. 템플릿 자체는 실제 프로젝트에 연결되지 않은 가상의 예시입니다.
+지침과 Skill은 대상 모델의 공식 프롬프팅 가이드에 맞춰 점검합니다. 마지막 점검은 2026-11-10입니다. `CLAUDE.md`와 Skill은 Claude 가이드 두 편, `AGENTS.md`는 OpenAI 가이드를 기준으로 했습니다.
 
-설명 결과물은 요청한 위치나 임시 산출물 공간에 두며 기본적으로 앱이나 Git에 추가하지 않습니다. 실제 코드·실행 근거, 추정, 모형을 구분하고 브라우저 검증을 하지 못한 경우에는 그 한계를 알립니다. 영상·음성 생성, 별도 MCP 서버, 전용 렌더러는 포함하지 않습니다.
+- [Prompting Claude Fable 5.2](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-2)
+- [Prompting Claude Opus 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5)
+- [Using GPT-6: Prompting best practices](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) (GPT-6 Astra 기준, GPT-6.1 Sol에도 같은 출발점)
 
-## 커밋 맥락 스킬
+`AGENTS.md`에는 Astra 가이드가 짚은 다섯 가지 성향을 반영했습니다.
 
-`commit-context`는 diff만으로 알기 어려운 선택의 이유와 제약을 커밋 본문에 남기거나, 현재 코드와 지침으로 설명되지 않는 중요한 선택을 관련 Git 이력에서 찾습니다. 전역 지침에는 짧은 원칙만 두고, 선별·작성·조회 절차는 스킬이 담당합니다. 단순 수정은 한 줄로 끝낼 수 있고, 정해진 분량이나 필수 항목은 없습니다.
+- 질문하며 멈추는 성향: 요청형 표현을 실행 지시로 보고, 승인은 검토 가능한 결과를 준비한 뒤 마지막 단계로 받습니다. 가이드는 draft PR 생성까지 자율로 두지만 여기서는 커밋·푸시·PR에 승인을 유지합니다.
+- Skill 지침에 민감한 성향: 사용자 지시가 Skill보다 우선하고, Skill 때문에 멈추면 해당 `SKILL.md`와 문장을 밝히게 합니다.
+- 목록·표 위주의 서식과 상투어: 문단을 기본으로 하고 상투적 표현을 피하게 합니다.
+- 위임을 덜 하는 성향: 언제 위임하고 어떻게 맡기는지 적었습니다. Claude 쪽과 방향이 반대인 이유입니다.
+- 과한 테스트: 필수 검사가 통과하면 끝내고, 구현을 그대로 옮긴 테스트는 쓰지 않습니다.
 
-예시 요청:
+Claude 쪽에 적용한 원칙은 다음과 같습니다.
 
-```text
-$commit-context
-이번 변경의 확인된 이유와 중요한 호환성 영향을 커밋 메시지로 정리해줘.
-단순 변경이면 짧게 끝내고, 커밋이나 푸시는 하지 마.
-```
-
-```text
-$commit-context
-이 분기를 일부러 유지한 이유가 현재 코드와 지침만으로는 불분명해.
-관련 이력만 찾아 근거 커밋과 함께 설명하고, 지금도 전제가 맞는지 확인해줘.
-코드는 수정하지 마.
-```
-
-실제로 확인하지 않은 이유·기각 대안·검증 결과는 만들지 않습니다. 메시지는 실제 커밋에 포함될 변경만 설명하고, 과거 이력은 현재 지침이나 새 승인으로 취급하지 않습니다. 스쿼시를 사용하는 승인된 작업에서는 중요한 근거가 최종 메시지에도 남도록 합니다. 현재 계약은 기존 코드·문서에 유지하며, 별도 의사결정 문서 체계나 Git hook, 스크립트는 추가하지 않습니다.
-
-## 조사 위임 스킬
-
-`delegate-research`는 읽을 자료가 많고 범위를 명확히 나눌 수 있을 때, 적절한 모델의 서브 에이전트에게 조사를 맡기고 근거를 통합합니다. 단순 조회는 직접 처리하며, 위임·검증·재작업을 포함한 전체 비용을 고려합니다. 모델명·가격·에이전트 수를 고정하지 않고 현재 런타임과 사용자의 명시적 선택을 따릅니다.
-
-예시 요청:
-
-```text
-$delegate-research
-이 SDK 버전의 재시도 조건과 제한을 공식 문서와 구현에서 조사해줘.
-독립적으로 나눌 가치가 있는 부분만 적절한 경량 에이전트에게 맡기고,
-근거 위치·확인한 범위·미확인 사항을 받아 핵심 결론을 확인해줘.
-코드는 수정하지 마.
-```
-
-메인은 조사 방향과 중요한 판단을 맡습니다. 검색 결과가 없다는 사실을 부재나 안전성의 증명으로 취급하지 않으며, 실제 측정 없이 비용·할당량 절감률을 주장하지 않습니다. 조사량이나 관련 파일 수만으로 위임하지 않고, 결과를 확인하는 비용이 전체 재조사보다 작은 경우에 사용합니다.
+- 승인이 필요한 행동은 정확한 이름으로 나열하고, 이미 받은 승인이 유효하다는 예외를 같은 규칙 안에 씁니다. 승인이 필요 없는 단계(읽기, 로컬 수정, 빌드·테스트, 재시도)도 이름으로 적습니다.
+- 일반적인 장애(오류, 타임아웃, 도구 실패)는 진단하고 계속 진행하게 하고, 의도적으로 막아 둔 것(수정 금지 파일, 회수된 권한)은 건드리지 않고 보고하게 합니다.
+- 위임을 권하는 문장을 두지 않습니다. 기본은 메인 대화에서 직접 작업합니다.
+- 주의 문구는 범위와 이유가 있는 것만 남깁니다. 이유가 사라진 금지 규칙과 여러 파일에 반복된 경고는 지웁니다.
+- 글쓰기 규칙은 글자 수 같은 강한 제한 대신 독자 기준(도구 호출을 보지 않은 사람이 읽는다)으로 씁니다.
+- 생각 과정을 답변에 적으라는 지시, 덜 생각하라는 지시, 토큰 예산 문구는 쓰지 않습니다. 사고량은 effort 설정으로 조절합니다.
+- 개인 계정용 지침이므로 코드 소유권 문장을 넣었습니다. 작업 영역의 중복을 합치고 관련 문제를 함께 고치는 대신, 요청 밖의 변경은 작은 것까지 보고하고 기존 기능의 동작 변경은 승인을 받습니다. 가이드에 따르면 이 문장은 출력 토큰을 약 1.5배로 늘리고 요청하지 않은 변경을 만들 수 있으므로 요약만 보지 말고 diff를 확인합니다. 남의 저장소(포크, vendored 사본, upstream)에서는 가장 작은 변경이 기본입니다.
 
 ## 의도적으로 제외한 항목
 
@@ -116,18 +105,16 @@ git diff --check
 git status --short
 ```
 
-현재 또는 새 PC에 저장소 내용을 적용합니다. 기존 6개 스킬의 전역 설치본을 제거할 때도 같은 명령을 사용합니다.
+현재 또는 새 PC에 저장소 내용을 적용합니다. 제거한 Skill의 전역 설치본을 지울 때도 같은 명령을 사용합니다.
 
 ```powershell
 pwsh -File ./scripts/sync.ps1 -Mode Install
 pwsh -File ./scripts/sync.ps1 -Mode Install -Apply
 ```
 
-`Install -Apply`는 덮어쓸 기존 파일과 Skill 폴더를 먼저 `~/.agents-dotfiles-backups/<run-id>/`에 백업합니다. 제거 대상 Skill 폴더는 같은 백업 디렉터리로 이동하므로 로컬 수정분과 하위 파일도 보존됩니다. 별도 설치한 스킬과 저장소의 보관 원본은 건드리지 않습니다. Skill 자체가 심볼릭 링크·정션이면 연결 항목만 이동하며 연결 대상은 따라가지 않습니다. 설치 루트나 그 상위 경로가 연결이면 제거를 거부합니다.
+`Install -Apply`는 덮어쓸 기존 파일과 Skill 폴더를 먼저 `~/.agents-dotfiles-backups/<run-id>/`에 백업합니다. 제거 대상 Skill 폴더는 같은 백업 디렉터리로 이동하므로 로컬 수정분과 하위 파일도 보존됩니다. 별도 설치한 Skill은 건드리지 않습니다. Skill 자체가 심볼릭 링크·정션이면 연결 항목만 이동하며 연결 대상은 따라가지 않습니다. 설치 루트나 그 상위 경로가 연결이면 제거를 거부합니다.
 
-향후 Skill을 제거하려면 이름을 `Skills`에서 빼고 `RemovedSkills`로 옮깁니다. 원본은 `skills/`에 보관하거나 삭제할 수 있습니다. 오래 동기화하지 않은 PC에서도 제거되도록 `RemovedSkills` 항목은 유지하세요. 다시 설치하려면 반대로 옮기고 원본을 준비합니다.
-
-단순히 원본 폴더가 없다는 이유로 설치본을 삭제하지는 않습니다. 설치 대상 원본이 없으면 오류로 처리합니다. `Export`는 활성 `Skills`만 내보내며, 제거 목록과 보관 원본을 변경하지 않습니다. 일반 파일 삭제와 활성 스킬 내부의 불필요한 파일 정리는 자동화하지 않습니다.
+Skill을 제거하려면 이름을 `Skills`에서 빼고 `RemovedSkills`로 옮긴 뒤 `skills/`의 원본을 삭제합니다. 단순히 원본 폴더가 없다는 이유로 설치본을 삭제하지는 않으며, 설치 대상 원본이 없으면 오류로 처리합니다. `Export`는 활성 `Skills`만 내보냅니다. 활성 Skill 내부에서 지운 파일은 설치본에서 자동으로 정리되지 않습니다.
 
 Skill을 추가하거나 고친 뒤에는 정적 검사를 돌립니다.
 
@@ -141,10 +128,12 @@ pwsh -File ./scripts/lint-skills.ps1
 pwsh -File ./scripts/test-sync.ps1
 ```
 
-`evals/`는 실제 모델 실행용 입력과 기대 행동을 기록한 수동 평가 자료입니다. 스킬 평가 시드에는 활성 스킬과 보관된 스킬의 사례가 함께 있습니다. 각 사례에서 필요한 스킬을 별도 평가 환경에 설치한 뒤 확인합니다. 정적 검사 통과는 모델의 행동 검증을 뜻하지 않습니다. 지침 변경 전후를 비교할 때는 같은 모델·설정·테스트 자료를 사용한 별도 세션에서 실행합니다.
-
 테스트용 홈 경로를 지정할 수도 있습니다.
 
 ```powershell
 pwsh -File ./scripts/sync.ps1 -Mode Install -HomePath ./work/test-home -Apply
 ```
+
+## 평가 시드
+
+`evals/`는 실제 모델 실행용 입력과 기대 행동을 기록한 수동 평가 자료입니다. 정적 검사 통과는 모델의 행동 검증을 뜻하지 않습니다. 지침 변경 전후를 비교할 때는 같은 모델·effort·테스트 자료를 사용한 별도 세션에서 실행하고, 한 번에 한 가지 변경만 비교합니다.
