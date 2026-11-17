@@ -11,6 +11,8 @@
 - `manifest.psd1`: 동기화할 파일, 설치할 Skill(`Skills`), 제거할 Skill(`RemovedSkills`)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인
 - `scripts/lint-skills.ps1`: Skill frontmatter, 크기, 참조 링크, `manifest.psd1` 일치 여부 정적 검사
+- `scripts/lint-skills.sh`: 같은 정적 검사의 macOS·Linux용(bash)
+- `hooks/pre-commit`: 커밋할 내용으로 정적 검사를 돌리고 실패하면 커밋을 막는 Git 훅
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
 - `evals/routing-cases.json`: Skill 선택(트리거) 확인용 수동 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·중단 조건·보고 형식을 확인하는 수동 시드
@@ -130,6 +132,18 @@ Skill을 추가하거나 고친 뒤에는 정적 검사를 돌립니다.
 
 ```powershell
 pwsh -File ./scripts/lint-skills.ps1
+```
+
+macOS와 Linux에서는 같은 검사를 bash로 돌립니다. 두 스크립트는 같은 규칙을 검사하므로 한쪽에 규칙을 더하면 다른 쪽에도 더합니다.
+
+```bash
+bash ./scripts/lint-skills.sh
+```
+
+`hooks/pre-commit`은 커밋할 때마다 이 검사를 자동으로 돌립니다. 작업 폴더가 아니라 스테이징된 내용을 검사하고, Windows에서는 PowerShell 쪽을, 그 밖에서는 bash 쪽을 씁니다. Git은 훅 설정을 클론과 함께 옮기지 않으므로 클론마다 한 번 연결합니다.
+
+```bash
+git config core.hooksPath hooks
 ```
 
 동기화 스크립트를 변경한 뒤에는 실제 사용자 홈 대신 `work/` 아래 임시 홈을 사용하는 검증을 실행합니다. 검증 자료는 확인을 위해 해당 폴더에 남습니다.

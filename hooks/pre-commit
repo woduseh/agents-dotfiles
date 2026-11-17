@@ -1,0 +1,19 @@
+#!/bin/sh
+# Lints the staged snapshot, not the working tree, so the checked content is exactly what
+# the commit will contain. Each OS runs its own lint: PowerShell on Windows, bash elsewhere.
+# Connect once per clone: git config core.hooksPath hooks
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+snapshot=$(mktemp -d)
+trap 'rm -rf "$snapshot"' EXIT
+git checkout-index -a -f --prefix="$snapshot/"
+
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        pwsh -NoProfile -File "$snapshot/scripts/lint-skills.ps1"
+        ;;
+    *)
+        bash "$snapshot/scripts/lint-skills.sh"
+        ;;
+esac

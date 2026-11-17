@@ -7,6 +7,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # Static checks for skills/*/SKILL.md: frontmatter, sizes, reference links, and manifest coverage.
+# lint-skills.sh is the macOS and Linux counterpart. Keep the two in step.
 $manifest = Import-PowerShellDataFile -LiteralPath (Join-Path $RepoRoot 'manifest.psd1')
 $skillsRoot = Join-Path $RepoRoot 'skills'
 $problems = New-Object System.Collections.Generic.List[string]
