@@ -98,6 +98,27 @@ Claude 쪽에 적용한 원칙은 다음과 같습니다.
 
 비밀값이 필요한 설정은 이 저장소에 넣지 말고 새 컴퓨터에서 다시 인증합니다.
 
+### 새 PC에서 직접 넣는 권한 규칙
+
+`.claude/settings.json`은 저장소가 관리하지 않으므로, 에이전트가 자격증명 파일을 읽어 대화 기록에 남기지 않도록 막는 규칙은 PC마다 직접 넣습니다. 한번 기록에 남은 비밀값은 되돌릴 수 없어서 모델의 판단에 맡기지 않고 규칙으로 막습니다.
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "Read(~/.ssh/id_*)",
+      "Read(~/.codex/auth.json)",
+      "Read(~/.claude/.credentials.json)"
+    ]
+  }
+}
+```
+
+- 이미 `permissions`가 있으면 `deny` 배열에 항목만 더합니다. 다른 설정은 그대로 둡니다.
+- deny 규칙은 allow 규칙과 auto 모드보다 먼저 적용됩니다. Read 도구와, 셸의 `cat`·`head`·`tail` 같은 파일 명령에 적용됩니다. 스크립트가 파일을 직접 여는 경우까지는 막지 못합니다.
+- 비밀값이 실제로 어느 파일에 있는지는 PC마다 다릅니다. macOS는 Claude 로그인 정보를 키체인에 두므로 `.credentials.json`이 없을 수 있습니다. 토큰이 든 다른 파일이 있으면 같은 형식으로 더합니다.
+- 2026-11-17에 macOS의 Claude Code 2.1.308에서 `~/.ssh/id_*` 규칙이 Read 도구와 `cat`을 모두 막는 것을 확인했습니다. Windows에서는 확인하지 않았습니다.
+
 ## 사용법
 
 PowerShell 7(`pwsh`)에서 실행합니다. `Export`와 `Install`은 기본적으로 미리보기만 하며, 실제 복사·제거에는 `-Apply`가 필요합니다.
