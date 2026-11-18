@@ -48,6 +48,7 @@
     ClaudePermissionRules = @{
         Deny = @(
             'Read(~/.ssh/id_*)'
+            'Read(~/.ssh/*.pem)'
             'Read(~/.codex/auth.json)'
             'Read(~/.claude/.credentials.json)'
         )
