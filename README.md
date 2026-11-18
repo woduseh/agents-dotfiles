@@ -52,19 +52,24 @@ git checkout c975f3c -- skills/commit-context
 
 ## 지침을 고칠 때의 기준
 
-지침과 Skill은 대상 모델의 공식 프롬프팅 가이드에 맞춰 점검합니다. 마지막 점검은 2026-11-10입니다. `CLAUDE.md`와 Skill은 Claude 가이드 두 편, `AGENTS.md`는 OpenAI 가이드를 기준으로 했습니다.
+지침과 Skill은 대상 모델의 공식 프롬프팅 가이드에 맞춰 점검합니다. `CLAUDE.md`와 Skill은 2026-11-10에 Claude 가이드 두 편을 기준으로, `AGENTS.md`는 2026-11-18에 GPT-6.2 Astra용 OpenAI 가이드 두 편을 기준으로 마지막으로 점검했습니다.
 
 - [Prompting Claude Fable 5.2](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-2)
 - [Prompting Claude Opus 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5)
-- [Using GPT-6: Prompting best practices](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) (GPT-6 Astra 기준, GPT-6.1 Sol에도 같은 출발점)
+- [Using GPT-6.2: Prompting best practices](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices) (GPT-6.2 Astra와 Sol 공통)
+- [Prompting GPT-6.2 in Codex](https://learn.chatgpt.com/guides/prompting-gpt-6-2-astra)
 
-`AGENTS.md`에는 Astra 가이드가 짚은 다섯 가지 성향을 반영했습니다.
+`AGENTS.md`에는 GPT-6.2 가이드가 짚은 성향과 권고를 반영했습니다.
 
-- 질문하며 멈추는 성향: 요청형 표현을 실행 지시로 보고, 승인은 검토 가능한 결과를 준비한 뒤 마지막 단계로 받습니다. 가이드는 draft PR 생성까지 자율로 두지만 여기서는 커밋·푸시·PR에 승인을 유지합니다.
-- Skill 지침에 민감한 성향: 사용자 지시가 Skill보다 우선하고, Skill 때문에 멈추면 해당 `SKILL.md`와 문장을 밝히게 합니다.
-- 목록·표 위주의 서식과 상투어: 문단을 기본으로 하고 상투적 표현을 피하게 합니다.
-- 위임을 덜 하는 성향: 언제 위임하고 어떻게 맡기는지 적었습니다. Claude 쪽과 방향이 반대인 이유입니다.
-- 과한 테스트: 필수 검사가 통과하면 끝내고, 구현을 그대로 옮긴 테스트는 쓰지 않습니다.
+- 간결해진 문체: GPT-6.2 Astra는 기본 문체가 이미 간결하므로 "간결하게"라는 지시를 뺐습니다. 대신 설명이 정확해지는 기술 세부와 도메인 용어는 남기고, 사용자와 출처가 쓰는 용어를 따르게 합니다.
+- 작업 중 약어가 최종 답변에 섞이는 성향: 최종 답변은 진행 메시지를 읽지 않은 사람이 처음 보는 글로 새로 쓰고, 추론·도구 호출·다른 에이전트와 주고받은 약어와 라벨을 빼게 합니다. 사용자가 쓴 글을 고칠 때는 요청한 부분만 바꿉니다.
+- 다음 단계를 제안하고 멈추는 성향: 요청형 표현을 실행 지시로 보고, 가정을 밝힌 채 계속 진행하며, 턴을 끝내기 전에 요청의 모든 부분이 끝났고 검증됐는지 확인합니다. 승인은 검토 가능한 결과를 준비한 뒤 마지막 단계로 받습니다. 가이드는 draft PR 생성까지 자율로 두지만 여기서는 커밋·푸시·PR에 승인을 유지합니다.
+- 코드 작성: 기존 클래스·메서드·API를 재사용하고, 호출자가 기대는 동작을 보존하며, 줄 수를 줄이려고 압축한 코드와 불필요한 헬퍼·추상화를 피합니다. 테스트는 요청받았거나, 저장소가 요구하거나, 기존 테스트가 놓칠 특정 회귀를 잡을 때만 더합니다.
+- 프런트엔드와 시각 작업: 결과를 렌더링해 실제로 보이는 크기에서 확인하고, 지원해야 하는 동작을 직접 해 봅니다. 화면 문구는 필요한 것만 둡니다. 가이드가 권한 이미지 종류와 서체 지정은 프로젝트마다 다르므로 전역 지침에 넣지 않았습니다.
+- 서브에이전트: 가이드는 반복되는 작업이면 언제 위임할지를 `AGENTS.md`에 적으라고 합니다. 언제 위임하고 어떻게 맡기는지 적은 기존 문장이 여기에 해당합니다. Claude 쪽과 방향이 반대인 이유입니다.
+- 함께 쓰는 컴퓨터: 사용자가 같은 PC에서 계속 일하고 다른 에이전트도 함께 돌 수 있으므로, 커넥터·CLI·API로 할 수 있는 일은 앞에 떠 있는 앱을 조작하지 않고 처리합니다. 동시에 돌리는 빌드와 테스트 수를 조절하고, 끝낼 때 자신이 시작한 백그라운드 작업과 임시 파일을 정리합니다.
+
+GPT-6 Astra 가이드를 기준으로 넣었던 두 가지는 GPT-6.2 가이드에 언급이 없지만 그대로 둡니다. 사용자 지시가 Skill보다 우선하고 Skill 때문에 멈추면 해당 `SKILL.md`와 문장을 밝히게 하는 규칙, 그리고 문단을 기본으로 하고 상투적 표현을 피하게 하는 규칙입니다. reasoning effort 선택은 `AGENTS.md`가 아니라 요청할 때 정하는 설정이므로 지침에 넣지 않았습니다.
 
 Claude 쪽에 적용한 원칙은 다음과 같습니다.
 
