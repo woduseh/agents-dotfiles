@@ -149,7 +149,7 @@ Lauren Tan의 발표 「All Code Is Slop (Except Mine)」의 주장을 받아들
 ```
 
 - 이미 `permissions`가 있으면 `deny`와 `ask` 배열에 항목만 더합니다. 다른 설정은 그대로 둡니다.
-- `ask` 규칙은 Claude가 보통 쓰는 형태의 명령을 잡을 뿐 보안 경계가 아닙니다. `git -C . push --force`처럼 다르게 쓴 명령은 잡지 못합니다. Maven이나 Gradle 게시처럼 다른 게시 명령을 쓰는 PC에서는 같은 형식으로 더합니다. 이 규칙들이 실제로 묻는지는 아직 어느 PC에서도 확인하지 않았습니다.
+- `ask` 규칙은 Claude가 보통 쓰는 형태의 명령을 잡을 뿐 보안 경계가 아닙니다. `git -C . push --force`처럼 다르게 쓴 명령은 잡지 못합니다. Maven이나 Gradle 게시처럼 다른 게시 명령을 쓰는 PC에서는 같은 형식으로 더합니다. 2026-11-18에 Windows의 Claude 데스크톱 앱 세션에서 `Bash(npm publish *)` 규칙이 `npm publish --dry-run`에 승인 창을 띄우는 것을 확인했습니다. 창에는 한 번만 허용하는 선택지만 있었고, 규칙을 넣은 세션에서 다시 시작하지 않고도 적용됐습니다. 나머지 `ask` 규칙과 PowerShell 쪽 규칙은 실행해 보지 않았습니다.
 - deny 규칙은 allow 규칙과 auto 모드보다 먼저 적용됩니다. Read 도구와, 셸의 `cat`·`head`·`tail` 같은 파일 명령에 적용됩니다. 스크립트가 파일을 직접 여는 경우까지는 막지 못합니다.
 - 비밀값이 실제로 어느 파일에 있는지는 PC마다 다릅니다. macOS는 Claude 로그인 정보를 키체인에 두므로 `.credentials.json`이 없을 수 있습니다. 토큰이 든 다른 파일이 있으면 같은 형식으로 더합니다.
 - 2026-11-17에 macOS의 Claude Code 2.1.308에서 `~/.ssh/id_*` 규칙이 Read 도구와 `cat`을 모두 막는 것을 확인했습니다. Windows에서는 확인하지 않았습니다.
