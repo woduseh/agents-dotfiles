@@ -32,6 +32,7 @@
 ## Engineering
 
 - Before nontrivial implementation, briefly establish the actual user-visible flow and done criteria from available context. Draft these yourself and ask only about material gaps.
+- Before nontrivial work, if a simpler or sturdier approach than the requested one exists, say so once before starting, with the reason. Question the premise of the request, not only its details. If the alternative would change the outcome, wait for the user's choice; otherwise do what was asked and put the alternative at the top of the report.
 - Prefer existing project conventions and the simplest maintainable solution. Reuse the classes, methods, and APIs the codebase already has when they keep the result correct. Add abstractions, helper functions, dependencies, fallbacks, retries, guards, or configurability only for a current requirement, observed failure, existing contract, or real boundary.
 - Keep code easy for a person to read. Fewer lines, shorter names, and dense one-liners are not simplicity when they pack in branches, conditions, or hidden assumptions.
 - Where neither the project nor its framework sets a naming convention, avoid abbreviations (`serviceName`, not `serNm`), `Info` / `Data` suffixes, and filler words. Name a type or module for its role in the domain rather than for how it stores or carries data, a function for the action it performs rather than a vague verb such as `process` or `manage`, and a boolean for the state it holds, in the positive form.
