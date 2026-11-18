@@ -16,6 +16,7 @@ Look only at what this session touched, and skip an area the session never reach
 - Running things: local servers, containers, and background processes the session started, and test data or temporary configuration it left on a personal server.
 - Scratch files: material in the session's scratch area the user may want later, such as evidence or benchmark results, and large temporary data that can go.
 - Decisions: a decision, a rejected alternative, or a trap from the session that belongs in a commit body or in the project's owning document and is not there yet.
+- Repeated corrections: a mistake the user had to correct more than once in the session, and whether a check (a type, a lint rule, a test, a hook) could stop it next time. Offer the check; a note in the instructions or in memory is the fallback for what needs judgment.
 - Open threads: what is waiting on something else, what that is, and the next step once it is unblocked.
 
 ## Acting on what is found

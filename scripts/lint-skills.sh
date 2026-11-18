@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# macOS and Linux counterpart of lint-skills.ps1. Keep the two in step: both run the same
-# static checks on skills/*/SKILL.md (frontmatter, sizes, reference links, manifest coverage).
 set -u
 
 repo_root="${1:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -125,6 +123,22 @@ while IFS= read -r skill; do
 done <<EOF
 $removed
 EOF
+
+routing="$repo_root/evals/routing-cases.json"
+if [ -f "$routing" ]; then
+    routed="$({
+        grep -oE '"expect":[[:blank:]]*"[^"]*"' "$routing" | sed -E 's/^"expect"://'
+        grep -oE '"exclude":[[:blank:]]*\[[^]]*\]' "$routing" | sed -E 's/^"exclude"://'
+    } | grep -oE '"[^"]*"' | tr -d '"' | LC_ALL=C sort -u)"
+    while IFS= read -r skill; do
+        [ -n "$skill" ] || continue
+        listed "$skill" "$active" || fail "evals/routing-cases.json: unknown skill '$skill'"
+    done <<EOF
+$routed
+EOF
+else
+    fail "evals/routing-cases.json not found"
+fi
 
 if [ "$problems" -gt 0 ]; then
     exit 1

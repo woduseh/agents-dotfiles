@@ -21,11 +21,19 @@ function Write-Fixture {
 }
 
 function Invoke-Sync {
-    param([string]$Mode, [bool]$Apply = $false, [string]$HomePath = $fixtureHome, [int]$ExpectedExit = 0)
+    param([string]$Mode, [bool]$Apply = $false, [string]$HomePath = $fixtureHome, [int]$ExpectedExit = 0, [string]$ExpectedOutput)
     $arguments = @('-NoProfile', '-File', (Join-Path $fixtureRepo 'scripts/sync.ps1'), '-Mode', $Mode, '-HomePath', $HomePath)
     if ($Apply) { $arguments += '-Apply' }
-    $output = & $pwsh @arguments 2>&1
+    $output = (& $pwsh @arguments 2>&1 | ForEach-Object { "$_" }) -join "`n"
     Assert-True ($LASTEXITCODE -eq $ExpectedExit) "Unexpected exit $LASTEXITCODE for $Mode`: $output"
+    if ($ExpectedOutput) { Assert-True ($output.Contains($ExpectedOutput)) "Expected '$ExpectedOutput' from $Mode`: $output" }
+}
+
+function Write-Settings {
+    param([string]$HomePath)
+    $rules = $manifest.ClaudePermissionRules
+    $settings = @{ permissions = @{ allow = @('Bash(npm test *)'); deny = @($rules.Deny); ask = @($rules.Ask) } }
+    Write-Fixture (Join-Path $HomePath $manifest.ClaudeSettings) ($settings | ConvertTo-Json -Depth 4)
 }
 
 function Get-Snapshot {
@@ -57,6 +65,10 @@ foreach ($skill in $manifest.RemovedSkills) {
         Write-Fixture (Join-Path $fixtureRepo "skills/$skill/SKILL.md") "archived $skill"
     }
 }
+foreach ($path in $manifest.RemovedPaths) {
+    Write-Fixture (Join-Path $fixtureHome "$path/old.md") "retired $path"
+}
+Write-Settings $fixtureHome
 
 $before = Get-Snapshot $fixtureHome
 Invoke-Sync Install
@@ -74,6 +86,10 @@ foreach ($root in $manifest.SkillInstallRoots) {
     }
     Assert-True ((Get-Content -Raw (Join-Path $fixtureHome "$root/unmanaged/SKILL.md")) -eq 'keep this separate installation') 'Unmanaged skill changed'
 }
+foreach ($path in $manifest.RemovedPaths) {
+    Assert-True (-not (Test-Path (Join-Path $fixtureHome $path))) "Path remains: $path"
+    Assert-True ((Get-Content -Raw (Join-Path $backup[0].FullName "$path/old.md")) -eq "retired $path") 'Backup lost a retired path'
+}
 Invoke-Sync Check
 Invoke-Sync Install -Apply $true
 Invoke-Sync Check
@@ -81,6 +97,21 @@ $sourceBefore = Get-Snapshot (Join-Path $fixtureRepo 'skills')
 Invoke-Sync Export -Apply $true
 Assert-True ((Get-Snapshot (Join-Path $fixtureRepo 'skills')) -eq $sourceBefore) 'Export changed archived skill sources'
 Write-Host '[OK] Preview, pending removals, backup content, unmanaged skills, repeat install, export'
+
+$settingsPath = Join-Path $fixtureHome $manifest.ClaudeSettings
+$settingsText = Get-Content -LiteralPath $settingsPath -Raw
+$firstDeny = $manifest.ClaudePermissionRules.Deny[0]
+Write-Fixture $settingsPath $settingsText.Replace($firstDeny, 'Read(~/elsewhere)')
+Invoke-Sync Check -ExpectedExit 1 -ExpectedOutput "[PERMISSION-MISSING] deny: $firstDeny"
+Remove-Item -LiteralPath $settingsPath
+Invoke-Sync Check -ExpectedExit 1 -ExpectedOutput "[PERMISSION-MISSING] ask: $($manifest.ClaudePermissionRules.Ask[0])"
+Write-Fixture $settingsPath $settingsText
+Invoke-Sync Check -ExpectedOutput '[SKIP] Git hook'
+& git -C $fixtureRepo init --quiet
+Invoke-Sync Check -ExpectedExit 1 -ExpectedOutput '[HOOK-MISSING]'
+& git -C $fixtureRepo config core.hooksPath hooks
+Invoke-Sync Check -ExpectedOutput '[OK] Git hook'
+Write-Host '[OK] Missing permission rules, missing settings file, unconnected and connected Git hook'
 
 # A retired skill need not retain a source directory; an active skill still copies to both roots.
 $activeManifest = $manifestText.Replace('Skills = @()', "Skills = @('sample-skill')")
@@ -106,12 +137,16 @@ Invoke-Sync Install -Apply $true -ExpectedExit 1
 Assert-True ((Get-Snapshot $outside) -eq $outsideBefore) 'Invalid skill name changed outside files'
 Write-Fixture (Join-Path $fixtureRepo 'manifest.psd1') ($manifestText.Replace('Skills = @()', "Skills = @('creative-writing')"))
 Invoke-Sync Install -Apply $true -ExpectedExit 1
+Write-Fixture (Join-Path $fixtureRepo 'manifest.psd1') ($manifestText.Replace("'.claude/guides'", "'.claude'"))
+Invoke-Sync Install -Apply $true -ExpectedExit 1 -ExpectedOutput 'Path is both managed and removed'
+Assert-True (Test-Path -LiteralPath $settingsPath) 'Rejected removal path moved managed files'
 Write-Host '[OK] Escaping paths, invalid names, and conflicting manifest entries rejected'
 
 Write-Fixture (Join-Path $fixtureRepo 'manifest.psd1') $manifestText
 $linkedHome = Join-Path $testRoot 'linked-home'
 New-Item -ItemType Directory -Path (Join-Path $linkedHome '.agents/skills') -Force | Out-Null
 New-Item -ItemType Junction -Path (Join-Path $linkedHome '.agents/skills/creative-writing') -Target (Join-Path $outside 'creative-writing') | Out-Null
+Write-Settings $linkedHome
 Invoke-Sync Install -Apply $true -HomePath $linkedHome
 Assert-True ((Get-Snapshot $outside) -eq $outsideBefore) 'Junction removal changed its target'
 Assert-True (-not (Test-Path (Join-Path $linkedHome '.agents/skills/creative-writing'))) 'Junction remains installed'
@@ -125,6 +160,7 @@ $pairedHome = Join-Path $testRoot 'paired-home'
 Write-Fixture (Join-Path $pairedHome '.agents/skills/creative-writing/SKILL.md') 'paired source'
 New-Item -ItemType Directory -Path (Join-Path $pairedHome '.claude/skills') -Force | Out-Null
 New-Item -ItemType Junction -Path (Join-Path $pairedHome '.claude/skills/creative-writing') -Target (Join-Path $pairedHome '.agents/skills/creative-writing') | Out-Null
+Write-Settings $pairedHome
 Invoke-Sync Install -Apply $true -HomePath $pairedHome
 Invoke-Sync Check -HomePath $pairedHome
 Assert-True ($null -eq (Get-Item -LiteralPath (Join-Path $pairedHome '.claude/skills/creative-writing') -Force -ErrorAction SilentlyContinue)) 'Dangling junction remains'

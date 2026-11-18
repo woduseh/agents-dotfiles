@@ -29,6 +29,8 @@ Keep three kinds apart: demonstrated defects, maintenance risks, and hypotheses.
 
 Consider leaving the code as it is, then the simplest local repair, before a larger reorganization. Prefer the smallest cohesive fix, which is not always the fewest changed lines. Name an alternative only when its trade-off affects the choice.
 
+When a finding is a kind of mistake that can recur, not a single instance, choose the remedy by how well it holds without anyone remembering it: an interface or type that makes the mistake unrepresentable, then a check the build runs (a lint rule, or an architecture test such as ArchUnit) whose failure message says what to do instead, then a test, and a written convention last. A workaround that carries a comment explaining why it is needed, and that has been copied, is one finding at its origin, with the copies as its cost.
+
 When the user wants to explore interfaces, sketch two or three materially different designs, compare them on depth, on where a future change would land, and on where the boundary sits, then recommend one.
 
 When implementation is part of the request, preserve behavior unless the task changes it. For a behavior-preserving refactor, compare outputs and side effects before and after, not only compilation. Remove the code, tests, and documentation that the change makes obsolete, and report unrelated improvements separately.

@@ -6,8 +6,6 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# Static checks for skills/*/SKILL.md: frontmatter, sizes, reference links, and manifest coverage.
-# lint-skills.sh is the macOS and Linux counterpart. Keep the two in step.
 $manifest = Import-PowerShellDataFile -LiteralPath (Join-Path $RepoRoot 'manifest.psd1')
 $skillsRoot = Join-Path $RepoRoot 'skills'
 $problems = New-Object System.Collections.Generic.List[string]
@@ -77,6 +75,22 @@ foreach ($listed in $manifest.Skills) {
 foreach ($listed in $manifest.RemovedSkills) {
     if ($listed -notmatch '^[a-z0-9-]{1,64}$') { $problems.Add("Invalid removed skill name: $listed") }
     if ($manifest.Skills -contains $listed) { $problems.Add("Skill is both installed and removed: $listed") }
+}
+
+$routingFile = Join-Path $RepoRoot 'evals/routing-cases.json'
+if (Test-Path -LiteralPath $routingFile -PathType Leaf) {
+    $routingText = Get-Content -LiteralPath $routingFile -Raw
+    $routedSkills = @(
+        [regex]::Matches($routingText, '"expect":[ \t]*"([^"]*)"') | ForEach-Object { $_.Groups[1].Value }
+        [regex]::Matches($routingText, '"exclude":[ \t]*\[([^\]\r\n]*)\]') | ForEach-Object {
+            [regex]::Matches($_.Groups[1].Value, '"([^"]*)"') | ForEach-Object { $_.Groups[1].Value }
+        }
+    ) | Sort-Object -Unique
+    foreach ($routed in $routedSkills) {
+        if ($manifest.Skills -notcontains $routed) { $problems.Add("evals/routing-cases.json: unknown skill '$routed'") }
+    }
+} else {
+    $problems.Add('evals/routing-cases.json not found')
 }
 
 if ($problems.Count -gt 0) {

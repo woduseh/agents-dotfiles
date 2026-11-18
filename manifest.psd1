@@ -39,4 +39,31 @@
         'release-prep'
         'work-continuity'
     )
+
+    RemovedPaths = @(
+        '.claude/guides'
+    )
+
+    ClaudeSettings        = '.claude/settings.json'
+    ClaudePermissionRules = @{
+        Deny = @(
+            'Read(~/.ssh/id_*)'
+            'Read(~/.codex/auth.json)'
+            'Read(~/.claude/.credentials.json)'
+        )
+        Ask  = @(
+            'Bash(git push *--force*)'
+            'Bash(git push -f*)'
+            'Bash(git push * -f*)'
+            'Bash(gh pr merge *--admin*)'
+            'Bash(gh release create *)'
+            'Bash(npm publish *)'
+            'PowerShell(git push *--force*)'
+            'PowerShell(git push -f*)'
+            'PowerShell(git push * -f*)'
+            'PowerShell(gh pr merge *--admin*)'
+            'PowerShell(gh release create *)'
+            'PowerShell(npm publish *)'
+        )
+    }
 }

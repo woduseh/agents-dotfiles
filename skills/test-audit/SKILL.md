@@ -25,6 +25,7 @@ Use the cheapest reliable check that would catch the failure. A higher level is 
 
 - Use integration or end-to-end tests when correctness depends on parts working together: routing, wiring, a user workflow, save-and-reload.
 - Use unit, contract, or property tests for logic and edge cases that they reach more directly and deterministically.
+- Use a property-based test or a model check when the failure hides in combinations: interleavings, retries and reordering, or state shared across devices or services. Name the invariant first; one property protects more than an example for each case someone happened to think of. A model (TLA+ or similar) checks the design, so say which code paths are assumed to follow it.
 - Keep two levels when they catch different failures. Mirroring every scenario at every level adds cost without adding protection.
 - A passing unit suite says nothing about the installed or deployed application. If the change affects that experience, check a real flow there, or report it as unverified.
 

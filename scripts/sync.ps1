@@ -21,14 +21,19 @@ foreach ($skill in $removedSkills) {
     if ($manifest.Skills -contains $skill) { throw "Skill is both installed and removed: $skill" }
 }
 
+function Get-HomePath {
+    param([string]$Relative, [string]$Description)
+    $path = [IO.Path]::GetFullPath((Join-Path $homeRoot $Relative))
+    $homePrefix = $homeRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+    if (-not $path.StartsWith($homePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "$Description must be inside HomePath: $Relative"
+    }
+    $path
+}
+
 function Get-SkillPath {
     param([string]$InstallRoot, [string]$Skill)
-    $root = [IO.Path]::GetFullPath((Join-Path $homeRoot $InstallRoot))
-    $homePrefix = $homeRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
-    if (-not $root.StartsWith($homePrefix, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "Skill install root must be inside HomePath: $InstallRoot"
-    }
-    [IO.Path]::GetFullPath((Join-Path $root $Skill))
+    [IO.Path]::GetFullPath((Join-Path (Get-HomePath $InstallRoot 'Skill install root') $Skill))
 }
 
 function Assert-NoLinks {
@@ -45,34 +50,97 @@ function Assert-NoLinks {
     }
 }
 
-function Remove-ManagedSkill {
-    param([string]$InstallRoot, [string]$Skill)
-    $target = Get-SkillPath $InstallRoot $Skill
-    Assert-NoLinks (Split-Path -Parent $target)
-    $item = Get-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
+function Move-ToBackup {
+    param([string]$Target, [string]$Label)
+    Assert-NoLinks (Split-Path -Parent $Target)
+    $item = Get-Item -LiteralPath $Target -Force -ErrorAction SilentlyContinue
     if ($null -eq $item) { return }
-    if (-not $item.PSIsContainer) {
-        throw "Expected a skill directory: $target"
-    }
-    $relative = [IO.Path]::GetRelativePath($homeRoot, $target)
+    $relative = [IO.Path]::GetRelativePath($homeRoot, $Target)
     $backup = [IO.Path]::GetFullPath((Join-Path $backupRoot $relative))
     $backupPrefix = [IO.Path]::GetFullPath($backupRoot).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
     if (-not $backup.StartsWith($backupPrefix, [StringComparison]::OrdinalIgnoreCase)) {
         throw "Backup path escapes backup directory: $backup"
     }
     Assert-NoLinks $backup
-    Write-Host "[REMOVE] Skill: $Skill -> backup $backup"
-    if ($Apply) {
-        New-Item -ItemType Directory -Path (Split-Path -Parent $backup) -Force | Out-Null
+    Write-Host "[REMOVE] $Label -> backup $backup"
+    if (-not $Apply) { return }
+    New-Item -ItemType Directory -Path (Split-Path -Parent $backup) -Force | Out-Null
+    if ($item.PSIsContainer) {
         # Directory.Move relocates the directory entry, including a junction itself,
         # without traversing links or deleting their target contents.
-        [IO.Directory]::Move($target, $backup)
+        [IO.Directory]::Move($Target, $backup)
+    } else {
+        [IO.File]::Move($Target, $backup)
     }
 }
 
-# Validate removal paths before any install writes.
+function Remove-ManagedSkill {
+    param([string]$InstallRoot, [string]$Skill)
+    $target = Get-SkillPath $InstallRoot $Skill
+    $item = Get-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
+    if ($null -ne $item -and -not $item.PSIsContainer) {
+        throw "Expected a skill directory: $target"
+    }
+    Move-ToBackup $target "Skill: $Skill"
+}
+
 foreach ($installRoot in $manifest.SkillInstallRoots) {
     foreach ($skill in $removedSkills) { $null = Get-SkillPath $installRoot $skill }
+}
+$managedPaths = @(
+    @($manifest.Files) + @($manifest.Directories) | ForEach-Object { Get-HomePath $_.Home 'Managed path' }
+    $manifest.SkillInstallRoots | ForEach-Object { Get-HomePath $_ 'Skill install root' }
+)
+$removedPaths = @($manifest.RemovedPaths | ForEach-Object { Get-HomePath $_ 'Removed path' })
+foreach ($removed in $removedPaths) {
+    $removedPrefix = $removed + [IO.Path]::DirectorySeparatorChar
+    foreach ($managed in $managedPaths) {
+        if ($managed -eq $removed -or $managed.StartsWith($removedPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Path is both managed and removed: $removed"
+        }
+    }
+}
+
+function Test-GitHook {
+    $topLevel = & git -C $repoRoot rev-parse --show-toplevel 2>$null
+    if ($LASTEXITCODE -ne 0 -or [IO.Path]::GetFullPath($topLevel) -ne $repoRoot) {
+        Write-Host '[SKIP] Git hook (this folder is not the root of a Git checkout)'
+        return $true
+    }
+    $configured = & git -C $repoRoot config --get core.hooksPath
+    if ($configured -and [IO.Path]::GetFullPath((Join-Path $repoRoot $configured)) -eq (Join-Path $repoRoot 'hooks')) {
+        Write-Host '[OK] Git hook'
+        return $true
+    }
+    Write-Host '[HOOK-MISSING] Connect it with: git config core.hooksPath hooks'
+    $false
+}
+
+function Test-PermissionRules {
+    $settingsPath = Get-HomePath $manifest.ClaudeSettings 'Claude settings'
+    $configured = @{ Deny = @(); Ask = @() }
+    if (Test-Path -LiteralPath $settingsPath -PathType Leaf) {
+        $settings = Get-Content -LiteralPath $settingsPath -Raw | ConvertFrom-Json -AsHashtable
+        if ($settings.ContainsKey('permissions')) {
+            foreach ($kind in @('Deny', 'Ask')) {
+                $key = $kind.ToLowerInvariant()
+                if ($settings.permissions.ContainsKey($key)) { $configured[$kind] = @($settings.permissions[$key]) }
+            }
+        }
+    }
+    $missing = @(
+        foreach ($kind in @('Deny', 'Ask')) {
+            foreach ($rule in $manifest.ClaudePermissionRules[$kind]) {
+                if ($configured[$kind] -cnotcontains $rule) { "$($kind.ToLowerInvariant()): $rule" }
+            }
+        }
+    )
+    if ($missing.Count -gt 0) {
+        $missing | ForEach-Object { Write-Host "[PERMISSION-MISSING] $_" }
+        return $false
+    }
+    Write-Host "[OK] Claude permission rules"
+    $true
 }
 
 function Get-Hash {
@@ -229,6 +297,14 @@ if ($Mode -eq 'Check') {
             }
         }
     }
+    foreach ($removed in $removedPaths) {
+        if ($null -ne (Get-Item -LiteralPath $removed -Force -ErrorAction SilentlyContinue)) {
+            Write-Host "[REMOVE-PENDING] $([IO.Path]::GetRelativePath($homeRoot, $removed).Replace('\', '/'))"
+            $success = $false
+        }
+    }
+    if (-not (Test-PermissionRules)) { $success = $false }
+    if (-not (Test-GitHook)) { $success = $false }
 
     if (-not $success) {
         exit 1
@@ -265,10 +341,13 @@ if ($Mode -eq 'Export') {
             Remove-ManagedSkill $installRoot $skill
         }
     }
+    foreach ($removed in $removedPaths) {
+        Move-ToBackup $removed "Path: $([IO.Path]::GetRelativePath($homeRoot, $removed).Replace('\', '/'))"
+    }
 }
 
 if (-not $Apply) {
-    Write-Host 'Dry run only. Re-run with -Apply to copy files and remove retired skills.'
+    Write-Host 'Dry run only. Re-run with -Apply to copy files and remove retired skills and paths.'
 } elseif ($Mode -eq 'Install' -and (Test-Path -LiteralPath $backupRoot)) {
     Write-Host "Backup: $backupRoot"
 }
