@@ -15,6 +15,10 @@
 - `scripts/test-lint-skills.ps1`: 일부러 망가뜨린 Skill 묶음에 두 린트가 같은 결과를 내는지 검증
 - `hooks/pre-commit`: 커밋할 내용으로 정적 검사를 돌리고 실패하면 커밋을 막는 Git 훅
 - `scripts/test-sync.ps1`: 임시 홈에서 설치·제거·백업·경로 보호 동작 검증
+- `scripts/agent-doctor.ps1`: 에이전트가 쓰는 도구(git, gh, fnm, uv, jq, node 등)의 경로와 버전, 프로젝트가 고정한 Node 버전의 준비 상태를 보고. 아무것도 설치하지 않습니다
+- `scripts/repo-run.ps1`: 프로젝트의 `.node-version`이나 `.nvmrc`가 고정한 Node 버전으로 명령을 실행
+- `scripts/agent-tools-common.ps1`: 위 두 스크립트가 함께 쓰는 함수
+- `scripts/test-agent-tools.ps1`: 위 두 스크립트의 동작 검증
 - `evals/routing-cases.json`: Skill 선택(트리거) 확인용 수동 시드
 - `evals/instruction-cases.json`: 승인·작업 범위·중단 조건·보고 형식을 확인하는 수동 시드
 
@@ -218,6 +222,26 @@ pwsh -File ./scripts/test-sync.ps1
 
 ```powershell
 pwsh -File ./scripts/sync.ps1 -Mode Install -HomePath ./work/test-home -Apply
+```
+
+### 도구 점검과 프로젝트 Node 실행
+
+에이전트가 작업을 시작하기 전에 도구가 준비됐는지 확인합니다. 종료 코드 0은 준비됨(경고가 있을 수 있음), 1은 필수 도구(git, fnm, uv, jq)나 프로젝트 Node 점검 실패, 2는 프로젝트 설정 오류입니다. `-Json`을 붙이면 같은 결과를 JSON으로 냅니다.
+
+```powershell
+pwsh -File ./scripts/agent-doctor.ps1 -ProjectPath C:\src\my-project
+```
+
+프로젝트가 고정한 Node 버전으로 명령을 실행합니다. 정확한 버전(예: `26.10.0`)이 적힌 `.node-version`이나 `.nvmrc`가 있어야 하고, 그 버전이 fnm에 이미 설치돼 있어야 합니다. 없으면 다른 버전으로 대신 실행하지 않고 실패합니다. 프로젝트 경로 뒤의 인자는 셸 코드로 해석하지 않고 그대로 넘깁니다.
+
+```powershell
+pwsh -File ./scripts/repo-run.ps1 C:\src\my-project npm run check
+```
+
+두 스크립트를 고친 뒤에는 검증을 실행합니다. 기본값으로 Node 24.21.0과 26.10.0이 fnm에 설치돼 있어야 하고, 다른 버전은 `-NodeVersions`로 지정합니다. PowerShell에서 실행합니다. 2026-11-18에 Git Bash에서 띄웠을 때는 작업 폴더 비교 단계에서 실패했고, 원인은 확인하지 않았습니다.
+
+```powershell
+pwsh -File ./scripts/test-agent-tools.ps1
 ```
 
 ## 평가 시드
