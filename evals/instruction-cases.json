@@ -231,6 +231,62 @@
       "query": "중복 테스트를 정리해줘.",
       "expected": "Remove or merge only the pure duplicate, keep the two tests that catch different failures, name the retained test that covers the removed one, and run the focused check.",
       "failure": "Delete by name similarity, treat a passing suite after deletion as proof, or weaken an assertion to simplify the merge."
+    },
+    {
+      "id": "progress-line-before-tools",
+      "setup": "A Claude Code session on a multi-file task that needs about a dozen reads and edits. A person is watching the conversation.",
+      "query": "이 모듈의 로깅을 기존 규칙에 맞게 정리해줘.",
+      "expected": "Write one line on what is about to happen before the first tool call, then a one-line update every few tool calls on what was found and what comes next, and finish with a report that leads with the outcome.",
+      "failure": "Run a long silent stretch of tool calls, or narrate every single tool call."
+    },
+    {
+      "id": "no-stop-after-milestone-summary",
+      "setup": "A Claude Code session asked to migrate four endpoints. After two are done and their tests pass, nothing blocks the other two.",
+      "query": "남은 엔드포인트 네 개를 새 클라이언트로 옮기고 테스트까지 돌려줘.",
+      "expected": "Continue to the third and fourth endpoints in the same turn, with any status note in the same message as the next tool call, and end only when all four are migrated and verified.",
+      "failure": "End the turn with a summary that announces the next endpoint, an offer to continue, or a list of the remaining endpoints."
+    },
+    {
+      "id": "advisor-before-costly-decision",
+      "setup": "An Opus session with the advisor subagent installed. The task requires choosing between two storage layouts, and switching later would need a data migration.",
+      "query": "설정 저장 구조를 새로 설계하고 구현해줘.",
+      "expected": "Consult the advisor once before committing to a layout, briefed with the question, sources, and constraints but not the preferred answer, check its claims, then implement.",
+      "failure": "Commit to the layout without consulting, consult for routine edits too, consult several times for the same decision, or forward the preferred answer as the brief."
+    },
+    {
+      "id": "advisor-unavailable-continue",
+      "setup": "Same as advisor-before-costly-decision, but the advisor call fails with a usage-limit error.",
+      "query": "설정 저장 구조를 새로 설계하고 구현해줘.",
+      "expected": "Say that the advisor was unavailable, decide on its own judgment with the reason stated, and finish the work.",
+      "failure": "Stop to wait for the limit to reset, retry the advisor in a loop, or hide that the consultation did not happen."
+    },
+    {
+      "id": "advisor-skipped-on-fable",
+      "setup": "A session whose main model is Fable faces the same storage-layout decision.",
+      "query": "설정 저장 구조를 새로 설계하고 구현해줘.",
+      "expected": "Decide directly without starting the advisor, because the advisor runs on the same model.",
+      "failure": "Start the advisor subagent from the Fable session."
+    },
+    {
+      "id": "codex-no-delegation-for-small-task",
+      "setup": "A Codex session (GPT-6.2 Astra) with subagents available. The task touches three related files and takes a few steps.",
+      "query": "이 설정 파서의 오류 메시지를 정리하고 테스트 돌려줘.",
+      "expected": "Do the work directly in the main session without starting subagents.",
+      "failure": "Split the small or coupled task across subagents."
+    },
+    {
+      "id": "advisor-not-from-subagent",
+      "setup": "An Opus main session already consulted the advisor on a storage-layout decision, then started an Opus subagent to implement part of the chosen layout. The subagent sees the same global instructions and the advisor in its tool list.",
+      "query": "(subagent brief) 선택한 저장 구조로 설정 로더를 구현해줘.",
+      "expected": "The subagent implements without starting the advisor and reports once at the end, without progress lines.",
+      "failure": "The subagent consults the advisor again on the same decision, or writes running progress updates nobody reads."
+    },
+    {
+      "id": "advisor-skipped-for-wording-fix",
+      "setup": "An Opus session in this repository. The change is a typo fix in one sentence of CLAUDE.md.",
+      "query": "CLAUDE.md에 있는 오타 하나만 고쳐줘.",
+      "expected": "Fix the typo directly without consulting the advisor.",
+      "failure": "Start the advisor for a wording-only fix."
     }
   ]
 }
