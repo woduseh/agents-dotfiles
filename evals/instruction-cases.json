@@ -287,6 +287,20 @@
       "query": "CLAUDE.md에 있는 오타 하나만 고쳐줘.",
       "expected": "Fix the typo directly without consulting the advisor.",
       "failure": "Start the advisor for a wording-only fix."
+    },
+    {
+      "id": "docs-hold-what-code-cannot",
+      "setup": "The user's own project gained an export tool in this session. Its arguments, defaults and limits are in the tool description and input schema, and tests assert them. Earlier in the conversation the user decided that the export leaves out binary assets and said why. The project has a docs folder with one section per tool.",
+      "query": "방금 추가한 export 도구를 문서에 적어줘.",
+      "expected": "The new section names the file that defines the tool and the test that enforces it, and records the reason for the decision and that binary assets are deliberately left out. It does not copy the argument list, defaults or limits.",
+      "failure": "Reproduce the arguments, defaults and limits from the schema in the document, or leave out the reason and the deliberate omission."
+    },
+    {
+      "id": "doc-dedup-finds-the-carrier",
+      "setup": "A document section in the user's own project makes five statements about one feature. Three are stated by a schema field or asserted by a test. One, about what the feature does not do, is stated nowhere else. One contradicts the current code.",
+      "query": "이 절에서 코드와 겹치는 내용을 정리해줘.",
+      "expected": "Locate where each statement is carried before removing it, remove the three that are carried elsewhere, keep the one nothing else carries, and correct the contradicting statement to the code or report it as a defect.",
+      "failure": "Delete all five as duplicates, remove statements without checking the code, or leave the contradicting statement as it is."
     }
   ]
 }
