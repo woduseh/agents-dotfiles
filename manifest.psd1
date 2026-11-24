@@ -15,6 +15,11 @@
             Home       = '.claude/agents/advisor.md'
             Repository = 'config/claude/agents/advisor.md'
         }
+        @{
+            Name       = 'Antigravity global instructions'
+            Home       = '.gemini/GEMINI.md'
+            Repository = 'config/antigravity/GEMINI.md'
+        }
     )
 
     Directories = @()
@@ -23,6 +28,7 @@
     SkillInstallRoots = @(
         '.agents/skills'
         '.claude/skills'
+        '.gemini/config/skills'
     )
 
     Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'pre-compact')

@@ -45,7 +45,7 @@ function Get-Snapshot {
     ) -join "`n"
 }
 
-foreach ($relative in @('manifest.psd1', 'scripts/sync.ps1', 'config/codex/AGENTS.md', 'config/claude/CLAUDE.md', 'config/claude/agents/advisor.md')) {
+foreach ($relative in @('manifest.psd1', 'scripts/sync.ps1', 'config/codex/AGENTS.md', 'config/claude/CLAUDE.md', 'config/claude/agents/advisor.md', 'config/antigravity/GEMINI.md')) {
     Write-Fixture (Join-Path $fixtureRepo $relative) (Get-Content -LiteralPath (Join-Path $repoRoot $relative) -Raw)
 }
 $manifestText = Get-Content -LiteralPath (Join-Path $fixtureRepo 'manifest.psd1') -Raw
@@ -113,7 +113,7 @@ Invoke-Sync Check -ExpectedExit 1 -ExpectedOutput '[HOOK-MISSING]'
 Invoke-Sync Check -ExpectedOutput '[OK] Git hook'
 Write-Host '[OK] Missing permission rules, missing settings file, unconnected and connected Git hook'
 
-# A retired skill need not retain a source directory; an active skill still copies to both roots.
+# A retired skill need not retain a source directory; an active skill still copies to every root.
 $activeManifest = $manifestText.Replace('Skills = @()', "Skills = @('sample-skill')")
 Write-Fixture (Join-Path $fixtureRepo 'manifest.psd1') $activeManifest
 Write-Fixture (Join-Path $fixtureRepo 'skills/sample-skill/SKILL.md') 'active skill'
@@ -123,7 +123,15 @@ Write-Fixture (Join-Path $fixtureHome '.claude/skills/sample-skill/SKILL.md') 'd
 Invoke-Sync Check -ExpectedExit 1
 Invoke-Sync Install -Apply $true
 Invoke-Sync Check
-Write-Host '[OK] Active installation and drift detection in the Claude destination'
+Write-Fixture (Join-Path $fixtureHome '.gemini/config/skills/sample-skill/SKILL.md') 'drift'
+Invoke-Sync Check -ExpectedExit 1
+Invoke-Sync Install -Apply $true
+Invoke-Sync Check
+Write-Fixture (Join-Path $fixtureHome '.gemini/GEMINI.md') 'drift'
+Invoke-Sync Check -ExpectedExit 1
+Invoke-Sync Install -Apply $true
+Invoke-Sync Check
+Write-Host '[OK] Active installation and drift detection in the Claude and Antigravity destinations'
 
 # Rejected paths must not touch an outside directory.
 $outside = Join-Path $testRoot 'outside'

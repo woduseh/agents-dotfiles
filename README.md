@@ -7,6 +7,7 @@
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 글쓰기, 승인 경계, 코딩 기본 규칙)
 - `config/claude/agents/advisor.md`: Claude Code 서브에이전트. Fable이 아닌 메인 모델 세션에서 사용자가 요청할 때와 정해진 세 시점(되돌리기 비싼 결정 전, 진단 두 번 실패 후, 지침·Skill 변경 마무리 전)에 쓰며, Fable·effort high로 고정하고 파일을 수정하지 못합니다
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
+- `config/antigravity/GEMINI.md`: Antigravity 전역 지침 (`CLAUDE.md`를 바탕으로 하네스·호칭을 맞추고 `advisor` 호출 규칙을 뺀 구성)
 - `skills/`: 설치 대상 Skill 원본
 - `manifest.psd1`: 동기화할 파일, 설치할 Skill(`Skills`), 제거할 Skill(`RemovedSkills`), 제거할 홈 경로(`RemovedPaths`), PC마다 있어야 하는 Claude 권한 규칙(`ClaudePermissionRules`)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인. 확인에는 권한 규칙과 Git 훅 연결 여부도 포함됩니다
@@ -24,7 +25,7 @@
 
 ## Skill
 
-Skill은 저장소에서 한 번만 관리하고 `Install`이 `.agents/skills`와 `.claude/skills` 양쪽에 적용합니다.
+Skill은 저장소에서 한 번만 관리하고 `Install`이 `.agents/skills`, `.claude/skills`, `.gemini/config/skills`에 적용합니다.
 
 | Skill | 사용할 때 |
 | --- | --- |
@@ -194,7 +195,7 @@ Uimori에서 도우미 도구 문서 두 개(`HELPER-TOOLS.md`, `TOOL-CONTRACTS.
 
 PowerShell 7(`pwsh`)에서 실행합니다. `Export`와 `Install`은 기본적으로 미리보기만 하며, 실제 복사·제거에는 `-Apply`가 필요합니다.
 
-현재 PC와 저장소의 차이를 확인합니다. `Check`는 양쪽 설치 경로를 검사하며, 제거 대상 Skill이나 경로가 남아 있으면 `[REMOVE-PENDING]`, 권한 규칙이 빠져 있으면 `[PERMISSION-MISSING]`, 이 클론에 pre-commit 훅이 연결돼 있지 않으면 `[HOOK-MISSING]`을 출력하고 종료 코드 1을 반환합니다.
+현재 PC와 저장소의 차이를 확인합니다. `Check`는 모든 설치 경로를 검사하며, 제거 대상 Skill이나 경로가 남아 있으면 `[REMOVE-PENDING]`, 권한 규칙이 빠져 있으면 `[PERMISSION-MISSING]`, 이 클론에 pre-commit 훅이 연결돼 있지 않으면 `[HOOK-MISSING]`을 출력하고 종료 코드 1을 반환합니다.
 
 ```powershell
 pwsh -File ./scripts/sync.ps1 -Mode Check
