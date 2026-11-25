@@ -17,6 +17,9 @@
     {"query": "이 SDK 버전의 재시도 조건을 공식 문서와 구현에서 조사해줘.", "expect": null, "exclude": ["engineering-review", "explain-with-artifacts"], "note": "Research needs no skill; whether to use a subagent follows the global instructions."},
     {"query": "이제 compact 하려는데 그 전에 남은 일 있어?", "expect": "pre-compact", "exclude": ["engineering-review", "test-audit"]},
     {"query": "I'm about to wrap up this session. Is anything left uncommitted or still running?", "expect": "pre-compact", "exclude": ["explain-with-artifacts"]},
-    {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact"], "note": "A commit or push request on its own follows the global instructions, not the pre-compact check."}
+    {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact"], "note": "A commit or push request on its own follows the global instructions, not the pre-compact check."},
+    {"query": "이번 배포 릴리스 노트 초안 써줘. 사용자한테 바뀌는 점 위주로 정리해줘.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "engineering-review"]},
+    {"query": "Draft the pull request body for this branch with the verification evidence.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "test-audit"]},
+    {"query": "이 기능의 사용자 가이드 문서를 새로 써줘.", "expect": null, "exclude": ["writing-for-readers"], "note": "Guides and reference documentation keep their own structure instead of two-layer reporting."}
   ]
 }

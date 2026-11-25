@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing for Readers"
+  short_description: "Draft PR bodies, release notes, issues, and proposals in two layers"
+  default_prompt: "Use $writing-for-readers to draft this pull request body or release note with a short visible decision layer and a folded evidence layer."

@@ -7,7 +7,7 @@
 - `config/claude/CLAUDE.md`: Claude Code 전역 지침 (말투, 글쓰기, 승인 경계, 코딩 기본 규칙)
 - `config/claude/agents/advisor.md`: Claude Code 서브에이전트. Fable이 아닌 메인 모델 세션에서 사용자가 요청할 때와 정해진 세 시점(되돌리기 비싼 결정 전, 진단 두 번 실패 후, 지침·Skill 변경 마무리 전)에 쓰며, Fable·effort high로 고정하고 파일을 수정하지 못합니다
 - `config/codex/AGENTS.md`: Codex 전역 지침 (작업 완수·권한·검증에 관한 짧은 기본 계약)
-- `config/antigravity/GEMINI.md`: Antigravity 전역 지침 (`CLAUDE.md`를 바탕으로 하네스·호칭을 맞추고 `advisor` 호출 규칙을 뺀 구성)
+- `config/antigravity/GEMINI.md`: Antigravity(Gemini 4 Neon) 전역 지침 (상시 안전·호칭·판단 큐 위주로 경량화하고 작업별 규칙은 Skill로 위임)
 - `skills/`: 설치 대상 Skill 원본
 - `manifest.psd1`: 동기화할 파일, 설치할 Skill(`Skills`), 제거할 Skill(`RemovedSkills`), 제거할 홈 경로(`RemovedPaths`), PC마다 있어야 하는 Claude 권한 규칙(`ClaudePermissionRules`)
 - `scripts/sync.ps1`: 현재 PC 내보내기, 새 PC 설치, 드리프트 확인. 확인에는 권한 규칙과 Git 훅 연결 여부도 포함됩니다
@@ -32,7 +32,8 @@ Skill은 저장소에서 한 번만 관리하고 `Install`이 `.agents/skills`, 
 | `engineering-review` | 구조·모듈 경계·인터페이스 설계, 리팩터링 계획, 유지보수성 점검 |
 | `test-audit` | 테스트 작성·수정·검토, 회귀 검증 선택, 중복·구현 결합 테스트 정리 |
 | `explain-with-artifacts` | 근거가 있는 도식, 변경 전후 비교, 단계별 설명, 작은 인터랙티브 HTML |
-| `pre-compact` | 세션을 압축하거나 끝내기 전에 남은 일 점검, 압축에 넘길 초점 문장 |
+| `pre-compact` | 세션을 압축하거나 끝내기 전에 남은 일 점검, 압축 초점 문장 또는 단계 핸드오프 정리 |
+| `writing-for-readers` | 릴리스 노트·PR·이슈 본문·제안서를 보이는 결정 층과 접는 근거 층의 2계층으로 작성 |
 
 Skill에는 모델이 스스로 알 수 없는 판단 기준과 개인 선호만 둡니다. 일반적인 절차, 승인 규칙, 교과서적 지식은 넣지 않습니다. 승인과 범위는 전역 지침이 담당하므로 Skill마다 반복하지 않습니다. 공용 Skill에는 특정 프로젝트의 전제나 문서 경로를 넣지 않습니다.
 
@@ -135,6 +136,14 @@ Uimori에서 도우미 도구 문서 두 개(`HELPER-TOOLS.md`, `TOOL-CONTRACTS.
 - 주석 규칙과 같은 구분입니다. 주석 규칙의 "제약은 강제되는 곳에 둔다"를 문서로 넓혔고, 남의 저장소는 그 저장소의 문서 관례를 따릅니다.
 
 프로젝트의 문서 구조에 맞춘 적용 규칙은 프로젝트 지침에 둡니다. Uimori는 같은 날 `AGENTS.md`에 넣었습니다. 이번에는 프롬프팅 가이드와 다시 대조하지 않고 문단 하나만 더했으므로, 위의 마지막 점검 날짜는 바꾸지 않았습니다.
+
+### 2026-11-26 점검 (Gemini 4 Neon 경량화 및 공용 Skill 분리)
+
+Philipp Schmid의 「5 Habits I changed when working with Gemini 4 Neon」을 바탕으로 Antigravity 전역 지침(`GEMINI.md`)을 Gemini 4 Neon 성향에 맞게 재정비하고, 작업별 규칙을 공용 Skill로 분리해 `CLAUDE.md`와 `AGENTS.md`의 중복도 함께 덜어냈습니다.
+
+- `writing-for-readers` Skill 신설: 세 전역 지침(`GEMINI.md`, `CLAUDE.md`, `AGENTS.md`)에 중복돼 있던 2계층 PR·릴리스 노트·이슈·제안서 작성 규칙을 공용 Skill로 옮기고 `evals/routing-cases.json`에 트리거 시드를 추가했습니다.
+- `GEMINI.md` 경량화(약 14.8KB → 5.1KB): `CLAUDE.md` 복제본에서 도구 설명·기본 시스템 프롬프트와 겹치는 규칙(`edit_file` 분할 편집, 서브에이전트 일반 기준)과 장문의 금지·예외 목록을 덜어내고, 한국어·호칭·승인 경계·출처 검증·시각 스크린샷 확인·단계 핸드오프 등 모든 세션에 적용되는 핵심 판단 큐만 남겼습니다.
+- `CLAUDE.md`·`AGENTS.md`·기존 Skill 정합성: 두 지침의 모델별 튜닝(Claude Opus 5.5/Fable 5.2, GPT-6.2 Astra)과 2026-11-18/21 원칙은 유지하되, `writing-for-readers`와 `test-audit`에 있는 상세 문단 중복을 줄이고, 단계 전환 시 압축 대신 짧은 핸드오프를 우선하는 규칙(`pre-compact`에도 반영)과 렌더링 스크린샷 직접 확인(`CLAUDE.md`)을 맞췄습니다.
 
 ## 의도적으로 제외한 항목
 

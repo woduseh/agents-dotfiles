@@ -31,7 +31,7 @@
         '.gemini/config/skills'
     )
 
-    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'pre-compact')
+    Skills = @('engineering-review', 'test-audit', 'explain-with-artifacts', 'pre-compact', 'writing-for-readers')
 
     # Keep removal entries so machines that missed earlier syncs also uninstall them.
     RemovedSkills = @(

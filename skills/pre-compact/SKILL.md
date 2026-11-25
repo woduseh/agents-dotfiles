@@ -25,4 +25,9 @@ Reads proceed. A commit, a push, a post, or a deletion follows the usual go-ahea
 
 ## What to hand back
 
-Report briefly what was closed just now, what stays open, and where the state of each open item is recorded. Then give one focus line the user can pass to the compaction command, naming the branches, pull-request or issue numbers, the next step, and what is being waited on. When nothing is open, say so in one line and give the focus line.
+Report briefly what was closed just now, what stays open, and where the state of each open item is recorded. Then give either:
+
+- **For compaction**: one focus line the user can pass to the compaction command, naming the branches, pull-request or issue numbers, the next step, and what is being waited on.
+- **For a phase handoff or session fork**: a short standalone handoff block (or file, if requested) listing the goal, verified decisions, exact file paths, and the immediate next step so a fresh session can start without losing line-level detail to compaction.
+
+When nothing is open, say so in one line and give the focus line.
