@@ -1,4 +1,0 @@
-interface:
-  display_name: "Project Docs"
-  short_description: "Keep project docs to what the code cannot state"
-  default_prompt: "Use $project-docs to document this feature with its reasons and deliberate omissions, pointing to the code instead of copying it."

@@ -1,33 +1,31 @@
 ---
 name: pre-compact
-description: "Check what a session would lose before the user compacts, ends, or hands it off: uncommitted or unpushed work, promised updates to a pull request, issue, or release, local servers and processes still running, scratch files worth keeping, and decisions not yet written down; then give a focus line for the compaction. Use when the user says they are about to compact or wrap up a session and asks whether anything is left to do. Not for a commit or push request on its own."
+description: "Check what a session would lose before the user compacts, ends, or hands it off: uncommitted or unpushed work, promised updates to a pull request, issue, or release, local servers and processes still running, scratch files worth keeping, repeated corrections worth turning into a check, and decisions not yet written down; then give a compaction focus line or standalone handoff block. Use when the user says they are about to compact, end, or hand off a session and asks whether anything is left to do. Not for a commit or push request on its own."
 ---
 
 # Pre-Compact
 
-Compaction keeps a summary and drops the rest, so whatever lives only in the conversation is lost or blurred afterward. The aim is to leave nothing in that state and to hand the user a focus line that tells the compaction what to keep.
+Compaction keeps a summary and drops line-level detail, so anything living only in the conversation gets lost or blurred. Audit what this session touched, close what is safe, and hand back a crisp continuity record.
 
-## What to look at
+## Audit only what this session touched
 
-Look only at what this session touched, and skip an area the session never reached.
+Skip areas the session never reached.
 
-- Working trees: uncommitted or unpushed changes in each repository and worktree the session edited, and whether each is meant to stay that way.
-- Published things: a pull request, an issue, release notes, or a document the session said it would update, and drafts that were shown but not posted.
-- Running things: local servers, containers, and background processes the session started, and test data or temporary configuration it left on a personal server.
-- Scratch files: material in the session's scratch area the user may want later, such as evidence or benchmark results, and large temporary data that can go.
-- Decisions: a decision, a rejected alternative, or a trap from the session that belongs in a commit body or in the project's owning document and is not there yet.
-- Repeated corrections: a mistake the user had to correct more than once in the session, and whether a check (a type, a lint rule, a test, a hook) could stop it next time. Offer the check; a note in the instructions or in memory is the fallback for what needs judgment.
-- Open threads: what is waiting on something else, what that is, and the next step once it is unblocked.
+- **Working trees:** uncommitted or unpushed changes in each touched repository or worktree, and whether each is meant to stay uncommitted.
+- **Promised updates and drafts:** pull requests, issues, release notes, or documents the session said it would update, plus drafts shown in chat but not posted.
+- **Running processes and temp state:** local servers, containers, background tasks, or temporary config/test data left running or on disk.
+- **Scratch files:** evidence or benchmark outputs worth keeping versus large temporary data that can be deleted.
+- **Unrecorded decisions:** decisions, rejected alternatives, or traps from the session that belong in a commit body or owning document and are not written down yet.
+- **Repeated corrections:** any mistake 재연님 had to correct more than once, and whether a type, lint rule, test, or hook could prevent it next time (offer the check; prose rules or memory are only the fallback for judgment calls).
+- **Open threads:** what is blocked or waiting on something else, and the exact next step once unblocked.
 
-## Acting on what is found
+Inspect directly. List any write, deletion, commit, push, or external follow-up with its exact target for approval rather than executing it silently.
 
-Reads proceed. A commit, a push, a post, or a deletion follows the usual go-ahead rule: list each one with its exact target and act on the user's answer.
+## Hand back
 
-## What to hand back
+Report briefly what was verified or closed, what remains open, and where each open item's state lives. Then provide one of:
 
-Report briefly what was closed just now, what stays open, and where the state of each open item is recorded. Then give either:
+- **For compaction:** one tight focus line to pass to the compaction command, naming active branches, PR/issue numbers, the immediate next step, and what is being waited on.
+- **For a phase handoff or session fork:** a short standalone handoff block (or file, if requested) with the goal, verified decisions, exact file paths, and immediate next step so a fresh session starts without compaction loss.
 
-- **For compaction**: one focus line the user can pass to the compaction command, naming the branches, pull-request or issue numbers, the next step, and what is being waited on.
-- **For a phase handoff or session fork**: a short standalone handoff block (or file, if requested) listing the goal, verified decisions, exact file paths, and the immediate next step so a fresh session can start without losing line-level detail to compaction.
-
-When nothing is open, say so in one line and give the focus line.
+If nothing is open, say so in one line and give the focus line.

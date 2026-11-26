@@ -29,16 +29,10 @@ Skill은 저장소에서 한 번만 관리하고 `Install`이 `.agents/skills`, 
 
 | Skill | 사용할 때 |
 | --- | --- |
-| `engineering-review` | 구조·모듈 경계·인터페이스 설계, 리팩터링 계획, 유지보수성 점검 |
-| `test-audit` | 테스트 작성·수정·검토, 회귀 검증 선택, 중복·구현 결합 테스트 정리 |
-| `explain-with-artifacts` | 근거가 있는 도식, 변경 전후 비교, 단계별 설명, 작은 인터랙티브 HTML |
 | `pre-compact` | 세션을 압축하거나 끝내기 전에 남은 일 점검, 압축 초점 문장 또는 단계 핸드오프 정리 |
 | `writing-for-readers` | 릴리스 노트·PR·이슈 본문·제안서를 보이는 결정 층과 접는 근거 층의 2계층으로 작성 |
-| `project-docs` | 프로젝트 문서 작성·중복 정리·코드와 대조, 코드가 말할 수 없는 내용만 남기기 |
 
 Skill에는 모델이 스스로 알 수 없는 판단 기준과 개인 선호만 둡니다. 일반적인 절차, 승인 규칙, 교과서적 지식은 넣지 않습니다. 승인과 범위는 전역 지침이 담당하므로 Skill마다 반복하지 않습니다. 공용 Skill에는 특정 프로젝트의 전제나 문서 경로를 넣지 않습니다.
-
-`engineering-review`의 모듈 형태 기준(깊은 모듈, 삭제 테스트, 경계의 근거)은 John Ousterhout의 *A Philosophy of Software Design*과 [Matt Pocock의 codebase-design 스킬](https://github.com/mattpocock/skills)의 개념을 다시 쓴 것입니다. `test-audit`는 OpenClaw의 `test-audit`를 바탕으로 다시 구성한 개인용 변형이며 원본의 MIT 고지를 `skills/test-audit/LICENSE.txt`에 보존합니다.
 
 ### 제거한 Skill
 
@@ -46,6 +40,10 @@ Skill에는 모델이 스스로 알 수 없는 판단 기준과 개인 선호만
 
 | Skill | 제거 이유 |
 | --- | --- |
+| `engineering-review` | 9월 말 설치 이후 실전 호출 0회. 대부분 프런티어 모델이 이미 내재화한 설계 교과서였고, 고유 기준(검사 실패 메시지에 대안 포함, 리뷰 점수표·억지 채우기 금지 및 결함·리스크·가설 구분)은 전역 지침으로 옮겼습니다. |
+| `explain-with-artifacts` | 10월 초 설치 이후 실전 호출 0회. Claude·Antigravity 모두 시각화·아티팩트용 내장 도구를 별도로 제공합니다. |
+| `project-docs` | 전역 지침의 문서 원칙 한 문장과 사실상 동일해 별도 Skill로 둘 실익이 없었습니다. "문서가 의도를 적었는데 코드가 못 미치면 결함으로 보고" 기준만 전역 지침에 흡수했습니다. |
+| `test-audit` | 절반 이상이 교과서·전역 중복이었고, 정작 중요한 테스트 무결성(구현 복붙 oracle 금지, 테스트 삭제·완화 시 대체 보호 경로 명시, 조합 문제 불변식 검증)은 Skill이 불리지 않는 세션에서도 상시 작동해야 하므로 전역 지침으로 승격했습니다. 과거 MIT 원본 고지는 Git 이력의 `skills/test-audit/LICENSE.txt`에 남아 있습니다. |
 | `delegate-research` | 위임을 권하는 상시 지침은 현재 Claude 모델에서 서브에이전트를 필요 이상으로 늘립니다. 위임 기준은 전역 지침 한 줄로 충분합니다. |
 | `commit-context` | 커밋 본문에 확인된 이유를 남기는 규칙은 전역 지침 한 줄이 담당합니다. 이력 조회 절차는 모델이 이미 수행합니다. |
 | `codebase-design` | 판단 기준을 `engineering-review`에 통합했습니다. 원본은 서브에이전트 3개 이상 병렬 실행을 지시했고 경계 기준이 다른 Skill과 충돌했습니다. |
@@ -157,6 +155,16 @@ Philipp Schmid의 「5 Habits I changed when working with Gemini 4 Neon」을 �
 - `GEMINI.md`의 프로젝트 게이트 한계 복원: 경량화하면서 괄호 한 줄로 줄었던 예외에 한계를 다시 적었습니다. 실패하거나 빠진 검사를 넘어 병합하지 않고, 게이트 자체나 인증·시크릿·권한을 바꾸는 변경은 게이트 대상이 아닙니다. 승인 경계는 세 지침이 같은 뜻이어야 하고, 표현과 길이는 모델별 가이드를 따릅니다.
 
 `scripts/lint-skills.sh`는 통과했습니다. `sync.ps1`과 PowerShell 린트는 `pwsh`가 없는 머신에서 작업해 실행하지 않았습니다. 시드는 실행하지 않았으므로 모델 동작은 확인하지 않은 상태입니다.
+
+### 2026-11-27 개편 (위임·검증 관점 전면 재정비 및 Skill 4개 제거)
+
+"인간 보스가 자기보다 유능한 AI 에이전트에게 위임해 성과를 얻는 구조" 관점으로 니아(Gemini 4 Neon)와 리아(Claude Fable 5.2)의 교차 검토를 종합해 전역 지침 3개(`GEMINI.md`, `CLAUDE.md`, `AGENTS.md`), `advisor.md`, Skill을 전면 다듬었습니다.
+
+- **Skill 4개 제거:** `engineering-review`, `explain-with-artifacts`, `project-docs`, `test-audit`를 삭제하고 `manifest.psd1`의 `RemovedSkills`로 옮겼습니다. 활성 Skill은 모델이 추측할 수 없는 개인 출력 포맷(`writing-for-readers`)과 세션 연속성 체크리스트(`pre-compact`) 두 개만 남겼습니다.
+- **경계와 기본값 분리:** 세 전역 지침 모두 `Authority and boundaries`(승인 목록·프로젝트 게이트·작업 범위·검증 정직성 — 절대 경계)와 `Engineering defaults`(설계·코딩 선호 — 결과가 분명히 더 나으면 이유를 보고하고 벗어날 수 있는 기본값)를 명시적으로 나눴습니다.
+- **보스 검증 비용을 낮추는 장치 추가:** 비사소한 추천·설계 시 포기하는 것(핵심 약점)과 판단을 뒤집을 반증 증거를 함께 쓰게 하고, 자동 검사가 덮지 못하는 판단·UI·경계 지점이 있을 때 재연님이 직접 확인할 1~3곳을 지목하도록 했습니다. 사용자 노출 정책·UX 트레이드오프도 조용히 가정하지 않고 1안과 포기하는 가치로 거부권을 올리게 했습니다.
+- **삭제 Skill의 핵심 상시화 및 How 축소:** 교과서적 코딩·네이밍 지시(`Read before changing`, `Edit files surgically`, `KISS > YAGNI > DRY`, `serNm`/`Info`/`Data` 예시 등)를 덜어내는 대신, 테스트 oracle 독립성과 삭제·완화 시 대체 보호 경로 명시, 검사 실패 메시지의 대안 제시, 문서 의도 미달 결함 보고, 리뷰 점수표·억지 채우기 금지와 결함·리스크·가설 구분을 세 전역 지침에 상시 규칙으로 흡수했습니다. `advisor.md`에는 가장 그럴싸한 실패 시나리오(pre-mortem) 항목을 더했습니다.
+- **`evals/`:** 삭제된 Skill을 참조하던 `evals/routing-cases.json`은 린트에 맞게 정리했고, `evals/instruction-cases.json`은 이번 개편에서 건드리지 않았습니다.
 
 ## 의도적으로 제외한 항목
 

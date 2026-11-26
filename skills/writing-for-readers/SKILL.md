@@ -3,24 +3,24 @@ name: writing-for-readers
 description: "Write or draft text that reports work to someone else or asks them for a decision—release notes, pull-request or issue bodies, and proposals—in two layers: a brief visible decision layer and a folded evidence layer. Use when drafting or editing PR descriptions, release notes, issue reports, or written proposals. Not for guides, reference documentation, articles, fiction, or ordinary chat replies."
 ---
 
-# Writing for Other Readers
+# Writing for Readers
 
-Text that reports work to someone else or asks them for something—such as release notes, a pull-request or issue body, or a proposal—is read first by a person deciding quickly and later by a person or an agent looking for evidence. Write it in two layers. Guides, reference documentation, articles, and fiction keep their own structure and do not use this format.
+Someone deciding whether to approve, upgrade, or act needs the verdict in seconds; a reviewer or future agent auditing the work needs complete evidence. Separate the two layers. Guides, reference docs, articles, and fiction keep their own structure and do not use this format.
 
-## Visible layer (for the person deciding)
+## Visible layer (for the decision-maker)
 
-- Cover, in a few lines: what changes for them, what they need to do, and any risk or unverified item.
-- Start from the shortest version that carries those points and fit it to the reader: a user needs the effect on their use and data; a pull-request reviewer needs the behavior change and what to check.
-- Keep the user's own sentences when the user supplied a draft.
-- Because the visible layer carries the user's judgment about what deserves the reader's time, present it as a draft for the user to choose from or edit.
+- Cover in a few lines: what changes for the reader, what action (if any) they need to take, and any material risk or unverified boundary. Never hide a caveat or risk inside the fold.
+- Fit the framing to the audience: users care about impact on their workflow and data; PR reviewers care about behavior changes and what deserves direct inspection.
+- Preserve the user's wording when they supplied a draft.
+- Because the visible layer represents 재연님's judgment about what deserves the reader's time, present it as a draft to choose from or edit.
 
 ## Folded layer (for evidence)
 
-- Include the changes file by file, rejected alternatives, and the commands run with their results—complete enough for an agent to act on without this conversation.
-- Fold it with what the medium offers (such as `<details><summary>` on GitHub) and label the fold as agent-written with the model name.
-- When the commit range, a linked pull request, or another record already carries that evidence, link it instead of repeating it.
-- Omit the folded layer when the change is small enough to explain completely in the visible layer.
+- Include file-by-file changes, rejected alternatives with reasons, and commands run with their results—complete enough for another agent to act on without this conversation.
+- Fold it using the medium's native control (such as `<details><summary>` on GitHub) and label the fold as agent-written with the model name.
+- Link to an existing commit range, linked PR, or record instead of repeating evidence it already carries.
+- Omit the fold when the change is small enough to state completely in the visible layer.
 
 ## Project templates
 
-Where a project has its own format for release notes, pull requests, or issues, keep that template. The two layers decide what goes on top and what gets folded, not the template.
+Keep any template the repository already defines for release notes, pull requests, or issues; the two layers govern what stays on top and what folds, not the template itself.

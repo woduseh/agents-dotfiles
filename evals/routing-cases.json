@@ -1,28 +1,14 @@
 {
   "purpose": "Manual trigger seeds for this repository's skills. Run each query in a fresh session with these skills installed and check that the expected skill loads and the excluded one does not. A null expectation means none of this repository's skills is needed; other installed skills may still apply. These cases are not an automated model evaluation.",
   "cases": [
-    {"query": "Fix the failing null check in OrderService and add a test.", "expect": "test-audit", "exclude": ["explain-with-artifacts", "engineering-review"], "note": "Adding regression coverage uses test-audit; ordinary implementation does not request an explainer or a design review."},
-    {"query": "이 테스트 스위트에서 중복이거나 구현에 결합된 테스트를 찾아줘. 수정은 하지 마.", "expect": "test-audit", "exclude": ["engineering-review"]},
-    {"query": "기존 테스트를 그대로 한 번 돌려서 결과만 알려줘.", "expect": null, "exclude": ["test-audit"], "note": "Running an unchanged suite needs no test judgment."},
-    {"query": "This refactor is big and touches twelve files.", "expect": null, "exclude": ["engineering-review"], "note": "Size alone is not a request for a structural review."},
-    {"query": "이 모듈 경계가 과도하게 복잡한지 실제 코드로 검토해줘. 결과는 채팅에 간단히 써줘.", "expect": "engineering-review", "exclude": ["explain-with-artifacts"]},
-    {"query": "이 모듈의 인터페이스를 더 작게 만들 수 있는지 설계안 두세 개를 비교하고 하나를 추천해줘.", "expect": "engineering-review", "exclude": ["test-audit"], "note": "Interface design moved here from the removed codebase-design skill."},
-    {"query": "OrderService의 NPE를 고쳐줘.", "expect": null, "exclude": ["engineering-review", "test-audit"], "note": "A routine bug fix needs no skill."},
-    {"query": "실제 코드에서 요청이 전달되는 흐름을 간단한 도식으로 보여줘. 새 설계 리뷰는 필요 없어.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
-    {"query": "이 설정의 입력을 바꾸면서 결과를 이해할 수 있는 작은 HTML을 만들어줘.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
-    {"query": "이미 확인한 변경 내역과 실행 결과로 전후 동작을 시각적으로 비교해줘. 다시 리뷰하거나 테스트하지 마.", "expect": "explain-with-artifacts", "exclude": ["engineering-review", "test-audit"]},
-    {"query": "이 함수가 무슨 일을 하는지 두 문장으로 설명해줘.", "expect": null, "exclude": ["explain-with-artifacts", "engineering-review", "test-audit"]},
-    {"query": "이 열 가지 설정을 이름, 기본값, 용도, 주의사항의 마크다운 표로 정리해줘.", "expect": null, "exclude": ["explain-with-artifacts"], "note": "Table dimensions do not request HTML or trigger the explainer."},
-    {"query": "이번 변경에서 호환성 분기를 유지한 이유와 실제 검증 결과를 커밋 메시지에 남겨줘. 커밋 실행은 하지 마.", "expect": null, "exclude": ["engineering-review", "test-audit"], "note": "Commit rationale is covered by the global instructions, not a skill."},
-    {"query": "이 SDK 버전의 재시도 조건을 공식 문서와 구현에서 조사해줘.", "expect": null, "exclude": ["engineering-review", "explain-with-artifacts"], "note": "Research needs no skill; whether to use a subagent follows the global instructions."},
-    {"query": "이제 compact 하려는데 그 전에 남은 일 있어?", "expect": "pre-compact", "exclude": ["engineering-review", "test-audit"]},
-    {"query": "I'm about to wrap up this session. Is anything left uncommitted or still running?", "expect": "pre-compact", "exclude": ["explain-with-artifacts"]},
-    {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact"], "note": "A commit or push request on its own follows the global instructions, not the pre-compact check."},
-    {"query": "이번 배포 릴리스 노트 초안 써줘. 사용자한테 바뀌는 점 위주로 정리해줘.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "engineering-review"]},
-    {"query": "Draft the pull request body for this branch with the verification evidence.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "test-audit"]},
-    {"query": "이 기능의 사용자 가이드 문서를 새로 써줘.", "expect": "project-docs", "exclude": ["writing-for-readers"], "note": "Guides and reference documentation keep their own structure instead of two-layer reporting."},
-    {"query": "방금 추가한 export 도구를 문서에 적어줘.", "expect": "project-docs", "exclude": ["writing-for-readers", "explain-with-artifacts"]},
-    {"query": "이 절에서 코드와 겹치는 내용을 정리해줘.", "expect": "project-docs", "exclude": ["engineering-review"], "note": "Deduplicating a document checks where each statement is carried; it is not a structural code review."},
-    {"query": "이 함수에 왜 이렇게 처리하는지 주석을 달아줘.", "expect": null, "exclude": ["project-docs"], "note": "Code comments follow the global instructions, not the documentation skill."}
+    {"query": "이제 compact 하려는데 그 전에 남은 일 있어?", "expect": "pre-compact", "exclude": ["writing-for-readers"]},
+    {"query": "I'm about to wrap up this session. Is anything left uncommitted or still running?", "expect": "pre-compact", "exclude": ["writing-for-readers"]},
+    {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact", "writing-for-readers"], "note": "A commit or push request on its own follows the global instructions, not pre-compact."},
+    {"query": "이번 배포 릴리스 노트 초안 써줘. 사용자한테 바뀌는 점 위주로 정리해줘.", "expect": "writing-for-readers", "exclude": ["pre-compact"]},
+    {"query": "Draft the pull request body for this branch with the verification evidence.", "expect": "writing-for-readers", "exclude": ["pre-compact"]},
+    {"query": "이 기능의 사용자 가이드 문서를 새로 써줘.", "expect": null, "exclude": ["writing-for-readers", "pre-compact"], "note": "Guides and reference docs follow global project-doc principles, not two-layer reporting."},
+    {"query": "OrderService의 NPE를 고쳐줘.", "expect": null, "exclude": ["writing-for-readers", "pre-compact"], "note": "Routine bug fixes need no skill."},
+    {"query": "이 함수가 무슨 일을 하는지 두 문장으로 설명해줘.", "expect": null, "exclude": ["writing-for-readers", "pre-compact"]},
+    {"query": "이번 변경에서 호환성 분기를 유지한 이유와 실제 검증 결과를 커밋 메시지에 남겨줘. 커밋 실행은 하지 마.", "expect": null, "exclude": ["writing-for-readers", "pre-compact"], "note": "Commit rationale is covered by global instructions."}
   ]
 }
