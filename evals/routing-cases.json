@@ -20,6 +20,9 @@
     {"query": "지금 변경분 커밋하고 푸시해줘.", "expect": null, "exclude": ["pre-compact"], "note": "A commit or push request on its own follows the global instructions, not the pre-compact check."},
     {"query": "이번 배포 릴리스 노트 초안 써줘. 사용자한테 바뀌는 점 위주로 정리해줘.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "engineering-review"]},
     {"query": "Draft the pull request body for this branch with the verification evidence.", "expect": "writing-for-readers", "exclude": ["explain-with-artifacts", "test-audit"]},
-    {"query": "이 기능의 사용자 가이드 문서를 새로 써줘.", "expect": null, "exclude": ["writing-for-readers"], "note": "Guides and reference documentation keep their own structure instead of two-layer reporting."}
+    {"query": "이 기능의 사용자 가이드 문서를 새로 써줘.", "expect": "project-docs", "exclude": ["writing-for-readers"], "note": "Guides and reference documentation keep their own structure instead of two-layer reporting."},
+    {"query": "방금 추가한 export 도구를 문서에 적어줘.", "expect": "project-docs", "exclude": ["writing-for-readers", "explain-with-artifacts"]},
+    {"query": "이 절에서 코드와 겹치는 내용을 정리해줘.", "expect": "project-docs", "exclude": ["engineering-review"], "note": "Deduplicating a document checks where each statement is carried; it is not a structural code review."},
+    {"query": "이 함수에 왜 이렇게 처리하는지 주석을 달아줘.", "expect": null, "exclude": ["project-docs"], "note": "Code comments follow the global instructions, not the documentation skill."}
   ]
 }

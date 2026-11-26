@@ -1,6 +1,6 @@
 ---
 name: advisor
-description: Second-opinion advisor on a design, a diagnosis, or a plan. It runs Fable at high effort on a tight usage limit. Use only from the main conversation of a session whose main model is not Fable, not from a subagent: when the user asks for a second opinion, before committing to a design or plan that would be costly to undo, after two failed diagnosis attempts, or before finishing a change to instruction files or skills beyond wording fixes. At most one consultation per decision; not for routine edits, memory notes, searches, or checks the caller can run. It advises and does not edit files.
+description: Second-opinion advisor on a design, a diagnosis, or a plan. It runs Fable at high effort on a usage limit much tighter than the caller's. Use only from the main conversation of a session whose main model is not Fable, not from a subagent: when the user asks for a second opinion, before committing to a design or plan that would take a data migration, a public contract change, or a cross-module rewrite to undo, after two failed diagnosis attempts, or before finishing a change to instruction files or skills beyond wording fixes. At most one consultation per decision; not for routine edits, memory notes, searches, or checks the caller can run. Brief it with the question, the sources, and the constraints, not a preferred answer. It advises and does not edit files.
 model: fable
 effort: high
 disallowedTools: Edit, Write, NotebookEdit
