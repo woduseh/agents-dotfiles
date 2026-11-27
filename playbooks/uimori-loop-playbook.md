@@ -66,7 +66,7 @@ Run this from the Uimori repo. Keep the review prompt short and open, in 재연�
 
 ## Quota and sessions
 
-Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh session per unit, or run `/pre-compact` when context grows and you continue in the same session.
+Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh session per unit, or run `/pre-compact` when context grows and you continue in the same session.
 
 ## Tone
 
@@ -90,33 +90,41 @@ Commits by unit:
 
 Leftovers (not blockers, but do not forget):
 
-- The timings ledger has not yet been rewritten from a real Linux CI artifact (about 48 files still sit at the default weight of 1).
+- The timings ledger still comes from pre-Wave 1 runs (`sourceRuns` 44729063248, 44730617062, 44736850258); 6 of 349 files sit at the default weight of 1 (checked 2026-11-27).
 - Server-side deletion of unseen older helper messages is not independently verified.
 
-### Wave 1: in progress, handed to 리아 (2026-11-27 09:33 KST)
+### Wave 1: closed (2026-11-27 KST)
 
-재연님's decisions: move `browser-full` to Ubuntu and make PR runs impact-based; collapse `verify:*` into one `npm run verify -- <domain>`, keeping the old names as aliases **only during Wave 1**.
+재연님's decisions: move `browser-full` to Ubuntu and make PR runs impact-based; collapse `verify:*` into one `npm run verify -- <domain>`. The old aliases are now gone; use `npm run verify -- all` where older notes say `verify:browser`.
 
-Pushed to `origin/main` (HEAD `05af2c9c`):
+`origin/main` HEAD is `0b41f164`:
 
-- `04490ef7` test(helper): split helper-browser into four files and keep 14 cases
-- `38ca11c3` test(tooling): add feature-map and require every browser spec
+- `04490ef7` test(helper): split helper-browser into four files and keep 14 cases (27 → 14, deliberate)
+- `38ca11c3` test(tooling): add feature-map and require every browser spec (also moved CODE-MAP case pointers to `tests/feature-map.json`)
 - `bd55b53d` feat(tooling): add a single verify command driven by the feature map
 - `862f1000` feat(ci): share check-changed selection with impact-based Vitest
 - `05af2c9c` ci: move browser-full to Ubuntu and make PR runs impact-based
+- `f9d87758` chore(tooling): remove verify:* aliases and select release areas from the feature map (finished the interrupted session's `release-check.mjs` work)
+- `0b41f164` fix(tooling): keep release checks synthetic and pass runners only their options (니아 review follow-up)
 
-Evidence status: implemented and pushed. **Unverified:** GitHub CI results for these five commits (check the Ubuntu `browser-full` run especially) and 니아's review of each.
+Evidence:
 
-Working tree at handoff: `scripts/release-check.mjs` is modified and uncommitted, left by an interrupted session. A `claude` process (pid 31168, started 09:06) and two `node` processes (28832, 33904) may still belong to it. Read the diff first; finish it as its own unit or ask 재연님 before discarding. Do not stash or check it out over someone else's work. Leftover temp dirs: `%TEMP%\uimori-w1`, `uimori-w1-1`, `uimori-w1-5`; delete once nothing uses them.
+- CI `Quality` success for every commit above. Ubuntu `browser-full` 3/3 passed on `05af2c9c` (manual dispatch run 45914422402). `0b41f164` push run 45919085428 succeeded; browser-full is skipped on ordinary pushes by design.
+- Local on `0b41f164`: `npm run verify -- all` 333 passed (346 in Wave 0 minus the 13 helper cases dropped in `04490ef7`); `npm test` 2856 passed; `test:tooling` 188 passed; quality, check-documentation, unit-diff and check:changed passed.
+- 니아 reviewed all seven commits (REQUEST_CHANGES → fixed in `0b41f164`), then re-reviewed `0b41f164`: **APPROVE**. 리아 re-ran unit-diff (37 → 39 cases), quality, check-documentation, `git diff --check`, check:changed and test:tooling on it; all passed.
 
-Remaining Wave 1 work, in order:
+니아's non-blocking notes from the re-review:
 
-1. Resolve `scripts/release-check.mjs` (finish + gates + commit, or ask).
-2. Check CI for the five commits; fix any red run as its own unit.
-3. Ask 니아 to review the five commits (paste diffs; plan mode cannot run shell). Apply mechanical fixes as a separate commit.
-4. Confirm CODE-MAP case numbering now points at `tests/feature-map.json` (may already be in `38ca11c3`); finish it if not.
-5. Remove the old `verify:*` aliases.
-6. One full `verify:browser` run to close the wave, then update this section.
+- `runOptions` in `scripts/verify.mjs` drops every option the runner does not list, so `verify -- self-host --grepp SH01` runs all of self-host instead of failing. Left for the runner-interface idea below.
+- `check-documentation` now treats a leading `ns:name` word with arguments as a script name; an inline token like `build:latest --tag` would be a false positive (none today).
+- `privateMaterialEnv` reads `defaults.launch` and `entry.launch` separately while `launchOf` merges them; same result today.
+
+Cleaned up: pids 31168, 28832, 33904 were already gone; `%TEMP%\uimori-w1*` deleted (the reviews remain in 니아's conversation).
+
+Open from 니아's review, for 재연님:
+
+- `npm run verify -- risu` still runs the private CHARX spec whenever `UIMORI_RISU_SAMPLE_ROOT` is set, and that route skips the `UIMORI_RISU_SAMPLE_DIAGNOSTIC=1` refusal that `scripts/verify-risu-native-samples.mjs` enforces. Release checks are now protected; the direct domain route is a design choice from `bd55b53d`.
+- `ci-vitest.mjs 1/1 --dist-only` exits 0 on an empty selection, and `ci-summary.mjs` does not read `vitest-dist-1`.
 
 After Wave 1: design Phases 1–4 together with Wave 2. Starting a phase, and adding a new devDependency, needs 재연님's approval.
 
@@ -127,8 +135,10 @@ Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v
 - A light CI path for PRs that only touch root `docs/*.md`.
 - Use the 1-hop import graph as the sole tooling-test selector.
 - Drop the Vitest double boot by running via `runTestSpecifications`.
-- Share `check-changed --list-json` with PR CI so both use the same selection rules (`862f1000` may already cover this; check).
-- Extend `npm run <script>` existence checks to inline backticks.
+- Flatten `verify.mjs`'s three run kinds into one runner interface that takes parsed options instead of rewriting `process.argv`, and declare per-runner options and env guards in the feature map (니아).
+- One change classifier shared by `ci-changes.mjs`, `check-changed.mjs` and `verify.mjs` (니아).
+- Run feature-map domains selected by `verify -- --changed <base>` in PR CI, capped by spec count (니아; decide after the first real PR run).
+- Refresh `scripts/ci-vitest-timings.json` from the first post-`05af2c9c` Linux `main` artifact.
 - A `.dockerignore` ↔ `buildFingerprint()` invariant test.
 - A shared `tests/fixtures/story-scale.ts`.
 - Multi-run median timings plus `assertPartition`.
