@@ -5,6 +5,15 @@ This is a short operating guide for **Lia (리아)** running the Uimori improvem
 - Repo: `C:\Users\wodus\ai-workspace\uimori` (`woduseh/Uimori`)
 - Keep this file in `agents-dotfiles`. Do not commit it to the Uimori repo.
 
+## Goal
+
+The loop exists to carry out 니아's two original plans, which 재연님 adopted as the goal (2026-11-26 KST, Antigravity app sessions):
+
+- "우이모리 테스트 및 CI 개편안" (`b23a44a5-acb3-49c9-aa54-9b1c67253816`): Wave 0 cleanup → Wave 1 CI redesign, single `verify`, browser second-pass cut (345 → ~120–150 cases, plus one representative spec for uncovered areas such as Story Guide) → Wave 2 test changes made inside each design phase → Wave 3 steady-state signals.
+- "U이모리 구조 및 설계 개선 제안" (`ffdf2de9-39ea-475c-beaa-ce415099fd9e`): seven proposals ordered as Phases 1–4 (sketch under Current state).
+
+Read them from `~/.gemini/antigravity/brain/<id>/.system_generated/logs/transcript_full.jsonl` (`PLANNER_RESPONSE` records). As of 2026-11-27 the browser second-pass cut from the original Wave 1 is still open; only `helper-browser` was cut.
+
 ## Roles
 
 - **리아 (coordinator session)**: Runs the loop. Calls 니아, re-runs every gate herself, reviews diffs, commits, pushes after 니아's review, and reports to 재연님. Implements small units (one or two files) directly in this session.
