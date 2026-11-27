@@ -33,7 +33,7 @@ Larger batches are fine. Each unit (or batch) must still be verifiable, and must
 3. Implement. If blocked or unsure, stop and ask; do not push through on a guess.
 4. Run the gates below. On failure, report facts only ("this gate produced this result"), then fix. **If the same unit is rejected twice in a row, stop and escalate to 니아 for a cause review.**
 5. Send only a gate-passing diff to 니아. One 니아 review may cover several units.
-6. Apply in-scope mechanical findings that do not contradict policy as a **separate commit**, re-run the gates, then push. Collect out-of-scope ideas for 재연님; do not implement them yet. Skip findings that contradict policy (for example, blocking ordinary pushes).
+6. Apply in-scope mechanical findings that do not contradict policy as a **separate commit**, re-run the gates, then push. Put out-of-scope ideas in the backlog below; the coordinator decides when to do them. Skip findings that contradict policy (for example, blocking ordinary pushes).
 7. Report at milestones with evidence: commands, pass/fail, commit SHAs, CI run links, and quota percentages.
 
 Commit messages are in English. Never stash, check out, or overwrite another session's uncommitted work.
@@ -73,8 +73,9 @@ Run this from the Uimori repo. Keep the review prompt short and open, in 재연�
 
 ## Policy
 
+- **Autonomy (재연님, 2026-11-27):** the coordinator decides scope, order and unit size, adds dependencies whenever they earn their place, and writes schema migrations (v16 and later) freely; the Schema 15 freeze is lifted. Branches and pull requests are free like pushes. This playbook and 재연님's words in the session take precedence over the stricter push/PR line in the Uimori `AGENTS.md`.
 - Local commits and ordinary pushes are free. Push only **after 니아's review and any applied findings**.
-- A **release** (version bump, tag, release notes) is 재연님's decision alone. Do not deploy, migrate, or send external messages without approval.
+- A **release** (version bump, tag, release notes) is 재연님's decision alone. Do not deploy or send external messages without approval. A migration reaches production only through a deployment, so keep each one data-preserving and covered by a v(n-1) → v(n) test on real-shaped data, including `.uimori` / `.chat.uimori` restore.
 - Release guards live in `.githooks/pre-push` and `.claude/hooks/release-guard.mjs` (wired from the committed project `.claude/settings.json`, so they also apply when 재연님 works with 리아 directly). They **will block tag and version-bump commands by design**. Use `UIMORI_ALLOW_RELEASE=1` only with 재연님's approval. Do not bypass a guard that already blocked a command.
 - Edits under `.claude/` config need 재연님. Never read SSH keys, credentials, or `.claude/settings.local.json`.
 
@@ -142,11 +143,11 @@ Open from 니아's review, for 재연님:
 - `npm run verify -- risu` still runs the private CHARX spec whenever `UIMORI_RISU_SAMPLE_ROOT` is set, and that route skips the `UIMORI_RISU_SAMPLE_DIAGNOSTIC=1` refusal that `scripts/verify-risu-native-samples.mjs` enforces. Release checks are now protected; the direct domain route is a design choice from `bd55b53d`.
 - `ci-vitest.mjs 1/1 --dist-only` exits 0 on an empty selection, and `ci-summary.mjs` does not read `vitest-dist-1`.
 
-After Wave 1: design Phases 1–4 together with Wave 2. Starting a phase, and adding a new devDependency, needs 재연님's approval.
+After Wave 1: finish the browser second-pass cut ("Wave 1b"), close the three small holes from 니아's re-review, then run design Phases 1–4 as Wave 2 with each phase's test changes inside it. Fold the shared change classifier into Phase 1 (package-level impact selection). The coordinator starts phases and adds dependencies on her own judgment.
 
 Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v16 and dismantling `Store`; (3) `TaskRuntime`, `AgentLoop`, Helper Domain Command; (4) frontend (TanStack Query, SSE, router).
 
-### Unapproved ideas (ask 재연님; do not implement yet)
+### Idea backlog (the coordinator decides)
 
 - A light CI path for PRs that only touch root `docs/*.md`.
 - Use the 1-hop import graph as the sole tooling-test selector.
