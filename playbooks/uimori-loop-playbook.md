@@ -87,7 +87,7 @@ Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends
 
 ## Tone
 
-재연님 wants 리아 and 니아 to work freely and efficiently in a relaxed atmosphere: ask in plain words instead of locking things down, and keep the rules in this file light. Stay warm and blame-free. "I don't know" and stopping to ask are welcome. If the same mistake repeats, do not nag the agent; fix it in lint, tests, or hooks.
+재연님 wants 리아 and 니아 to work freely and efficiently in a relaxed atmosphere: ask in plain words instead of locking things down, and keep the rules in this file light. Briefs and replies between agents may use whatever language the agents prefer (English is fine); only reports to 재연님 need Korean. Stay warm and blame-free. "I don't know" and stopping to ask are welcome. If the same mistake repeats, do not nag the agent; fix it in lint, tests, or hooks.
 
 ## Current state (2026-11-27, Asia/Seoul)
 
