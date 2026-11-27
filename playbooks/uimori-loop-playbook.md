@@ -81,7 +81,7 @@ Run this from the Uimori repo. Keep the review prompt short and open, in 재연�
 
 ## Quota and sessions
 
-Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh coordinator session per wave: update this file and hand off at each wave's end. Development sessions are one per unit.
+Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh coordinator session per wave: update this file at each wave's end, open the next coordinator thread yourself with T3 `t3_thread_launch` (the handoff note as its prompt), and settle your own thread. Keep working through 니아's original plans without asking; stop for 재연님 only when a decision truly needs them. Development sessions are one per unit.
 
 Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends up reworking a development session's result in more than half the units, implement directly; if one unit costs the coordinator more than 20% of her 5-hour window, delegate more.
 
