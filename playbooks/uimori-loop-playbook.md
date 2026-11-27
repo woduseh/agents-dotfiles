@@ -138,12 +138,51 @@ Evidence:
 
 Cleaned up: pids 31168, 28832, 33904 were already gone; `%TEMP%\uimori-w1*` deleted (the reviews remain in 니아's conversation).
 
-Open from 니아's review, for 재연님:
+### Wave 1b: closed (2026-11-27 KST)
 
-- `npm run verify -- risu` still runs the private CHARX spec whenever `UIMORI_RISU_SAMPLE_ROOT` is set, and that route skips the `UIMORI_RISU_SAMPLE_DIAGNOSTIC=1` refusal that `scripts/verify-risu-native-samples.mjs` enforces. Release checks are now protected; the direct domain route is a design choice from `bd55b53d`.
-- `ci-vitest.mjs 1/1 --dist-only` exits 0 on an empty selection, and `ci-summary.mjs` does not read `vitest-dist-1`.
+These closed the three holes left by Wave 1: `832f2d56` and `de3fc7ef`.
+- Mistyped and valueless runner options now reach the runner, which rejects them.
+- An empty full Vitest selection fails, and `ci-summary` requires the `--dist-only` report.
+- The Risu sample diagnostic mode is removed.
 
-After Wave 1: finish the browser second-pass cut ("Wave 1b"), close the three small holes from 니아's re-review, then run design Phases 1–4 as Wave 2 with each phase's test changes inside it. Fold the shared change classifier into Phase 1 (package-level impact selection). The coordinator starts phases and adds dependencies on her own judgment.
+The browser-suite cut followed 니아's plan in `playbooks/uimori-wave1b-browser-diet.md`: eight units, each reviewed by 니아.
+- Units: `c76c4582`, `674a2205`, `380f5dfd`, `9c7ad344`, `afe83a91`, `453747fc`, `565b2fb6`, `1235d838`.
+- Restorations from 니아's reviews: `de837335`, `4d29845b`, `db451066`, `497654ec`, `26f50390`, `f51d2585`.
+- Also:
+  - `c41cad10`: queued-send edge cases.
+  - `2b9288ac`: screenshots run only under `visualReview`. `tests/browser-screenshots.test.ts` enforces it.
+  - `15bec792`: SCENEDIAG opens the chat usage totals.
+
+Unit 7 moved the composer's scheduled-send guards out of `useStory` into `web/queued-send.ts`, covered by `tests/queued-send.test.ts`.
+
+Evidence:
+- Local on `f51d2585`: `npm run verify -- all` **253 passed in 2.1 min** (333 at Wave 1 close, about 3 min).
+- CI `Quality` is green on every pushed head. The last one is run 45935226151 on `f51d2585`, and `origin/main` is `f51d2585`.
+
+Lesson:
+- 니아's plan often named a headless or server test as the protection for a browser case. 7 of her 8 unit reviews found such a gap, so most of the plan's 168 cuts were partly reversed.
+- Development briefs now require naming the component and action, and finding (`rg`) another browser case that mounts it, before deleting.
+- Expect the same in any later test cut, and keep 니아's per-unit review.
+
+Parked flakes: `LIBUI08` (folder drag, once under load) and `HELPUI07` (see Next).
+
+### Next: Wave 2 = design Phase 1, with its test changes inside
+
+1. **Fix first: the `HELPUI07` app timing bug.** 니아's diagnosis in the unit 8 review is an app bug, not a test bug:
+   - `HelperPanel.tsx` around L1137/L1141 sets `scrollTop` directly instead of calling `bottom.follow()`, so `useBottomFollow`'s `last` ref stays `{0,0}`. A user scroll-up just after opening is then not seen as moving up, and reopening jumps to the bottom.
+   - `onScroll` has no guard while the panel is hidden.
+   - The test does not wait for the `scroll` event.
+   - Make `useBottomFollow`'s decision a pure helper with a Vitest seam, which also covers `STREAMFOLLOW`'s lost invariant.
+2. **Phase 1** (`packages/`, contracts, structured errors) per the Goal plans. Fold the shared change classifier into it.
+3. **Backlog from Wave 1b reviews:**
+   - Vitest seams for `useBottomFollow`, `SidePanelResizer` and `addDraftImages`' size/MIME/count checks.
+   - One shared client idempotent-action state machine (Phase 4, `useDurableMutation`).
+   - Split `provider-management-browser.spec.ts`.
+   - Merge the two `risu` private-Vite specs.
+
+The coordinator starts phases and adds dependencies on her own judgment.
+
+Quota note (2026-11-27): this wave took 니아's 5-hour window from 97% to under 30% (weekly 87% → 70%) and 리아's to 26% used. 재연님 is considering the Google AI Ultra plan. Until then, start 니아-heavy planning after her 5-hour window resets.
 
 Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v16 and dismantling `Store`; (3) `TaskRuntime`, `AgentLoop`, Helper Domain Command; (4) frontend (TanStack Query, SSE, router).
 
@@ -152,7 +191,7 @@ Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v
 - A light CI path for PRs that only touch root `docs/*.md`.
 - Use the 1-hop import graph as the sole tooling-test selector.
 - Drop the Vitest double boot by running via `runTestSpecifications`.
-- Flatten `verify.mjs`'s three run kinds into one runner interface that takes parsed options instead of rewriting `process.argv`, and declare per-runner options and env guards in the feature map (니아).
+- Flatten `verify.mjs`'s three run kinds into one runner interface that takes parsed options instead of rewriting `process.argv`, and declare per-runner options and env guards in the feature map (니아). `832f2d56`/`de3fc7ef` fixed the option symptoms; the `process.argv` rewrite remains.
 - One change classifier shared by `ci-changes.mjs`, `check-changed.mjs` and `verify.mjs` (니아).
 - Run feature-map domains selected by `verify -- --changed <base>` in PR CI, capped by spec count (니아; decide after the first real PR run).
 - Refresh `scripts/ci-vitest-timings.json` from the first post-`05af2c9c` Linux `main` artifact.
@@ -161,4 +200,4 @@ Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v
 - Multi-run median timings plus `assertPartition`.
 - Move the U6 helpers out of React files before design Phase 4.
 
-니아's source plans and reviews are named `test-ci.md`, `design.md`, `feedback-1.md`, plus per-unit review JSON.
+니아's source plans are the two Antigravity sessions under Goal. Her Wave 1b reviews are T3 delegated threads under the coordinator thread "Wave 1 리뷰와 다음 웨이브 추천"; the Wave 0–1 reviews are in her agy conversation `5187c4ac`.
