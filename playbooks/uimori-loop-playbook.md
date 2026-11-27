@@ -93,28 +93,41 @@ Leftovers (not blockers, but do not forget):
 - The timings ledger has not yet been rewritten from a real Linux CI artifact (about 48 files still sit at the default weight of 1).
 - Server-side deletion of unseen older helper messages is not independently verified.
 
-### Next: Wave 1
+### Wave 1: in progress, handed to 리아 (2026-11-27 09:33 KST)
 
-Wave 1 still needs 재연님's decisions. The first of the original three is now moot, because Wave 0 is already done.
+재연님's decisions: move `browser-full` to Ubuntu and make PR runs impact-based; collapse `verify:*` into one `npm run verify -- <domain>`, keeping the old names as aliases **only during Wave 1**.
 
-1. ~~Wave 0 alone vs. Wave 0 together with Wave 1.~~ (moot)
-2. Move `browser-full` from Windows to Ubuntu, and run impact-based Vitest + Linux smoke on PRs, with full Vitest / Windows reserved for `main` pushes, OS-sensitive paths, or releases.
-3. Collapse the 36 `verify:*` scripts into a single `npm run verify -- <domain>`, or keep a few well-used aliases.
+Pushed to `origin/main` (HEAD `05af2c9c`):
 
-Wave 1 body (once those are decided): redesign `quality.yml`, unify `verify.mjs`, introduce `tests/feature-map.json`, shrink helper browser cases, and **retarget CODE-MAP case numbering onto `tests/feature-map.json`** (already approved). After that, run design Phases 1–4 together with Wave 2. Starting a phase, and adding a new devDependency, needs 재연님's approval.
+- `04490ef7` test(helper): split helper-browser into four files and keep 14 cases
+- `38ca11c3` test(tooling): add feature-map and require every browser spec
+- `bd55b53d` feat(tooling): add a single verify command driven by the feature map
+- `862f1000` feat(ci): share check-changed selection with impact-based Vitest
+- `05af2c9c` ci: move browser-full to Ubuntu and make PR runs impact-based
+
+Evidence status: implemented and pushed. **Unverified:** GitHub CI results for these five commits (check the Ubuntu `browser-full` run especially) and 니아's review of each.
+
+Working tree at handoff: `scripts/release-check.mjs` is modified and uncommitted, left by an interrupted session. A `claude` process (pid 31168, started 09:06) and two `node` processes (28832, 33904) may still belong to it. Read the diff first; finish it as its own unit or ask 재연님 before discarding. Do not stash or check it out over someone else's work. Leftover temp dirs: `%TEMP%\uimori-w1`, `uimori-w1-1`, `uimori-w1-5`; delete once nothing uses them.
+
+Remaining Wave 1 work, in order:
+
+1. Resolve `scripts/release-check.mjs` (finish + gates + commit, or ask).
+2. Check CI for the five commits; fix any red run as its own unit.
+3. Ask 니아 to review the five commits (paste diffs; plan mode cannot run shell). Apply mechanical fixes as a separate commit.
+4. Confirm CODE-MAP case numbering now points at `tests/feature-map.json` (may already be in `38ca11c3`); finish it if not.
+5. Remove the old `verify:*` aliases.
+6. One full `verify:browser` run to close the wave, then update this section.
+
+After Wave 1: design Phases 1–4 together with Wave 2. Starting a phase, and adding a new devDependency, needs 재연님's approval.
 
 Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v16 and dismantling `Store`; (3) `TaskRuntime`, `AgentLoop`, Helper Domain Command; (4) frontend (TanStack Query, SSE, router).
-
-### Approved for Wave 1
-
-- Unify CODE-MAP case numbering onto `tests/feature-map.json`.
 
 ### Unapproved ideas (ask 재연님; do not implement yet)
 
 - A light CI path for PRs that only touch root `docs/*.md`.
 - Use the 1-hop import graph as the sole tooling-test selector.
 - Drop the Vitest double boot by running via `runTestSpecifications`.
-- Share `check-changed --list-json` with PR CI so both use the same selection rules.
+- Share `check-changed --list-json` with PR CI so both use the same selection rules (`862f1000` may already cover this; check).
 - Extend `npm run <script>` existence checks to inline backticks.
 - A `.dockerignore` ↔ `buildFingerprint()` invariant test.
 - A shared `tests/fixtures/story-scale.ts`.
