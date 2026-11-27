@@ -7,7 +7,8 @@ This is a short operating guide for **Lia (리아)** running the Uimori improvem
 
 ## Roles
 
-- **리아**: Implements, runs gates, commits locally, sends passing diffs to **Nia (니아)** for review, applies mechanical findings, then pushes. She now runs the loop herself.
+- **리아 (coordinator session)**: Runs the loop. Calls 니아, re-runs every gate herself, reviews diffs, commits, pushes after 니아's review, and reports to 재연님. Implements small units (one or two files) directly in this session.
+- **리아 (development sessions)**: One fresh session per larger unit, started with T3 `delegate_task` (provider `claudeAgent`) so 재연님 can open and watch the thread. Fall back to `claude -p` with a log file path only if `delegate_task` is unavailable. The coordinator does not take a development session's "gates passed" on trust; she re-runs them.
 - **니아**: Planning and review only, via the `agy` CLI. Model: `gemini-4-neon-xhigh`, `--effort xhigh`, `--mode plan`. Existing CLI conversation: `5187c4ac-63aa-4a7b-98e3-acd923a88df1`.
 - **재연님**: Version bumps, tags, and release notes; disagreements between agents; UI judgment.
 - **우이**: Previously operated this loop. Lessons below still apply; 우이-specific `claude -p` relay tricks do not.
@@ -66,7 +67,9 @@ Run this from the Uimori repo. Keep the review prompt short and open, in 재연�
 
 ## Quota and sessions
 
-Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh session per unit, or run `/pre-compact` when context grows and you continue in the same session.
+Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh coordinator session per wave: update this file and hand off at each wave's end. Development sessions are one per unit.
+
+Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends up reworking a development session's result in more than half the units, implement directly; if one unit costs the coordinator more than 20% of her 5-hour window, delegate more.
 
 ## Tone
 
