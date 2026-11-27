@@ -48,6 +48,10 @@ Also:
 
 ## Calling 니아
 
+Default (재연님, 2026-11-27): a fresh T3 `delegate_task` per review, provider `antigravity`, model `gemini-4-neon`, `thought_level: xhigh`. Ask her not to edit files; no hard read-only mode is needed, she keeps to it. She may read the repo and run read-only commands such as `git diff` herself, so the brief carries the purpose, the commit range and gate results plus any earlier decisions she needs, not pasted diffs. Check `git status` after she finishes.
+
+Fallback: the `agy` CLI below, which also keeps the Wave 0–1 conversation context.
+
 Never use `-c` / `--continue`. Confirm the conversation is **idle** before sending a new turn. In `--mode plan -p`, a shell call from 니아 cancels the turn, so tell her **not to run a shell** and paste `git status -sb`, `git log`, `git diff`, and gate results into the prompt.
 
 ```bash
@@ -73,7 +77,7 @@ Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends
 
 ## Tone
 
-Stay warm and blame-free. "I don't know" and stopping to ask are welcome. If the same mistake repeats, do not nag the agent; fix it in lint, tests, or hooks.
+재연님 wants 리아 and 니아 to work freely and efficiently in a relaxed atmosphere: ask in plain words instead of locking things down, and keep the rules in this file light. Stay warm and blame-free. "I don't know" and stopping to ask are welcome. If the same mistake repeats, do not nag the agent; fix it in lint, tests, or hooks.
 
 ## Current state (2026-11-27, Asia/Seoul)
 
