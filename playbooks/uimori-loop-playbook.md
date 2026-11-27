@@ -176,8 +176,10 @@ Parked flake: `LIBUI08` (folder drag, once under load). `HELPUI07` was an app bu
 - P1-2b1 chat/store/resource/reading codes: `4424a723`, `f881e5b6`. Routine CAS 409s collapse into `REVISION_CONFLICT`; helper-only codes are `HelperToolError`. The unused lore-override HTTP route is removed. A Korean auto-translation job error the web could not read now carries a code.
 - Over-verification backlog items 3 and 10, release tooling: `5142bd38`, `4ec32dd2`, `57a86dde`.
 - AGENTS.md boundaries narrowed (재연님): `9ea4cc7a`.
-
-`f881e5b6` got no 니아 re-review; the next session may ask for one together with P1-2b2.
+- Second coordinator session (from ~15:30 KST): P1-2b2 backup/transfer/push/images/library/search codes `a1bee2a4` (Opus dev session), full-run follow-up `333b51be` (helper 409 fallback is `REVISION_CONFLICT` too), 니아 review of f881e5b6 + a1bee2a4 (REQUEST_CHANGES) applied in `516ec873` (`throwApiError` in `web/api.ts` for raw-fetch readers; backup/push settings conflicts → `REVISION_CONFLICT`). Pushed; `333b51be` and `516ec873` still need 니아's re-review, bundle it with P1-2c1. P1-2c is split: c1 appearance+outline, c2 illustrations+translation guides+colon codes (`MODEL_REQUIRED:<role>`, `MODEL_UNAVAILABLE:`, `MANUSCRIPT_TRANSLATION_MISSING`); `helper-illustration-*` moves to P1-2d.
+- P1-2c1 appearance+outline `7d7ac63a`; 니아 reviewed it with `333b51be`/`516ec873` (those two fine; REQUEST_CHANGES on c1: outline races reached the UI as helper-only 400s, dead `OUTLINE_MOVE_CYCLE`, theme select checked existence before revision) → fixed with regression tests in `075fb125`, pushed. P1-2c2 (illustrations, translation, colon codes) delegated next.
+- Backup horizon decided (재연님): restore only from 0.18.0 onward; see the backlog file item 9. Its own unit after P1-2c.
+- Brief lessons: `check:unit-diff` takes one glob per `--allow`; `dist`-backed tests and `verify` need `npm run build` after source edits; browser specs assert UI text, so `rg` specs when merging messages.
 
 Evidence on `f881e5b6`: full `npm test` 2893 passed; test:tooling PASS; `verify -- --changed 4424a723` 146 and browser-smoke 4 passed; quality, lint:architecture, check-documentation and diff-check PASS; unit-diff from `0844928e` 258 → 253 (release-tooling tests for removed behavior). CI runs green through `0844928e` (45944500157). The run for `f881e5b6` is 45950628584.
 

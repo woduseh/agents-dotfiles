@@ -23,11 +23,19 @@ More from 니아's release-tooling review (agent-decidable):
 - `deploy/oracle-update.py` ~L376: `ready-to-switch` fails on running work before `close_writes` gets to drain it. `scripts/oracle-image-probe.mjs` ~L38 re-hashes `dist/` inside the image it just built, where `buildId` already identifies it.
 - The leftover `owner.startsWith('oracle:')` in `scripts/oracle-data.mjs` ~L242 does the same job as the check just removed elsewhere.
 
+From 니아's P1-2c1 review (2026-11-27, agent-decidable):
+
+- With the backup-horizon unit: drop `initFonts`' `sourceUrl`/`license` UPDATE (retired in v0.11.16) and its test in `tests/fonts.test.ts`.
+- `GET /api/themes/:id/export` and `GET /api/palettes/:id/export` have no caller outside tests; delete them and move the tests to `themeFile`/`paletteFile` + `/api/theme-assets/:hash`.
+- `web/ThemeAssetEditor.tsx` has no client size check, so assets over 64 MiB hit Fastify's bodyLimit as a generic 413.
+- `THEME_STORY_UI_MISSING` can race when another tab turns `storyUi` off (`saveTheme` does not bump the preferences revision); small window, left as HelperToolError.
+- Server-owned staged-file re-hashes still in `risu-import-prepared.ts` (~L74-84 manifest) and `request-images.ts` (~L48-49 `REQUEST_IMAGE_CHANGED`); unify with the P1-2d Risu unit.
+
 Decided by 재연님 (2026-11-27):
 
 - 2 → reduce to one best-effort save without warnings; drop the IndexedDB write queue, failure banner, retry UI and the extra session keys.
 - 3 → slim the Oracle release scripts to backup, integrity/compatibility probe, health check and rollback (tests only; the next release by 재연님 is the real check).
-- 9 → backups are guaranteed to restore only from recent versions. 리아's working reading: backups made by the current release line (0.18.x); confirm with 재연님 before removing anything older than that. Applies to `search_fts` and is the horizon for `stored-shape-upgrades` / `nativeRisuSnapshotNeedsRefresh` too.
+- 9 → backups are guaranteed to restore only from 0.18.0 and later (confirmed by 재연님 2026-11-27: they keep two days of backups and delete the rest). A backup whose `appVersion` is older than 0.18.0 is refused on restore with a clear code. Then remove the legacy `search_fts` dual lookup and migrator, `stored-shape-upgrades-*`, and `nativeRisuSnapshotNeedsRefresh`. DB schema stays 15 (unchanged since v0.4), so the `appVersion` check is the only gate.
 
 Original notes:
 
