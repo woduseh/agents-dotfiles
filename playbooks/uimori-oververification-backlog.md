@@ -206,3 +206,29 @@ From PR #49 (helper MCP spike, 2026-11-28):
 - Installed clients (Claude Code 2.1.332, Codex 0.172.0) never call `skills/list`; the four skills are served and verified with the SDK client only. Recheck client support before investing in user-written skills.
 - `chat_list` / `chat_read` are inline in `HelperRuntime` and were left out of the MCP tool list; a SKILL.md-only change does not select `tests/mcp.test.ts` in `check:changed`; in-flight MCP calls are not cancelled at shutdown.
 - Ideas: move `server/mcp-routes.ts` onto the Domain Command entry (`executeOperation`) as commands land; expose a free `image_read` as MCP image content (니아); library items as MCP resources (not urgent, tools already read with revisions).
+
+From PR #67 (helper workspace CRUD routes to typed endpoints, 2026-11-28; pre-existing or left out):
+
+- Coordinator decision: a deleted helper conversation or project keeps answering 404 `HELPER_CONVERSATION_NOT_FOUND` / `HELPER_PROJECT_NOT_FOUND` (the web shows "may have been deleted elsewhere" and hands off to a new conversation); the 11 revision-carrying writes are named exemptions in `tests/stale-tab/helper.ts`, pinned over HTTP by `tests/helper-navigation.test.ts`. Overturn if the 404 confuses in real use.
+- Reviewer idea not applied: in `tests/stale-tab-matrix.test.ts` (near L444) the runner skips the "revision one ahead answers 409 first" probe only for `conflict` answers although the docs say `targetRevision` exempts it; adding `&& !item.targetRevision` would turn those exemptions into real cases. It changes what the check means, so do it as its own small unit with a reviewer.
+- A missing helper message answers 404 `Helper message not found` without a code.
+- Editing an attachment-only message that another tab deleted, with empty text, answers 400 `HELPER_REQUEST_EMPTY` before 409; an empty context summary answers 400 before a deleted conversation or a stale revision.
+- A context-summary conflict answers 409 `HELPER_CONTEXT_DEPENDENCY_CHANGED`, not `REVISION_CONFLICT`.
+- Still raw in `server/helper-routes.ts`: task routes, message send, view, events, references, message/task page reads, artifacts, and `POST`/`DELETE …/compact` (starts paid generation).
+
+From PR #66 (command test scaffolding, 2026-11-28):
+
+- A commit that only deletes a samples file may not select the probes in `check:changed`; `stale-tab-matrix` also runs on samples-file changes.
+
+From the MCP breadth 1a review (2026-11-28; pre-existing, made reachable by MCP):
+
+- `image.update-metadata` checks existence before the revision, and `Store.renameChat` uses `chat` instead of `writableChat` (a stale tab gets 404/400 instead of 409). Fixed in the 1a PR only if local; otherwise open.
+
+From PR #69 (helper change cards and turn rollback removed, 2026-11-28):
+
+- Dead after the removal, not deleted yet: `web/resource-anchor.ts` and its wiring in `LibraryPanel`, `PromptEditor`, `RisuNativeFields`, `NativeRisuPresetEditor`; `ReaderTarget.changedParagraph` and the arrival-scroll handling in `web/useStory.ts`; `ChatOverridesStore.restore` and its `reinstate` branch.
+- Pre-existing: an `@` reference chip pointing at a deleted resource leaves an unhandled rejection in `web/HelperPanel.tsx`.
+- Two confirmation policies lost their stated reason (rollback) and were left as they are, pending 재연님: chat-only lore deletion runs without confirmation; `resource.patchMany` runs at any count without confirmation.
+- Ideas (dev): a contract test that every `(operation, kind, setting)` of a result row has a label and a place to open, with `setting` narrowed to a union so `tsc` catches a missing label; a minimal "view and reset chat-only lore" screen under "기억과 메모" as the recovery path for lore; keep a theme's existing assets when a helper `resource.save` omits `assets` (a few lines in the helper path).
+- Stale after #69, found by the #68 dev: the `resource.patchMany` tool description still says its edits are "rolled back together on the helper screen". Model-facing text that is now false; fix with the next helper wording pass.
+- The provider-error redactor does not know `UIMORI_MCP_TOKEN` (a provider never receives it and the column is not reachable through MCP; noted, not fixed).

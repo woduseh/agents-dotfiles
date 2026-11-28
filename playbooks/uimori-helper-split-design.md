@@ -47,6 +47,7 @@ Not breadth: the duplicated runtime. `data.exec` is a container runtime; on the 
 - Cheap model on the phone: wants to try it first.
 - In-app rollback: "hardly ever used, probably an excessive safeguard". Treat change cards + turn rollback (`helper_changes`, `helper_rollback`, the helper-only hooks in `server/command.ts`) as a deletion candidate; ask for an explicit yes before removing a visible feature.
 - **In-app change cards + turn rollback: delete (재연님, explicit yes, 2026-11-28 evening, eighth coordinator thread).** Recovery is a backup or another edit.
+- **Deletion over MCP (재연님, 2026-11-28 night, supersedes "permanent deletion always confirms in the app" for MCP):** a setting lets an outside harness delete without confirmation; 재연님 trusts the strong models (Fable, Opus, Carbon, Neon) and expects to turn it on. Coordinator's reading, stated back to 재연님: the setting is off by default (deletes are refused, or wait for the one-tap confirmation once that exists) and turning it on lets the eight delete operations run at once. "Edits are edits" (same night): a save through MCP replaces content as in the app; only delete operations are gated.
 - They like 니아's bold ideas ("send to the workshop") together with 리아's practical checks.
 
 ## Open decision for 재연님 (answered above; kept for the reasoning)
