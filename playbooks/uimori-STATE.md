@@ -4,6 +4,8 @@ Updated 2026-11-28 ~20:00 KST by the eighth coordinator (리아, Fable 5.2 high)
 
 ## HANDOFF 11-28 ~20:00 KST from the eighth coordinator — read this block first
 
+**Ninth coordinator (Fable 5.2 high) opened 11-28 ~19:55 KST: thread `mcp:061f49d7-51b0-4d61-82a0-2d26f4e89af3`.** The eighth thread (`mcp:c83184cf-cb39-49f2-8b88-276820afb639`) relays anything 재연님 still says there, then settles. `main` CI for the candidate commit is green.
+
 **State.** `origin/main` = `8ecdf2b243ed9224b95784e9883b950ae4e27ef7`. Merged by the eighth coordinator: #63–#70 (eight PRs). No lanes are running, no PR is open, no worktree besides the main checkout. Remote branches: `main` and `t3/preserve-native-start-titles` (closed #46; keep until the start-title label work is done). Production still runs v0.19.1 (`8bfc0fdd`).
 
 **Release candidate #2 handed to 재연님:** `8ecdf2b243ed9224b95784e9883b950ae4e27ef7`; snapshot replay `PASS … comparisons=2385 chats=3 unexpected=0 blocked=0 errors=0 retries=0` on the same tree (old `v0.18.1`; reports in `uimori-private\snapshot-2026-11-28\reports-2026-11-28-evening`); screens list `uimori-release-checkpoint-2-screens.md`. It carries a schema migration (#69 drops `helper_changes`; on the production snapshot 35 rows go and 55 images become cleanup candidates, of which only unreferenced ones are deleted). The release is 재연님's alone; they may wait for the delete-setting unit below.
