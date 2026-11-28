@@ -16,7 +16,7 @@ Read them from `~/.gemini/antigravity/brain/<id>/.system_generated/logs/transcri
 
 ## Roles
 
-- **리아 (coordinator session)**: Runs the loop. Calls 니아, re-runs every gate herself, reviews diffs, commits, pushes after 니아's review, and reports to 재연님. Implements small units (one or two files) directly in this session.
+- **리아 (coordinator session)**: Always Claude Fable 5.2 at `high` effort, also for every later coordinator session (재연님, 2026-11-28); open the next coordinator thread with `t3_thread_launch` and `modelSelection` `claude-fable-5-2` / `effort: high`. Runs the loop. Calls 니아, re-runs every gate herself, reviews diffs, commits, pushes after 니아's review, and reports to 재연님. Implements small units (one or two files) directly in this session.
 - **리아 (development sessions)**: One fresh session per larger unit, started with T3 `delegate_task` (provider `claudeAgent`) so 재연님 can open and watch the thread. Fall back to `claude -p` with a log file path only if `delegate_task` is unavailable. The coordinator does not take a development session's "gates passed" on trust; she re-runs them.
 - **니아**: Planning and review only, via the `agy` CLI. Model: `gemini-4-neon-xhigh`, `--effort xhigh`, `--mode plan`. Existing CLI conversation: `5187c4ac-63aa-4a7b-98e3-acd923a88df1`.
 - **재연님**: Version bumps, tags, and release notes; disagreements between agents; UI judgment.
@@ -24,36 +24,47 @@ Read them from `~/.gemini/antigravity/brain/<id>/.system_generated/logs/transcri
 
 Do not steal window focus; use the CLI. Do not use Cursor cloud agents. Clean up temp files and processes.
 
-## Unit loop
+## Unit loop (faster loop, adopted 2026-11-28 with 재연님)
 
-Larger batches are fine. Each unit (or batch) must still be verifiable, and must stay inside its allowed globs.
+Why it changed: in Wave 2, 17 of 19 first reviews were REQUEST_CHANGES; the two first-time APPROVEs were the only units with 니아's trap notes written before implementation. Finished units also waited 15–22 min for a fix session holding the main checkout, and full gates ran twice per unit on drafts that review then changed. The first round under this loop (P1-3c1 fixes + `UiMessage` 2a) got `APPROVE_AFTER_FIXES` and was pushed without a re-review.
 
-1. Set allowed paths (`--allow` globs) and `--base <starting commit>`.
-2. Prefer a regression test that fails on the pre-fix code and passes after the fix.
-3. Implement. If blocked or unsure, stop and ask; do not push through on a guess.
-4. Run the gates below. On failure, report facts only ("this gate produced this result"), then fix. **If the same unit is rejected twice in a row, stop and escalate to 니아 for a cause review.**
-5. Send only a gate-passing diff to 니아. One 니아 review may cover several units.
-6. Apply in-scope mechanical findings that do not contradict policy as a **separate commit**, re-run the gates, then push. Put out-of-scope ideas in the backlog below; the coordinator decides when to do them. Skip findings that contradict policy (for example, blocking ordinary pushes).
-7. Report at milestones with evidence: commands, pass/fail, commit SHAs, CI run links, and quota percentages.
+1. **Pre-flight (parallel, off the critical path).** While unit N builds, a fresh 니아 thread writes a 15–20 line trap memo for N+1: every non-HTTP caller of the functions it will touch (`resource-service`, `helper-*`), stale-tab/revision-order traps, web parse/snapshot/fallback traps, strict-schema caller traps, over-verification to remove, and which files N+1 shares with parallel lanes. Paste the memo into N+1's brief. 니아 may also split a unit (she split the mechanical-check unit into Y-A and Y-B).
+2. **Develop in a worktree, branch until approved.** Every dev and fix session works in a T3 worktree (`delegate_task` `isolation: "worktree"`); the main checkout only takes integration. Up to 2–3 parallel lanes for units that share few files. Homogeneous conversions (remaining P1-3 route groups, `UiMessage` 2b domains) go 2–3 per unit; a new mechanism stays alone. Briefs keep: bold ideas welcome, what 니아 found last time, a failing-on-old regression test for every behavior fix, the over-verification lens.
+3. **Tier 1 (dev session, before handing back):** `npm run quality`, `npm run build`, `npm run check:changed -- <base> --all`, `npm run check:unit-diff -- --base <base> --allow <glob> …` (one glob per `--allow`; per-file counts), `npm run verify -- --changed <base>` (one or two domains per call on Windows), `npx playwright test --list`.
+4. **니아 reviews the worktree branch directly** (fresh thread; she reads the branch, no pasted diffs). Verdicts: `APPROVE`; `APPROVE_AFTER_FIXES` (1–3 local, mechanically checkable fixes with a checklist: the dev fixes them with regression tests, 리아 checks, no re-review); `REQUEST_CHANGES` (design/state/multi-file: re-review). Fixes go back to the **original dev thread** with `t3_thread_send` (it holds the unit's context); a second rejection or a bloated thread gets a fresh session. **If the same unit is rejected twice in a row, ask 니아 for a cause review.**
+5. **Tier 2 (리아 on `main`, once, after approval):** cherry-pick, `npm ci` if the lockfile changed, `quality`, `build`, `check:changed -- <prev-main> --all`, `verify -- --changed <prev-main>`, `playwright test --list`, `check-documentation`, `git diff --check`; `node scripts/test-tooling.mjs` only when scripts/docs/hooks changed (`npm run test:tooling` builds again). Then push and check the Actions run.
+6. **Full runs:** full `npm test` only when `check:changed` prints `scope: full-required` or at a wave's end (CI runs 4 Vitest shards on every push). `verify -- all` only when `verify` reports an input no feature-map domain covers (shared UI/error core), every 4–5 units, at a wave's end, or via the CI `browser-full` dispatch.
+7. Out-of-scope findings go to `uimori-oververification-backlog.md`; skip findings that contradict policy. Report to 재연님 at milestones with commands, pass/fail, SHAs, CI links and quota.
+8. **Mechanical checks first:** when a defect class repeats, turn it into an API change, lint rule or contract-walking test before adding prose (Y-A: `allEndpoints` stale-tab matrix; Y-B: `ProductStore.get` → `stored`, `useConfirmAction`, `JSON.parse` split).
 
-Commit messages are in English. Never stash, check out, or overwrite another session's uncommitted work.
+**How a unit runs now (fifth coordinator session, 2026-11-28; supersedes steps 3–5 above where they differ):**
+- Dev session in a T3 worktree (`npm ci` runs on creation) → Tier 1 → **self-closing lane**: the dev starts its own cross-family reviewer with `docs/dev/REVIEW-RUBRIC.md` quoted verbatim + its "Brief"; applies `APPROVE_AFTER_FIXES`; stops and reports on `REQUEST_CHANGES` or a contested fix (리아 decides the design, the dev continues, a **fresh** reviewer re-reviews); then rebases, pushes, opens a PR without auto-merge.
+- 리아 reads the reviewer thread (a short read is enough), runs `gh pr update-branch <n> --rebase` if behind, and enables auto-merge (`pull_request_merge`, `auto: true`, `method: rebase`, full head SHA). PR CI (`quality`, strict) replaces the local Tier 2. Don't link/watch PRs from the coordinator thread (merge would settle it); link them to the dev thread.
+- Reviewer tiers: 니아 `high` for homogeneous conversions, `xhigh` for new mechanisms/state/server contracts. Lever 4 (same 니아 thread for pre-flight and review) missed the one defect in a departure from her own memo; always add a short independent 시아 (Codex `gpt-6.2-sol`, high) check when using it. 시아 so far: 2 real defects 니아 missed, no noise.
+- Sonnet 5.5 is enough for homogeneous conversion lanes (2 of 2 matched Opus).
+- Parallel lanes that all touch a shared ratchet file (`scripts/ui-message-allowlist.json`): land them as **one integration PR** (cherry-pick each lane, regenerate with `--shrink` after each, `npm run quality`, PR, close the superseded PRs) instead of serial update-branch + conflict rounds.
+- **Plan-review rules (2026-11-28, supersede the reviewer tiers above):** risk-tiered review, pre-existing non-protected defects listed only, fail-first tests only under CHECKS' keep criteria, paid-generation code open to bold redesign within AGENTS.md's boundary, gate PRs auto-merge after review, worktrees deleted right after merge. Full list in `uimori-STATE.md` "Loop rules".
 
-### Gates
+**How work is shaped (2026-11-28 evening; 재연님 asked 리아 and 니아 the same question and wanted the two views merged; supersedes the unit-shaping parts above where they differ).** Evidence: 24 PRs in one day; on protected or design-heavy units a reviewer of another family found real defects almost every time, mechanical units passed first review whoever built them, and the day's most valuable defect was found by `verify:snapshot`, not by a review.
+- **Collaboration is for verification, not for dividing a design.** Protected data and state machines always get a reviewer of another family; no agent reviews its own design. Prefer a mechanical oracle (differential replay, derived probes, `fast-check` state models) over another review round.
+- **Keystones are built in one breath by the coordinator ("player-coach", 니아's proposal).** The skeleton units (U6-4 core reduction, U7 TaskRuntime, the v16 design, the Phase 4 hub) are implemented by the Fable coordinator directly in a worktree, together with two or three real callers, at the start of a fresh coordinator session, and reviewed on the branch by 니아 xhigh (+ 시아 for the protected tier). One keystone per coordinator session, then hand over. Gives up: coordinator context and quota. Overturn if a keystone's first-review rejection rate is no better than a delegated Opus lane's, or the context fills before the unit is done — then use a fresh Fable dev session with a short brief.
+- **Then freeze the keystone.** Conversion lanes may not edit the core files (`server/command.ts`, the ports file, the adapter): if a command does not fit, the lane stops with a five-line counter-example instead of adding a hook. (The six hooks grown on 11-28 all have one caller, `helper-command-adapter.ts`; they came from wrapping the legacy helper transaction from outside, which the coordinator's brief prescribed — not from too many hands.)
+- **Delete before abstracting: no helper-coupled command conversions until 재연님 has chosen helper A/B/C.** Until then convert HTTP-only CRUD and the paid-admission paths (U7). U6-4 removes the helper-only hooks. Overturn if they choose A and an inside-the-transaction port cannot keep the change card atomic.
+- **Homogeneous conversions go as domain bundles on a train.** One PR per domain (8–18 routes), Sonnet, several in parallel; split the conflict magnets first (per-domain command tests, samples and ports; `commandProbes` stays generic); lanes only check "no growth" of the allowlists, and one integration ("train") PR once or twice a day runs `--shrink` and CI for the bundle. Gives up: debt counters move per train; PRs of 400–800 lines. Overturn if a bundle is rejected twice or a new `api()` slips in.
+- **Briefs are short and honest.** At most ~25 lines: the outcome, the invariants to enforce, and each premise tagged `[verified in code]` or `[hypothesis — stop if it differs]`. No internal signatures or mechanisms prescribed (three wrong premises and one prescribed hook cost a PR and a core clean-up on 11-28). Peer tone: "here is what I think, how do you see it?"
+- **Watch the lanes.** Look at any lane silent for 15 minutes or past its expected time (`t3_thread_read`, activity view); Antigravity threads can stall on a lost tool result and need `restart`. Fold this into the landing watcher when convenient.
+- **Placement by observed strength:** Claude Sonnet for bundles, deletions and browser verification; Opus only for protected multi-file work the coordinator does not build; 니아 for reviews and design memos (`high` by default, `xhigh` for keystones, protected data and the Phase 4 hub; a few pure-server dev units when Claude's window is above 80%); 시아 only as second reviewer on the four protected boundaries (paid admission, migration/restore, the access gate, draft preservation). 니아 as coordinator was considered and declined by 니아 herself (a stalled Antigravity turn would stop the loop, and she could not cross-review Claude lanes she integrates).
+- Not adopted from 리아's first proposal: a standing "mechanism owner" thread (its context would become the bottleneck). Open for 재연님: when to spend Claude's reset ticket (니아 suggests the Phase 4 week).
 
-Required every unit:
+재연님's decisions on 리아's skeleton proposals (2026-11-28, fifth coordinator session):
+- **Adopted, to set up:** (1) PR merge queue: approved lanes open a PR and CI on the merged tree replaces 리아's local Tier 2, with auto-merge (needs branch protection + an AGENTS.md opt-in; confirm the exact change with 재연님 before applying). (2) Type-first inversion for homogeneous conversions: switch the shared components to `UiMessage`-only (step 3 first) and let `tsc` list the remaining sites; same idea for P1-3h's `api<T>()` ban.
+- **(3) Risk-tiered review:** mechanical conversions get 니아 at `thought_level: high`; new mechanisms, state/race and server contracts keep `xhigh`. (재연님 is moving Gemini to Ultra, so quota should loosen.)
+- **(4) One 니아 thread per unit (pre-flight → review): try on one unit**, judge by first-review result and whether the memo anchored the review.
+- **(5) Adopted:** 리아 applies `APPROVE_AFTER_FIXES` fixes herself instead of a round trip to the dev thread; resolve `scripts/ui-message-allowlist.json` conflicts by regenerating with `--shrink`, never by hand-merging.
 
-- `npm run check:unit-diff -- --base <sha> --allow <glob...>` (or `node scripts/check-unit-diff.mjs`). Compare test-case counts **per file**; growth in one file must not offset a drop in another.
-- `npm run quality` (Biome + `tsc` + check-comments + check-i18n)
-- `npm run test:tooling` (required when scripts, docs, or hooks change)
-- `node scripts/check-documentation.mjs`
-- `git diff --check`
-- `npm run check:changed` smoke (usually `HEAD~1` or the unit base)
+Revert a lever when its stated evidence fails (니아's table in the T3 thread "니아: 품질 유지하며 루프 속도 높이기 상담"): merge-time conflicts above ~5 min per unit, CI catching what Tier 2 missed in 2 of 10 units, `APPROVE_AFTER_FIXES` letting 2 of 10 defects through, pre-flight units staying below 50% first-time APPROVE over 5 units, a reused dev thread's fix rejected in 2 of 3 rounds.
 
-Also:
-
-- Full `npm test` only when shared fixtures or global config (for example `vitest.config.ts`) change.
-- Full `npm run verify:browser` **once, before closing a wave.**
-- After a push, check and report the GitHub Actions run link.
+Commit messages are in English. Never stash, check out, or overwrite another session's uncommitted work. Coordinator integration tricks: a cherry-pick that only conflicts in imports is resolved by hand on `main`; when two parallel units rename/introduce the same helper, expect a `tsc` break on `main` only (`238d05ab`).
 
 ## Calling 니아
 
@@ -69,7 +80,7 @@ agy --conversation 5187c4ac-63aa-4a7b-98e3-acd923a88df1 \
   --output-format json -p <prompt-file>
 ```
 
-Run this from the Uimori repo. Keep the review prompt short and open, in 재연님's style: state the purpose clearly and ask for a verdict (`APPROVE` / `REQUEST_CHANGES`). Always include: **if you see a bolder improvement, say so even if it is out of scope.** For structural questions, say plainly that tearing up the skeleton is allowed.
+Run this from the Uimori repo. Keep the review prompt short and open, in 재연님's style: state the purpose clearly and ask for a verdict (`APPROVE` / `REQUEST_CHANGES`). Always include: **if you see a bolder improvement, say so even if it is out of scope.** 재연님 loves 니아's out-of-scope and bold ideas (2026-11-27): say in every brief, to 니아 and to development sessions alike, that root-cause fixes and better directions for a problem are welcome as boldly and actively as they like, as many as they see. For structural questions, say plainly that tearing up the skeleton is allowed.
 
 ## Policy
 
@@ -77,11 +88,16 @@ Run this from the Uimori repo. Keep the review prompt short and open, in 재연�
 - Local commits and ordinary pushes are free. Push only **after 니아's review and any applied findings**.
 - A **release** (version bump, tag, release notes) is 재연님's decision alone. Do not deploy or send external messages without approval. A migration reaches production only through a deployment, so keep each one data-preserving and covered by a v(n-1) → v(n) test on real-shaped data, including `.uimori` / `.chat.uimori` restore.
 - Release guards live in `.githooks/pre-push` and `.claude/hooks/release-guard.mjs` (wired from the committed project `.claude/settings.json`, so they also apply when 재연님 works with 리아 directly). They **will block tag and version-bump commands by design**. Use `UIMORI_ALLOW_RELEASE=1` only with 재연님's approval. Do not bypass a guard that already blocked a command.
+- **Clean-up (재연님, 2026-11-28):** whatever 리아, 니아 or 시아 made while working (merged or superseded branches, local and remote; finished worktrees; scratch logs, `.bak` copies, one-off scripts) is removed on the coordinator's own judgment once the work is on `main` or finished. Look first: is the content on `main`, is a running lane using it, is it the only copy of private data (move snapshot reports to `uimori-private`). Keep the branch of a closed-unmerged PR while a backlog item points at it. Say what was removed in one line.
 - Edits under `.claude/` config need 재연님. Never read SSH keys, credentials, or `.claude/settings.local.json`.
 
 ## Quota and sessions
 
 Check 리아's and 니아's 5-hour quota with `/usage` before and after each unit. From a shell, run `claude -p "/usage"` and `agy -p "/usage" --output-format text` in PowerShell; Git Bash rewrites `/usage` into a path and sends it as an ordinary prompt. **Pause if less than about 20% of the 5-hour window remains.** Report quota percentages, never API-equivalent dollar amounts. Start a fresh coordinator session per wave: update this file at each wave's end, open the next coordinator thread yourself with T3 `t3_thread_launch` (the handoff note as its prompt), and settle your own thread. Keep working through 니아's original plans without asking; stop for 재연님 only when a decision truly needs them. Development sessions are one per unit.
+
+Pipelining (재연님 approved 2026-11-27) is now part of the Unit loop above: parallel worktree lanes, pre-flight for the next unit, and branch-until-approved. Worktrees need `npm ci` (see the junction trap memory). The shared catalog and locale files, `packages/contracts/src/{index,operations}.ts` and `scripts/ui-message-allowlist.json` are the conflict hot spots.
+
+The faster loop itself (2026-11-28) is the Unit loop section above.
 
 Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends up reworking a development session's result in more than half the units, implement directly; if one unit costs the coordinator more than 20% of her 5-hour window, delegate more.
 
@@ -89,130 +105,13 @@ Revisit the split (agreed with 재연님 on 2026-11-27): if the coordinator ends
 
 재연님 wants 리아 and 니아 to work freely and efficiently in a relaxed atmosphere: ask in plain words instead of locking things down, and keep the rules in this file light. Briefs and replies between agents may use whatever language the agents prefer (English is fine); only reports to 재연님 need Korean. Stay warm and blame-free. "I don't know" and stopping to ask are welcome. 리아 and 니아 shape plans together as peers: share your own view and ask for hers ("here's what I think, how do you see it?"). Do not frame a request as something to refute, challenge or tear apart (재연님, 2026-11-27). If the same mistake repeats, do not nag the agent; fix it in lint, tests, or hooks.
 
-## Current state (2026-11-27, Asia/Seoul)
+## Current state
 
-**Wave 0 is finished and pushed.** `HEAD` is `2b14ba4c`. `verify:browser` passed 346 cases.
-
-Commits by unit:
-
-- U0 (unit-diff check + release guards): `50277fde`, `3c113d55`
-- U1 (docs/fixture cleanup + stronger check-documentation): `6020cc1a`, `797f4f3f`
-- U2 (`ci-changes` docs_only bug): `ed1d6776`
-- U3 (`check-changed` holes): `024c1810`, `e7ea07d6`
-- U3a/b (fenced command-path checks, `assertBuild()`, `buildFingerprint` ↔ `docsOnly` cross-test): `9d7c2dc5`, `457437ab`, `ab0bf139`
-- U4 (`story-performance` split into scale invariants + manual bench): `78fecf0d`
-- U5 (timings ledger generate/merge script; Linux CI artifacts only): `4415a348`
-- U6 (optional Vitest cover for helper merge / partial-failure retry): `9fa6ea36`
-- Review follow-up: `2b14ba4c`
-
-Leftovers (not blockers, but do not forget):
-
-- The timings ledger still comes from pre-Wave 1 runs (`sourceRuns` 44729063248, 44730617062, 44736850258); 6 of 349 files sit at the default weight of 1 (checked 2026-11-27).
-- Server-side deletion of unseen older helper messages is not independently verified.
-
-### Wave 1: closed (2026-11-27 KST)
-
-재연님's decisions: move `browser-full` to Ubuntu and make PR runs impact-based; collapse `verify:*` into one `npm run verify -- <domain>`. The old aliases are now gone; use `npm run verify -- all` where older notes say `verify:browser`.
-
-`origin/main` HEAD is `0b41f164`:
-
-- `04490ef7` test(helper): split helper-browser into four files and keep 14 cases (27 → 14, deliberate)
-- `38ca11c3` test(tooling): add feature-map and require every browser spec (also moved CODE-MAP case pointers to `tests/feature-map.json`)
-- `bd55b53d` feat(tooling): add a single verify command driven by the feature map
-- `862f1000` feat(ci): share check-changed selection with impact-based Vitest
-- `05af2c9c` ci: move browser-full to Ubuntu and make PR runs impact-based
-- `f9d87758` chore(tooling): remove verify:* aliases and select release areas from the feature map (finished the interrupted session's `release-check.mjs` work)
-- `0b41f164` fix(tooling): keep release checks synthetic and pass runners only their options (니아 review follow-up)
-
-Evidence:
-
-- CI `Quality` success for every commit above. Ubuntu `browser-full` 3/3 passed on `05af2c9c` (manual dispatch run 45914422402). `0b41f164` push run 45919085428 succeeded; browser-full is skipped on ordinary pushes by design.
-- Local on `0b41f164`: `npm run verify -- all` 333 passed (346 in Wave 0 minus the 13 helper cases dropped in `04490ef7`); `npm test` 2856 passed; `test:tooling` 188 passed; quality, check-documentation, unit-diff and check:changed passed.
-- 니아 reviewed all seven commits (REQUEST_CHANGES → fixed in `0b41f164`), then re-reviewed `0b41f164`: **APPROVE**. 리아 re-ran unit-diff (37 → 39 cases), quality, check-documentation, `git diff --check`, check:changed and test:tooling on it; all passed.
-
-니아's non-blocking notes from the re-review:
-
-- `runOptions` in `scripts/verify.mjs` drops every option the runner does not list, so `verify -- self-host --grepp SH01` runs all of self-host instead of failing. Left for the runner-interface idea below.
-- `check-documentation` now treats a leading `ns:name` word with arguments as a script name; an inline token like `build:latest --tag` would be a false positive (none today).
-- `privateMaterialEnv` reads `defaults.launch` and `entry.launch` separately while `launchOf` merges them; same result today.
-
-Cleaned up: pids 31168, 28832, 33904 were already gone; `%TEMP%\uimori-w1*` deleted (the reviews remain in 니아's conversation).
-
-### Wave 1b: closed (2026-11-27 KST)
-
-These closed the three holes left by Wave 1: `832f2d56` and `de3fc7ef`.
-- Mistyped and valueless runner options now reach the runner, which rejects them.
-- An empty full Vitest selection fails, and `ci-summary` requires the `--dist-only` report.
-- The Risu sample diagnostic mode is removed.
-
-The browser-suite cut followed 니아's plan in `playbooks/uimori-wave1b-browser-diet.md`: eight units, each reviewed by 니아.
-- Units: `c76c4582`, `674a2205`, `380f5dfd`, `9c7ad344`, `afe83a91`, `453747fc`, `565b2fb6`, `1235d838`.
-- Restorations from 니아's reviews: `de837335`, `4d29845b`, `db451066`, `497654ec`, `26f50390`, `f51d2585`.
-- Also:
-  - `c41cad10`: queued-send edge cases.
-  - `2b9288ac`: screenshots run only under `visualReview`. `tests/browser-screenshots.test.ts` enforces it.
-  - `15bec792`: SCENEDIAG opens the chat usage totals.
-
-Unit 7 moved the composer's scheduled-send guards out of `useStory` into `web/queued-send.ts`, covered by `tests/queued-send.test.ts`.
-
-Evidence:
-- Local on `f51d2585`: `npm run verify -- all` **253 passed in 2.1 min** (333 at Wave 1 close, about 3 min).
-- CI `Quality` is green on every pushed head. The last one is run 45935226151 on `f51d2585`, and `origin/main` is `f51d2585`.
-
-Lesson:
-- 니아's plan often named a headless or server test as the protection for a browser case. 7 of her 8 unit reviews found such a gap, so most of the plan's 168 cuts were partly reversed.
-- Development briefs now require naming the component and action, and finding (`rg`) another browser case that mounts it, before deleting.
-- Expect the same in any later test cut, and keep 니아's per-unit review.
-
-Parked flake: `LIBUI08` (folder drag, once under load). `HELPUI07` was an app bug, fixed in Wave 2.
-
-### Wave 2: in progress (first coordinator session ended 2026-11-27 ~15:20 KST)
-
-`origin/main` is `f881e5b6`. Units done, each reviewed by 니아, findings applied, all gates re-run by 리아:
-- HELPUI07 app bug: `3b10ca45`, `d7d98b43`.
-- P1-0 shared change classifier: `6d2ba6b7`, `3f54d229` (check-changed now follows the import closure through scripts and hooks).
-- P1-1 `packages/contracts` via `#contracts` subpath import: `db288db0`, `0639042f`.
-- P1-2a error core (`AppError`, `HelperToolError`, `{ code, params? }` wire, catalog): `41b8f942`, `0844928e`.
-- P1-2b1 chat/store/resource/reading codes: `4424a723`, `f881e5b6`. Routine CAS 409s collapse into `REVISION_CONFLICT`; helper-only codes are `HelperToolError`. The unused lore-override HTTP route is removed. A Korean auto-translation job error the web could not read now carries a code.
-- Over-verification backlog items 3 and 10, release tooling: `5142bd38`, `4ec32dd2`, `57a86dde`.
-- AGENTS.md boundaries narrowed (재연님): `9ea4cc7a`.
-- Second coordinator session (from ~15:30 KST): P1-2b2 backup/transfer/push/images/library/search codes `a1bee2a4` (Opus dev session), full-run follow-up `333b51be` (helper 409 fallback is `REVISION_CONFLICT` too), 니아 review of f881e5b6 + a1bee2a4 (REQUEST_CHANGES) applied in `516ec873` (`throwApiError` in `web/api.ts` for raw-fetch readers; backup/push settings conflicts → `REVISION_CONFLICT`). Pushed; `333b51be` and `516ec873` still need 니아's re-review, bundle it with P1-2c1. P1-2c is split: c1 appearance+outline, c2 illustrations+translation guides+colon codes (`MODEL_REQUIRED:<role>`, `MODEL_UNAVAILABLE:`, `MANUSCRIPT_TRANSLATION_MISSING`); `helper-illustration-*` moves to P1-2d.
-- P1-2c1 appearance+outline `7d7ac63a`; 니아 reviewed it with `333b51be`/`516ec873` (those two fine; REQUEST_CHANGES on c1: outline races reached the UI as helper-only 400s, dead `OUTLINE_MOVE_CYCLE`, theme select checked existence before revision) → fixed with regression tests in `075fb125`, pushed. P1-2c2 (illustrations, translation, colon codes) delegated next.
-- Backup horizon decided (재연님): restore only from 0.18.0 onward; see the backlog file item 9. Its own unit after P1-2c.
-- Brief lessons: `check:unit-diff` takes one glob per `--allow`; `dist`-backed tests and `verify` need `npm run build` after source edits; browser specs assert UI text, so `rg` specs when merging messages.
-
-Evidence on `f881e5b6`: full `npm test` 2893 passed; test:tooling PASS; `verify -- --changed 4424a723` 146 and browser-smoke 4 passed; quality, lint:architecture, check-documentation and diff-check PASS; unit-diff from `0844928e` 258 → 253 (release-tooling tests for removed behavior). CI runs green through `0844928e` (45944500157). The run for `f881e5b6` is 45950628584.
-
-Decisions made this session (also in the files named):
-- No wire backward compatibility. AGENTS.md Product intent now carries the over-verification lens: keep saved text, authoring-editor drafts, paid generation and backup restore; a short chat input and lost credentials need no safeguard. See `uimori-wave2-phase1-plan.md` "Lens".
-- Package resolution uses root `"imports"`, not workspaces. Fastify + Zod gets an in-house adapter. Error-catalog rules: see the plan's Decisions.
-- `uimori-oververification-backlog.md`: 재연님 decided its three open items. Chat inputs keep one best-effort save. Release scripts are slimmed (done). Backups are guaranteed to restore from recent versions only; working reading 0.18.x, to confirm before removing anything older.
-- Development sessions default to Opus (재연님).
-
-Next: P1-2b2 (backup/transfer/push/images/library/search/story-guide codes, skipping what `4424a723` already converted in `chat-backup.ts` and `resource-bundle.ts`, but converting `resource-bundle.ts`' remaining legacy strings at ~L194/249/256/278 and the orphan codes `NATIVE_TRANSFER_IMPORT_CONFLICT`, `CHAT_TRANSCRIPT_IMPORT_*`), then P1-2c, P1-2d, P1-2e, P1-3, P1-4 per the plan. Fit the over-verification backlog items in between or inside the units they overlap.
-
-### Wave 2 brief (from Wave 1b close)
-
-1. **Fix first: the `HELPUI07` app timing bug.** 니아's diagnosis in the unit 8 review is an app bug, not a test bug:
-   - `HelperPanel.tsx` around L1137/L1141 sets `scrollTop` directly instead of calling `bottom.follow()`, so `useBottomFollow`'s `last` ref stays `{0,0}`. A user scroll-up just after opening is then not seen as moving up, and reopening jumps to the bottom.
-   - `onScroll` has no guard while the panel is hidden.
-   - The test does not wait for the `scroll` event.
-   - Make `useBottomFollow`'s decision a pure helper with a Vitest seam, which also covers `STREAMFOLLOW`'s lost invariant.
-   Done: `3b10ca45` + review follow-up `d7d98b43` (니아 APPROVE; CI run 45936907451 green).
-2. **Phase 1** (`packages/`, contracts, structured errors) per the Goal plans. Fold the shared change classifier into it. Plan, decisions and unit order: `playbooks/uimori-wave2-phase1-plan.md` (P1-0 … P1-4c).
-3. **Backlog from Wave 1b reviews:**
-   - Vitest seams for `useBottomFollow`, `SidePanelResizer` and `addDraftImages`' size/MIME/count checks.
-   - One shared client idempotent-action state machine (Phase 4, `useDurableMutation`).
-   - Split `provider-management-browser.spec.ts`.
-   - Merge the two `risu` private-Vite specs.
-
-The coordinator starts phases and adds dependencies on her own judgment.
-
-Quota note (2026-11-27): this wave took 니아's 5-hour window from 97% to under 30% (weekly 87% → 70%) and 리아's to 26% used. 재연님 is considering the Google AI Ultra plan. Until then, start 니아-heavy planning after her 5-hour window resets.
-
-Design-phase sketch: (1) `packages/`, contracts, structured errors; (2) Schema v16 and dismantling `Store`; (3) `TaskRuntime`, `AgentLoop`, Helper Domain Command; (4) frontend (TanStack Query, SSE, router).
+Read `uimori-STATE.md` (short, current). The per-wave history moved to `uimori-loop-journal.md`; the whole-plan review and the decisions taken from it are in `uimori-fable-plan-review-2026-11-28.md`.
 
 ### Idea backlog (the coordinator decides)
+
+- Candidate from 재연님 (2026-11-28, undecided): once 니아 moves to Gemini Ultra, make 니아 the orchestrator (T3 offers `gemini-pro-orchestrator-neon`). Gains: planning, pre-flight and review share one context. Cost: the reviewer would own the integration she reviews, so swap roles (리아 reviews). Try it if first reviews under the faster loop keep failing for context lost between briefs.
 
 - A light CI path for PRs that only touch root `docs/*.md`.
 - Use the 1-hop import graph as the sole tooling-test selector.
